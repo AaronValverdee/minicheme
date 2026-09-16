@@ -1,0 +1,6 @@
+El objeto del proyecto ofertado es el desarrollo de la Ingeniería Básica de una planta de producción de MTBE verde, como gestión de una nafta rica en isobutileno. El Departamento de Ingeniería Química (en adelante, DIQ) pondrá a disposición de la Empresa Contratista (en adelante, EC) las definiciones fundamentales de la Ingeniería Conceptual del proyecto (Definición y Alcance –en adelante, DAP– y Bases de Diseño –en adelante, BD–) y la información necesaria para completar el diseño conceptual del proceso, dado que se trata de una tecnología licenciada. El proyecto ha de considerar la nafta rica en isobutileno a límite de batería, si bien ha de considerar la producción de metanol verde, suministrado a límite de batería. Asimismo, se garantiza el suministro a límite de batería de algunos servicios auxiliares necesarios para llevar a cabo el proceso.
+Las materias primas tendrán la siguientes especificaciones y límites de batería. El MTBE ha de cumplir con una pureza del 99,9 % en masa. El modelo termodinámico ha de seleccionarse para describir correctamente los equilibrios propios de reacción química, líquido-vapor y líquido-líquido. El coeficiente de utilización mínimo es del 50%. La planta operará 8000 horas al año.
+
+![[Pasted image 20260907180236.png]]
+
+La capacidad de la planta es de 10000 toneladas de nafta al año

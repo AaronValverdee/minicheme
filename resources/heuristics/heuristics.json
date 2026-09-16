@@ -1,0 +1,3139 @@
+{
+  "metadata": {
+    "title": "Minicheme Comprehensive Chemical Engineering Heuristics Database",
+    "version": "1.0.0",
+    "author": "Minicheme Process Planning Environment",
+    "description": "Distilled, cross-referenced, and deduplicated chemical engineering heuristics, shortcut design methods, and experience-based rules for conceptual process design, preliminary equipment sizing, and flowsheet synthesis.",
+    "golden_rule": "Never use a heuristic rule unless you understand where it came from and how it was derived.",
+    "primary_sources": [
+      {
+        "id": "turton_2012",
+        "citation": "Turton, R., Bailie, R. C., Whiting, W. B., Shaeiwitz, J. A. (2012). Analysis, Synthesis, and Design of Chemical Processes (4th Edition). Prentice Hall.",
+        "focus_areas": [
+          "Chapter 2: Synthesis of PFDs (Douglas Levels 1-5)",
+          "Chapter 11: Experience-Based Principles (Tables 11.1 - 11.18)",
+          "The PAR Process"
+        ]
+      },
+      {
+        "id": "seider_2010",
+        "citation": "Seider, W. D., Seader, J. D., Lewin, D. R. (2010). Product and Process Design Principles: Synthesis, Analysis and Design (3rd/4th Edition). John Wiley & Sons.",
+        "focus_areas": [
+          "Table 6.2: Core Heuristics 1 through 53 across reaction, separation, heat, pressure, and solids"
+        ]
+      },
+      {
+        "id": "ulrich_vasudevan_2004",
+        "citation": "Ulrich, G. D., Vasudevan, P. T. (2004/2006). Chemical Engineering Design, Appendix C: Rules of Thumb. Chemical Engineering Magazine / Process Equipment Design.",
+        "focus_areas": [
+          "Appendix C: Comprehensive Rules of Thumb, equipment scaling equations, HETP correlations, vaporizer velocity, mixer power"
+        ]
+      },
+      {
+        "id": "walas_1988",
+        "citation": "Walas, S. M. (1988). Chemical Process Equipment: Selection and Design. Butterworth-Heinemann.",
+        "focus_areas": [
+          "Rules of thumb for chemical process equipment, vessel holdups, column design limits"
+        ]
+      },
+      {
+        "id": "sinnott_towler_2013",
+        "citation": "Sinnott, R., Towler, G. (2013). Chemical Engineering Design: Principles, Practice and Economics of Plant and Process Design (2nd Edition). Butterworth-Heinemann.",
+        "focus_areas": [
+          "Chapter 1: Design Basis, Fitness Testing, Design Margins, Deliverables (BFD/PFD/P&ID), Codes & Standards"
+        ]
+      },
+      {
+        "id": "branan_1998",
+        "citation": "Branan, C. R. (1998). Rules of Thumb for Chemical Engineers (2nd Edition). Gulf Publishing / Haslego Cheresources.",
+        "focus_areas": [
+          "Practical field rules, piping hydraulics, compressor and pump power shortcuts"
+        ]
+      }
+    ],
+    "total_rules": 90,
+    "total_families": 13
+  },
+  "families": {
+    "process_synthesis_and_strategy": {
+      "name": "Process Synthesis, Strategy & Flowsheet Hierarchy",
+      "description": "Foundational conceptual rules from the Douglas/Turton design hierarchy: Batch vs Continuous, Input/Output structure, Recycle loops, Inerts/Purges, and Energy Pinch.",
+      "rules": [
+        {
+          "id": "PROC-001",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "heuristic_philosophy",
+          "rule": "Never use a heuristic rule unless you understand where it came from and how it was derived.",
+          "explanation_and_derivation": "Heuristics represent condensed empirical wisdom and optimized economic trade-offs (e.g., balancing capital cost vs operating cost at typical utility prices). They are shortcut guides for initial scoping, not physical laws. If process operating conditions deviate from standard commercial ranges (extreme temperatures, pressures, exotic chemistries), heuristics can lead to severe design errors.",
+          "quantitative_guidelines": {
+            "validation_requirement": "Apply the PAR Process: Predict using heuristic, Authenticate using rigorous simulation/thermodynamics, Re-evaluate any major discrepancy."
+          },
+          "conditions_and_limitations": "Do not treat heuristics as immutable specifications. Always corroborate with laboratory data, thermodynamic consistency, and safety reviews.",
+          "variations_and_discrepancies": "Universally agreed upon as the foundational rule of chemical engineering design across Turton, Walas, and Douglas.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 11.1 & Epigraph",
+              "page": 368
+            },
+            {
+              "source": "Koen (1985)",
+              "table_or_section": "Definition of the Engineering Method",
+              "page": null
+            }
+          ],
+          "tags": [
+            "philosophy",
+            "PAR method",
+            "design basis",
+            "verification",
+            "heuristics"
+          ]
+        },
+        {
+          "id": "PROC-002",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "batch_vs_continuous",
+          "rule": "Select continuous processing for annual capacities exceeding 5,000 metric tons/year; select batch processing for capacities below 500 metric tons/year. Evaluate the intermediate range (500-5,000 metric tons/year) based on product flexibility and kinetics.",
+          "explanation_and_derivation": "Continuous processes have higher initial capital investment for automation and piping, but significantly lower labor and operating costs per unit of product at high volume. Batch operations provide equipment versatility for multi-product campaigns, rapid seasonal changeovers, and accommodate slow reaction kinetics (>4-8 hours) or slurry fouling that would plug continuous equipment.",
+          "quantitative_guidelines": {
+            "continuous_threshold": "> 5,000 t/y (~10,000,000 lb/y)",
+            "batch_threshold": "< 500 t/y (~1,000,000 lb/y)",
+            "transition_region": "500 to 5,000 t/y",
+            "operating_hours_continuous": "7,920 to 8,400 hr/yr (330-350 days/yr, 90-95% stream factor)",
+            "operating_hours_batch": "Typically 6,000 to 7,000 hr/yr"
+          },
+          "conditions_and_limitations": "Batch may be mandatory even at high capacities if regulatory validation requires strict lot traceability (e.g. pharmaceuticals, vaccines) or if severe fouling necessitates regular mechanical cleanout.",
+          "variations_and_discrepancies": "Ulrich quotes 1,000 to 10,000 t/y as the intermediate zone; Turton and Douglas define 500 to 5,000 t/y.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.2, Table 2.1",
+              "page": 93
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, General",
+              "page": 573
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.2",
+              "page": 5
+            }
+          ],
+          "tags": [
+            "batch",
+            "continuous",
+            "capacity",
+            "process synthesis",
+            "Douglas level 1"
+          ]
+        },
+        {
+          "id": "PROC-003",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "feed_preparation_and_inerts",
+          "rule": "Eliminate inert species upstream of reaction if separation is easily accomplished and catalyst is fouled/poisoned by the inert, but retain the inert if a large exothermic heat of reaction must be moderated.",
+          "explanation_and_derivation": "Inert gases (e.g., N2, CH4) passing through a reactor increase equipment size, downstream compressor duty, and separation loads. However, for highly exothermic reactions, an inert diluent acts as a thermal heat sink, lowering the adiabatic temperature rise and preventing runaway reactions or hot-spots.",
+          "quantitative_guidelines": {
+            "separation_effort": "Remove inerts if relative volatility with feed is > 3.0 or condensation is facile.",
+            "exotherm_moderation": "Retain inerts if adiabatic temperature rise without inerts exceeds catalyst maximum allowable temperature."
+          },
+          "conditions_and_limitations": "If downstream separation of inert from products requires cryogenic distillation, upstream removal is strongly favored.",
+          "variations_and_discrepancies": "Directly matches Seider Heuristic 3 and Turton Chapter 2 Input/Output heuristics.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 3",
+              "page": 1
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.3",
+              "page": 96
+            }
+          ],
+          "tags": [
+            "inerts",
+            "feed prep",
+            "heat of reaction",
+            "catalyst poisoning",
+            "Douglas level 2"
+          ]
+        },
+        {
+          "id": "PROC-004",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "stoichiometry_and_reactants",
+          "rule": "Use an excess of an inexpensive, non-toxic, or readily available reactant to drive complete consumption of a valuable, toxic, or hazardous reactant.",
+          "explanation_and_derivation": "Le Chatelier's principle and reaction kinetics dictate that higher concentrations of one reactant accelerate the reaction rate and shift equilibrium toward products. Using excess air, water, or inexpensive hydrocarbon forces near 100% single-pass or overall conversion of the hazardous/costly component, reducing toxic emissions and expensive downstream purification.",
+          "quantitative_guidelines": {
+            "typical_excess": "5% to 50% excess depending on relative raw material costs and equilibrium constants.",
+            "separation_penalty": "The excess reactant must be easily separable from the product stream and recycled."
+          },
+          "conditions_and_limitations": "Excess reactant increases recycle flow rate, increasing reactor volume and recycle compressor/pump operating costs. Trade-off optimum must be found.",
+          "variations_and_discrepancies": "Consensus rule across Seider (Heuristic 2) and Turton.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 2",
+              "page": 1
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.3 & 2.4",
+              "page": 97
+            }
+          ],
+          "tags": [
+            "excess reactant",
+            "kinetics",
+            "equilibrium",
+            "safety",
+            "Douglas level 2"
+          ]
+        },
+        {
+          "id": "PROC-005",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "purge_streams",
+          "rule": "Introduce purge streams in recycle loops to provide an exit for trace feed impurities and irreversible side-reaction byproducts. Purge light gases in vapor purges and heavy impurities in liquid purges.",
+          "explanation_and_derivation": "Any material that enters a process and is recycled without an exit mechanism will accumulate indefinitely in the recycle loop until plant operation is disrupted or piping explodes. A purge fraction bleeding 0.5% to 10% of the recycle stream establishes a steady-state impurity concentration.",
+          "quantitative_guidelines": {
+            "purge_fraction": "f_purge = Feed_impurity_rate / Recycle_impurity_rate (typically 0.01 to 0.10).",
+            "vapor_purge": "Located at highest point of recycle loop or flash overhead for light boiling components.",
+            "liquid_purge": "Located at column bottoms or lowest drainage point for high-boiling polymers/oligomers."
+          },
+          "conditions_and_limitations": "Purge streams inherently carry valuable reactants. If the value of lost reactants exceeds the capital cost of a dedicated separator (e.g. membrane, PSA), install a separation unit instead of a simple purge.",
+          "variations_and_discrepancies": "Identical in Seider (Heuristic 4) and Turton (Chapter 2).",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 4",
+              "page": 1
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.4.2",
+              "page": 105
+            }
+          ],
+          "tags": [
+            "purge",
+            "recycle loop",
+            "impurity accumulation",
+            "steady state",
+            "Douglas level 3"
+          ]
+        },
+        {
+          "id": "PROC-006",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "environmental_and_valuable_purges",
+          "rule": "Do not purge valuable, toxic, or hazardous species directly to the environment. Install recovery separators to recapture valuable chemicals and reaction/destruction units (scrubbers, flares, incinerators) for hazardous chemicals.",
+          "explanation_and_derivation": "Environmental regulations (EPA, REACH, OSHA) prohibit venting VOCs, toxins, or greenhouse gases. Additionally, raw material yield loss directly destroys process economics.",
+          "quantitative_guidelines": {
+            "destruction_efficiency": "Thermal oxidizers / flares typically require >= 98% to 99.9% destruction efficiency.",
+            "scrubbers": "Vent scrubbers must achieve outlet concentrations below regulatory Permissible Exposure Limits (PEL)."
+          },
+          "conditions_and_limitations": "Ensure flare headers are adequately purged with inert gas to prevent backfire/explosion.",
+          "variations_and_discrepancies": "Directly articulated in Seider (Heuristic 5) and Sinnott & Towler (Chapter 1).",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 5",
+              "page": 1
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.4",
+              "page": 12
+            }
+          ],
+          "tags": [
+            "environmental",
+            "emissions",
+            "flares",
+            "safety",
+            "toxicity"
+          ]
+        },
+        {
+          "id": "PROC-007",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "reversible_byproducts",
+          "rule": "Byproducts produced in small quantities by reversible reactions should not be separated for sale or purged; recycle them to extinction in the reactor feed.",
+          "explanation_and_derivation": "If a byproduct reaction A + B <=> C is reversible, feeding equilibrium concentrations of C back into the reactor prevents net forward reaction of C by Le Chatelier's principle. This increases the overall selectivity of raw materials toward the desired product.",
+          "quantitative_guidelines": {
+            "byproduct_selectivity": "Applicable when byproduct formation accounts for < 5-10 mol% of raw material conversion.",
+            "equilibrium_check": "Verify that high temperatures do not decompose C into irreversible tars."
+          },
+          "conditions_and_limitations": "Only valid if the byproduct does not poison the catalyst or promote runaway polymerizations.",
+          "variations_and_discrepancies": "Seider Heuristic 6; Turton Section 2.4.2.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 6",
+              "page": 1
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.4.2",
+              "page": 107
+            }
+          ],
+          "tags": [
+            "recycle to extinction",
+            "byproducts",
+            "selectivity",
+            "reversible reactions"
+          ]
+        },
+        {
+          "id": "PROC-008",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "reactive_separations",
+          "rule": "For reversible equilibrium-limited reactions, evaluate reactive separation (e.g. reactive distillation) to remove products continuously from the reaction zone, driving conversion far beyond thermodynamic equilibrium.",
+          "explanation_and_derivation": "Conventional systems require large recycle loops and huge separation trains to handle low single-pass conversions. Coupling reaction and distillation in a single column saves capital cost, reboiler energy, and bypasses equilibrium barriers (e.g., methyl acetate synthesis).",
+          "quantitative_guidelines": {
+            "volatility_compatibility": "Requires that reaction temperature and distillation temperature ranges overlap significantly, and volatility of at least one product differs from reactants."
+          },
+          "conditions_and_limitations": "Difficult to control if reaction kinetics are very slow relative to vapor-liquid residence times.",
+          "variations_and_discrepancies": "Seider Heuristic 8.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 8",
+              "page": 1
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.5",
+              "page": 110
+            }
+          ],
+          "tags": [
+            "reactive distillation",
+            "equilibrium shift",
+            "process intensification"
+          ]
+        },
+        {
+          "id": "PROC-009",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "phase_pressure_increase",
+          "rule": "To increase the pressure of a stream, pump a liquid rather than compress a gas, unless refrigeration or reaction phase constraints dictate otherwise.",
+          "explanation_and_derivation": "Mechanical shaft work is proportional to fluid specific volume (dW = V dP). Because liquid density is 100 to 1,000 times higher than gas density, pumping a liquid requires orders of magnitude less electrical power and dramatically smaller capital machinery than gas compression.",
+          "quantitative_guidelines": {
+            "work_ratio": "Gas compression work / Liquid pumping work typically ranges from 50:1 to 500:1 for equal mass flow and Delta P.",
+            "condensation_tradeoff": "Condensation requires refrigeration or cooling water; if latent heat condensation duty is cheaper than gas compressor power, condense first."
+          },
+          "conditions_and_limitations": "Do not condense if sub-cooling destroys thermal integration or if stream cannot be easily condensed at ambient cooling temperatures.",
+          "variations_and_discrepancies": "Seider Heuristic 43.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 43",
+              "page": 4
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.4",
+              "page": 108
+            }
+          ],
+          "tags": [
+            "pumping vs compression",
+            "energy efficiency",
+            "thermodynamic work",
+            "shaft power"
+          ]
+        },
+        {
+          "id": "PROC-010",
+          "family": "process_synthesis_and_strategy",
+          "subfamily_or_equipment": "pinch_and_heat_integration",
+          "rule": "Follow the fundamental Pinch Analysis rules: Never transfer heat across the pinch. Above the pinch, only accept heat from hot utilities; below the pinch, only reject heat to cold utilities.",
+          "explanation_and_derivation": "Transferring heat across the pinch creates a double penalty: an equal amount of heat must be added from expensive hot utilities above the pinch AND removed by cold utilities below the pinch. Correct network synthesis minimizes total utility demand.",
+          "quantitative_guidelines": {
+            "delta_T_min_chemical": "10 to 20 K (18 to 36 F) for typical chemical and petrochemical processes.",
+            "delta_T_min_cryogenic": "2 to 5 K (3.6 to 9 F) for cryogenic gas processing where refrigeration power is extreme.",
+            "delta_T_min_furnace": "100 to 200 K for high-temperature flue gases."
+          },
+          "conditions_and_limitations": "Pinch integration couples unit operations; operability, startup flexibility, and safety during unit trips must be preserved.",
+          "variations_and_discrepancies": "Turton Chapter 2 (Section 2.6) & Sinnott Chapter 1.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.6",
+              "page": 119
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.2.4",
+              "page": 7
+            }
+          ],
+          "tags": [
+            "pinch analysis",
+            "heat integration",
+            "energy recovery",
+            "minimum approach",
+            "Douglas level 5"
+          ]
+        }
+      ]
+    },
+    "reactors_and_kinetics": {
+      "name": "Reactors & Reaction Kinetics",
+      "description": "Rules for reactor type selection (CSTR vs PFR), heat removal/addition, space velocity, catalyst particle sizing, and reaction-separation coordination.",
+      "rules": [
+        {
+          "id": "REACT-001",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "inherent_safety_chemistry",
+          "rule": "Select raw materials and chemical reaction pathways to avoid or reduce the handling and storage of hazardous, explosive, and toxic chemicals.",
+          "explanation_and_derivation": "Inherent safety (Kletz principle) is always cheaper and more reliable than add-on protective systems. Substituting less hazardous feedstocks (e.g. producing phosgene in situ in tiny quantities rather than bulk storage) prevents catastrophic community and plant risk.",
+          "quantitative_guidelines": {
+            "inventory_minimization": "Minimize intermediate hazardous holdup to < 10-15 minutes of production."
+          },
+          "conditions_and_limitations": "Alternative routes may have lower selectivity or higher raw material costs; perform net present value (NPV) safety-cost tradeoff.",
+          "variations_and_discrepancies": "Seider Heuristic 1; Sinnott & Towler Chapter 1.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 1",
+              "page": 1
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.2",
+              "page": 5
+            }
+          ],
+          "tags": [
+            "inherent safety",
+            "reaction route",
+            "toxic chemicals",
+            "hazards"
+          ]
+        },
+        {
+          "id": "REACT-002",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "residence_time_and_pilot_scale",
+          "rule": "Reaction rates must be established experimentally in the laboratory, and residence time or space velocity must eventually be verified in a pilot plant before commercial sizing.",
+          "explanation_and_derivation": "Mass and heat transfer limitations in commercial reactors can severely distort intrinsic chemical kinetics. Pilot plant data validates scale-up models, catalyst longevity, by-product accumulation, and temperature gradients.",
+          "quantitative_guidelines": {
+            "gas_phase_space_velocity": "Liquid hourly space velocity (LHSV) typically 0.5 to 5.0 h^-1; Gas hourly space velocity (GHSV) typically 500 to 10,000 h^-1.",
+            "liquid_residence_time": "Typically 10 minutes to 4 hours in continuous CSTRs."
+          },
+          "conditions_and_limitations": "Extrapolation of bench-scale microreactor data directly to a large multi-tubular or fluidized bed reactor without CFD or pilot validation causes widespread commercial failures.",
+          "variations_and_discrepancies": "Turton Table 11.17; Excel sheet 'Reactors'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17, Heuristic 1",
+              "page": 390
+            }
+          ],
+          "tags": [
+            "residence time",
+            "space velocity",
+            "pilot plant",
+            "scale-up"
+          ]
+        },
+        {
+          "id": "REACT-003",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "cstr_vs_pfr",
+          "rule": "For isothermal reactions where reaction rate decreases with conversion (order n > 0), a Plug Flow Reactor (PFR) requires smaller volume than a Continuous Stirred Tank Reactor (CSTR). For adiabatic exothermic reactions, a CSTR requires smaller volume at low conversions due to auto-acceleration.",
+          "explanation_and_derivation": "In a CSTR, the reaction takes place entirely at the lowest reactant concentration (the exit concentration), resulting in the lowest reaction rate throughout. In a PFR, concentration starts high at the inlet, yielding high initial rates and smaller total volume. A series of 3 to 5 CSTRs closely approximates PFR performance.",
+          "quantitative_guidelines": {
+            "cstr_series": "N = 3 CSTRs in series achieves 80-90% of PFR volume reduction while retaining agitation and heat transfer capabilities.",
+            "isothermal_pfr_volume": "V_PFR / V_CSTR typically 0.1 to 0.5 for high conversions (>85%) with positive order kinetics."
+          },
+          "conditions_and_limitations": "CSTR is preferred if slurry solids must remain suspended, if reaction generates heavy slurries, or if precise temperature control is critical.",
+          "variations_and_discrepancies": "Ulrich Appendix C (Reactors, p. 581).",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Reactors",
+              "page": 581
+            }
+          ],
+          "tags": [
+            "CSTR",
+            "PFR",
+            "reactor volume",
+            "kinetics",
+            "staging"
+          ]
+        },
+        {
+          "id": "REACT-004",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "exothermic_heat_control_severe",
+          "rule": "To remove a highly exothermic heat of reaction, use an excess of reactant, an inert diluent, or direct cold-shot fluid injection between adiabatic reaction stages.",
+          "explanation_and_derivation": "When heats of reaction are extreme (e.g. oxidation, chlorination, hydrogenation), internal cooling tubes or wall jackets lack sufficient surface area per unit volume. Cold shots or diluents directly absorb enthalpy through sensible heat capacity without fouling wall surfaces.",
+          "quantitative_guidelines": {
+            "cold_shot_fraction": "Typically 15% to 35% of total feed injected directly into intermediate beds.",
+            "adiabatic_stage_rise": "Limit adiabatic temperature rise per bed to 20 to 50 C (36 to 90 F)."
+          },
+          "conditions_and_limitations": "Cold shots dilute product stream, increasing downstream separation loads and recycle compressor capacity.",
+          "variations_and_discrepancies": "Seider Heuristic 21; Turton Table 11.17.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 21",
+              "page": 2
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17",
+              "page": 390
+            }
+          ],
+          "tags": [
+            "exothermic",
+            "cold shots",
+            "diluent",
+            "runaway prevention",
+            "temperature control"
+          ]
+        },
+        {
+          "id": "REACT-005",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "exothermic_heat_control_moderate",
+          "rule": "For moderately exothermic heats of reaction, circulate reactor fluid to an external heat exchanger, or use a jacketed vessel, internal cooling coils, or intercoolers between adiabatic beds.",
+          "explanation_and_derivation": "External circulating pump-around exchangers allow very high fluid velocities, high overall heat transfer coefficients (U = 500-1000 W/m2 K), and cleanable heat transfer surfaces unconstrained by vessel shell diameter.",
+          "quantitative_guidelines": {
+            "jacket_area_limit": "Jackets are limited to vessel volumes < 15 to 20 m3 (due to surface-to-volume ratio decreasing as 1/D).",
+            "internal_coils": "Coils provide up to 2-3x jacket surface area but hinder cleaning and solids suspension.",
+            "pump_around_rate": "Pump-around flow is typically 5 to 20 times the fresh feed flow rate."
+          },
+          "conditions_and_limitations": "Ensure circulating pumps can handle reactor operating temperatures, pressures, and any entrained particulate matter.",
+          "variations_and_discrepancies": "Seider Heuristic 22; Turton Table 11.17.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 22",
+              "page": 2
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17",
+              "page": 390
+            }
+          ],
+          "tags": [
+            "external heat exchanger",
+            "jackets",
+            "coils",
+            "pump-around",
+            "intercoolers"
+          ]
+        },
+        {
+          "id": "REACT-006",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "endothermic_heat_control",
+          "rule": "For highly endothermic reactions, use excess preheated reactant, an inert carrier (e.g. steam), or hot shots. For moderately endothermic reactions, circulate through an external heater, use jackets, or install interheaters between stages.",
+          "explanation_and_derivation": "Endothermic reactions (e.g. catalytic reforming, ethylbenzene dehydrogenation) cause steep temperature drops that extinguish reaction kinetics. Superheated steam or fired interheaters maintain the reaction in the active kinetic regime.",
+          "quantitative_guidelines": {
+            "inert_carrier_ratio": "Steam-to-hydrocarbon molar ratios of 5:1 to 15:1 are common in dehydrogenations.",
+            "interheater_duty": "Reheats stream back to inlet temperature (typically 500 to 650 C)."
+          },
+          "conditions_and_limitations": "Steam carrier requires extensive condensation and wastewater treatment downstream.",
+          "variations_and_discrepancies": "Seider Heuristics 23 and 24.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 23 & 24",
+              "page": 2
+            }
+          ],
+          "tags": [
+            "endothermic",
+            "interheaters",
+            "steam carrier",
+            "reforming"
+          ]
+        },
+        {
+          "id": "REACT-007",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "catalyst_particle_sizing",
+          "rule": "Select catalyst particle sizes based on reactor contact regime: ~0.10 mm (100 microns) for fluidized beds; ~1 mm for slurry bubble columns; 2 to 5 mm (1/8 to 3/16 inch) pellets or extrudates for fixed packed beds.",
+          "explanation_and_derivation": "In fixed beds, smaller particles increase internal pore diffusion efficiency (effectiveness factor) but cause excessive pressure drops (Ergun equation: Delta P scales as 1/d_p^2). Pellets of 2-5 mm represent the optimum trade-off between pressure drop and intraparticle diffusion. In fluidized beds, Geldart Group A/B powders (~0.1 mm) fluidize smoothly without slugging.",
+          "quantitative_guidelines": {
+            "fluidized_bed_dp": "0.05 to 0.15 mm (~0.1 mm)",
+            "slurry_reactor_dp": "0.5 to 1.5 mm (~1 mm)",
+            "fixed_bed_dp": "2 to 5 mm (1/8'' to 1/4'')",
+            "pressure_drop_fixed_bed": "Limit gas Delta P to < 0.1 to 0.3 bar per meter of catalyst bed."
+          },
+          "conditions_and_limitations": "Particles smaller than 1 mm in fixed beds lead to severe bed plugging and dust carryover.",
+          "variations_and_discrepancies": "Consensus values in Turton Table 11.17, Seider, and Excel sheet 'Reactors'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17, Rule 2",
+              "page": 390
+            }
+          ],
+          "tags": [
+            "catalyst",
+            "particle size",
+            "pressure drop",
+            "fluidized bed",
+            "fixed bed"
+          ]
+        },
+        {
+          "id": "REACT-008",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "fluid_bed_and_packed_bed_geometry",
+          "rule": "Fluidized beds maintain nearly uniform temperature (within 5 C throughout) and exhibit well-stirred behavior when L/D < 2; they approach plug flow when L/D > 4. In packed bed reactors, bed height must be at least half the diameter (H >= 0.5D) to ensure uniform flow distribution.",
+          "explanation_and_derivation": "Intense solid circulation in bubbling fluid beds provides massive effective thermal conductivity. When L/D is low, backmixing dominates; tall narrow beds (L/D > 4) limit axial mixing. In packed beds, very shallow beds suffer from maldistribution and wall bypass channeling.",
+          "quantitative_guidelines": {
+            "fluid_bed_isothermal_delta_T": "< 5 C from point to point",
+            "fluid_bed_stirred_limit": "L/D < 2",
+            "fluid_bed_pfr_limit": "L/D > 4",
+            "packed_bed_min_height": "H >= 0.5 * D"
+          },
+          "conditions_and_limitations": "Fluid bed solids must be robust against attrition; cyclones required to recapture fines.",
+          "variations_and_discrepancies": "Ulrich & Vasudevan Appendix C (Reactors, p. 581).",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Reactors",
+              "page": 581
+            }
+          ],
+          "tags": [
+            "fluidized bed",
+            "packed bed",
+            "flow distribution",
+            "L/D ratio",
+            "backmixing"
+          ]
+        },
+        {
+          "id": "REACT-009",
+          "family": "reactors_and_kinetics",
+          "subfamily_or_equipment": "stirred_tank_reactor_power",
+          "rule": "For homogeneous stirred tank reactors, specify agitator power input of 0.5 to 1.5 hp/1000 gal (0.1 to 0.3 kW/m3). If heat transfer coils/jackets are installed, increase to 1.5 to 3.0 hp/1000 gal (0.3 to 0.6 kW/m3). For gas dispersion or severe slurry suspension, specify up to 5 to 10 hp/1000 gal (1.0 to 2.0 kW/m3).",
+          "explanation_and_derivation": "Mechanical agitation enhances boundary layer heat transfer coefficients at vessel walls/coils and ensures homogeneous temperature, preventing localized hot-spots that degrade product quality.",
+          "quantitative_guidelines": {
+            "mild_reaction": "0.5 to 1.5 hp/1000 gal (0.10 - 0.30 kW/m3)",
+            "heat_transfer_reaction": "1.5 to 3.0 hp/1000 gal (0.30 - 0.60 kW/m3)",
+            "gas_dispersion_slurry": "4.0 to 10.0 hp/1000 gal (0.80 - 2.0 kW/m3)"
+          },
+          "conditions_and_limitations": "Agitator mechanical dissipation converts directly into heat; in cryogenic or heat-sensitive bioreactions, motor heat can overwhelm refrigeration.",
+          "variations_and_discrepancies": "Turton Table 11.17; Excel sheet 'Reactors'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17, Rule 3",
+              "page": 390
+            }
+          ],
+          "tags": [
+            "agitation power",
+            "stirred tank",
+            "impeller",
+            "heat transfer",
+            "mixing"
+          ]
+        }
+      ]
+    },
+    "separations_distillation_and_absorption": {
+      "name": "Separations: Distillation & Gas Absorption",
+      "description": "Comprehensive design rules for tray columns, packed towers, column sequencing, reflux ratios, HETP correlations, pressure selection, and internals sizing.",
+      "rules": [
+        {
+          "id": "DIST-001",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "separation_technique_selection",
+          "rule": "Distillation is the primary, most economical method for separating miscible liquid mixtures when relative volatility alpha > 1.10. If alpha < 1.05, components form an azeotrope, or mixtures are heat-sensitive, use liquid-liquid extraction, extractive/azeotropic distillation, or crystallization.",
+          "explanation_and_derivation": "Distillation utilizes vapor-liquid equilibrium (VLE) driven by direct heat addition, avoiding external mass-separating agents that must themselves be recovered. However, as alpha approaches 1.0, required reflux ratios and tray counts approach infinity, causing capital and reboiler energy costs to explode.",
+          "quantitative_guidelines": {
+            "easy_distillation": "alpha >= 1.50",
+            "moderate_distillation": "1.10 < alpha < 1.50",
+            "difficult_distillation": "1.05 <= alpha <= 1.10 (requires high tray count or extractive agent)",
+            "uneconomical_distillation": "alpha < 1.05 (switch to extraction, crystallization, or membranes)"
+          },
+          "conditions_and_limitations": "Does not apply if operating temperature exceeds thermal degradation/polymerization threshold of the chemicals.",
+          "variations_and_discrepancies": "Seider Heuristic 9; Ulrich Appendix C (Separators, p. 579).",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 9",
+              "page": 1
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Distillation",
+              "page": 579
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.5",
+              "page": 110
+            }
+          ],
+          "tags": [
+            "distillation",
+            "relative volatility",
+            "technique selection",
+            "VLE",
+            "separation"
+          ]
+        },
+        {
+          "id": "DIST-002",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "column_sequencing",
+          "rule": "For multi-component distillation trains, apply the standard sequencing heuristics: 1. Perform the easiest separation first (highest relative volatility). 2. Remove corrosive, hazardous, or polymerizable species early. 3. Remove the most plentiful component (highest molar flow) first. 4. Reserve difficult separations (lowest alpha) until last. 5. Reserve high-purity product specifications until last. 6. Favor sequences yielding equimolar splits between distillate and bottoms.",
+          "explanation_and_derivation": "Removing plentiful or easy components first reduces the total mass flow sent to downstream columns, dramatically shrinking column diameters and reboiler duties. Doing the hardest separation in the presence of non-key components wastes energy boiling non-participating species.",
+          "quantitative_guidelines": {
+            "direct_sequence": "Lightest component taken overhead column-by-column (favored when feed is mostly light components).",
+            "indirect_sequence": "Heaviest component taken bottoms column-by-column (favored when feed is mostly heavy components).",
+            "equimolar_split": "Molar ratio D / B between 0.8 and 1.2 minimizes column thermodynamic irreversibility."
+          },
+          "conditions_and_limitations": "Heuristics may conflict with one another (e.g. most plentiful component has the lowest alpha). In such cases, use shortcut marginal vapor rate calculations or simulator case studies to break ties.",
+          "variations_and_discrepancies": "Identical guidelines across Turton (Table 11.13), Seider, Ulrich (p. 579), and Excel sheet 'Tray Towers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.13, Heuristic 4",
+              "page": 386
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Distillation",
+              "page": 579
+            }
+          ],
+          "tags": [
+            "column sequencing",
+            "heuristics",
+            "direct sequence",
+            "indirect sequence",
+            "multicomponent"
+          ]
+        },
+        {
+          "id": "DIST-003",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "operating_pressure",
+          "rule": "Operate distillation columns at the lowest feasible pressure, because relative volatility increases as pressure decreases. The minimum operating pressure is constrained by the cooling medium in the condenser (condenser temperature >= 40-49 C for cooling water); the maximum operating pressure is constrained by bottom reboiler degradation temperature or column critical pressure.",
+          "explanation_and_derivation": "Vapor pressure ratios and VLE non-idealities widen at lower pressures, reducing the required theoretical stages and reflux. However, cooling tower water cannot cool condensers below ~40 C (104 F) without expensive refrigeration. At the column base, bottoms temperature must not cause thermal decomposition, coking, or exceed the critical point of the mixture.",
+          "quantitative_guidelines": {
+            "cooling_water_condenser_temp": ">= 40 C (104 F) minimum, typically 45 to 50 C (113 to 122 F)",
+            "air_cooler_condenser_temp": ">= 55 to 60 C (130 to 140 F)",
+            "vacuum_threshold": "Use vacuum if bottoms temperature at 1 atm exceeds thermal degradation limit",
+            "pressure_critical_limit": "P_operating <= 0.7 * P_critical"
+          },
+          "conditions_and_limitations": "Vacuum distillation requires larger column diameters due to high vapor specific volumes, and increases air inleakage risk.",
+          "variations_and_discrepancies": "Turton Table 11.13; Ulrich p. 579; Excel sheet 'Tray Towers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.13, Heuristic 2",
+              "page": 386
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Distillation",
+              "page": 579
+            }
+          ],
+          "tags": [
+            "operating pressure",
+            "condenser temperature",
+            "cooling water",
+            "reboiler degradation",
+            "vacuum"
+          ]
+        },
+        {
+          "id": "DIST-004",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "reflux_ratio",
+          "rule": "Set the operating reflux ratio R between 1.1 and 1.5 times the minimum reflux ratio (R_min), with 1.2 to 1.3 R_min being the standard economic optimum. Set the operating number of theoretical stages N between 1.5 and 2.0 times the minimum stages (N_min).",
+          "explanation_and_derivation": "Total annualized cost equals capital cost (trays/shell) plus operating cost (reboiler steam and condenser cooling). At R = R_min, infinite stages are required (infinite capital). At high R, reboiler and condenser sizes and energy consumption explode. The total cost curve has a flat optimum between 1.15 and 1.30 R_min.",
+          "quantitative_guidelines": {
+            "standard_optimum": "R / R_min = 1.20 to 1.30",
+            "low_energy_cost_regime": "R / R_min = 1.30 to 1.50",
+            "high_energy_cost_regime": "R / R_min = 1.10 to 1.20",
+            "stages_optimum": "N / N_min = 1.50 to 2.00",
+            "fenske_equation": "N_min = ln([x_D/(1-x_D)] * [(1-x_B)/x_B]) / ln(alpha_avg)",
+            "underwood_equations": "Used to compute R_min from feed thermal condition q and relative volatilities."
+          },
+          "conditions_and_limitations": "When pinch occurs near the feed tray or in highly non-ideal / azeotropic mixtures, Gilliland correlations deviate; use rigorous stage-by-stage simulation.",
+          "variations_and_discrepancies": "Seider recommends 1.1-1.2 R_min; Turton recommends 1.2-1.5 R_min; Ulrich recommends 1.2-1.3 R_min.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.13, Heuristic 5",
+              "page": 386
+            },
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2",
+              "page": 2
+            }
+          ],
+          "tags": [
+            "reflux ratio",
+            "minimum reflux",
+            "Fenske",
+            "Underwood",
+            "optimization",
+            "stages"
+          ]
+        },
+        {
+          "id": "DIST-005",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "tray_vs_packing_selection",
+          "rule": "Use tray columns for column diameters > 0.6 to 0.9 m (2 to 3 ft), high liquid flow rates, fouling fluids, slurries, or when internal cooling coils/side draws are needed. Use packed columns for vacuum distillation (where pressure drop is critical), highly corrosive systems (ceramic/plastic packings), foaming liquids, and small diameters (< 0.6 m).",
+          "explanation_and_derivation": "Trays are structurally robust, easy to clean, and maintain predictable liquid holdup. However, packed columns provide significantly lower pressure drop per theoretical stage (0.1 in H2O/ft vs 2-4 in H2O per tray), making packing mandatory for deep vacuum distillation to prevent excessive bottom reboiler temperatures.",
+          "quantitative_guidelines": {
+            "diameter_boundary": "Trays favored for D > 0.9 m (3 ft); Packings favored for D < 0.6 m (2 ft)",
+            "pressure_drop_comparison": "Tray Delta P ~ 1 kPa/stage (~0.15 psi/stage); Packed Delta P ~ 0.1 to 0.3 kPa/stage",
+            "vacuum_advantage": "Packed columns reduce reboiler temperature by 10-30 C in vacuum services compared to trays."
+          },
+          "conditions_and_limitations": "Packed towers with D > 1.5 m require precision liquid distributors every 3 to 6 m of bed height to prevent liquid wall channeling.",
+          "variations_and_discrepancies": "Consensus across Turton (Tables 11.14 & 11.15), Ulrich (p. 580), and Excel sheets 'Tray Towers' & 'Packed Towers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Tables 11.13, 11.14, 11.15",
+              "page": 386
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Distillation",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "tray vs packing",
+            "pressure drop",
+            "vacuum column",
+            "liquid distribution",
+            "internals"
+          ]
+        },
+        {
+          "id": "DIST-006",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "tray_spacing_and_efficiency",
+          "rule": "Standard tray spacing is 18 to 24 inches (0.45 to 0.60 m); use 12 inches (0.3 m) for small, clean columns; use 24 to 36 inches (0.6 to 0.9 m) for foaming liquids, high vapor velocities, or to provide manways for internal inspection. Tray efficiency typically ranges from 60% to 85% for low-viscosity hydrocarbons (< 0.5 cP), dropping below 30% for viscous liquids (> 2 cP) and gas absorbers.",
+          "explanation_and_derivation": "Tray spacing must provide sufficient disengagement height for entrained liquid droplets to separate from rising vapor before reaching the tray above. Viscous liquids retard liquid-phase molecular diffusion, drastically reducing mass transfer rates and tray Murphree efficiency.",
+          "quantitative_guidelines": {
+            "standard_tray_spacing": "24 inches (0.6 m) is standard industrial default.",
+            "small_column_spacing": "18 inches (0.45 m) or 12 inches (0.3 m) for D < 1.2 m.",
+            "hydrocarbon_tray_efficiency": "60% to 85% (O'Connell correlation: E_o = 0.492 * (mu_liq * alpha)^(-0.245))",
+            "absorber_tray_efficiency": "25% to 40% (gas absorption is liquid-film controlled)",
+            "aqueous_amine_absorbers": "15% to 25% efficiency."
+          },
+          "conditions_and_limitations": "Weeping occurs at low vapor rates (< 40-50% design); entrainment flooding occurs at high vapor rates (> 80-85% flooding velocity).",
+          "variations_and_discrepancies": "Turton Table 11.14; Excel sheet 'Tray Towers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.14",
+              "page": 387
+            }
+          ],
+          "tags": [
+            "tray spacing",
+            "tray efficiency",
+            "O'Connell correlation",
+            "flooding",
+            "weeping"
+          ]
+        },
+        {
+          "id": "DIST-007",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "tray_tower_height_equation",
+          "rule": "Calculate tray tower active height using the verified Ulrich equation: H_a = (N * H_t) / epsilon_t, where stage height H_t = 0.5 * D^0.3 for D > 1.0 m, and H_t = 0.5 m for D <= 1.0 m. Total tower height equals active height plus 1.0 to 1.5 m for vapor disengagement at the top and 2.0 to 3.0 m for bottom liquid holdup.",
+          "explanation_and_derivation": "As column diameter increases, liquid cross-flow path and vapor throw increase, requiring larger tray spacing (modeled empirically by H_t = 0.5 D^0.3) to prevent premature jet flooding.",
+          "quantitative_guidelines": {
+            "active_height_formula": "H_a = (N * H_t) / epsilon_t",
+            "latex_formula": "H_a = \\frac{N \\cdot H_t}{\\epsilon_t}",
+            "stage_height_large_d": "H_t = 0.5 * D^0.3  (for D > 1.0 m)",
+            "stage_height_small_d": "H_t = 0.5 m  (for D <= 1.0 m)",
+            "pressure_drop_per_stage": "~1 kPa (~0.15 psi) per theoretical stage",
+            "max_shell_height": "Maximum practical single shell height is 50 to 60 m (160 to 200 ft); split into two shells if stages exceed this limit."
+          },
+          "conditions_and_limitations": "Ensure L/D ratio of total column does not exceed 20 to 25 to prevent wind-load structural vibration without guy wires.",
+          "variations_and_discrepancies": "Ulrich p. 580; Verified against visual scan.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Distillation",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "tower height",
+            "tray tower equation",
+            "Ulrich equation",
+            "stage height",
+            "sizing"
+          ]
+        },
+        {
+          "id": "DIST-008",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "packed_tower_height_and_hetp",
+          "rule": "Calculate packed tower active height using the verified Ulrich equation: H_a = N * HETP. For distillation, HETP = 0.5 * D^0.3 (for D > 0.5 m); for gas absorption, HETP = D^0.3; for both distillation and absorption when D <= 0.5 m, HETP = D. Limit individual packed bed heights to 6 m (20 ft) before installing liquid redistributors.",
+          "explanation_and_derivation": "Height Equivalent to a Theoretical Plate (HETP) increases with column diameter because liquid distribution is never perfectly uniform, leading to radial concentration gradients. In gas absorption, higher liquid film resistance increases HETP compared to distillation.",
+          "quantitative_guidelines": {
+            "hetp_distillation_formula": "HETP = 0.5 * D^0.3  (m, for D > 0.5 m)",
+            "hetp_absorption_formula": "HETP = D^0.3  (m, for D > 0.5 m)",
+            "hetp_small_column": "HETP = D  (m, for D <= 0.5 m)",
+            "latex_formula": "\\text{HETP} = 0.5 D^{0.3} \\text{ (distillation); } \\text{HETP} = D^{0.3} \\text{ (absorption)}",
+            "packing_sizing_rule": "Use 1-inch (25 mm) packing for gas flow < 500 cfm (14 m3/min); use 2-inch (50 mm) packing for gas flow > 2000 cfm (57 m3/min).",
+            "diameter_ratio": "Column diameter / packing diameter >= 10 to 15 to prevent wall bypass.",
+            "max_bed_height": "4 to 6 m (15 to 20 ft) per packed segment."
+          },
+          "conditions_and_limitations": "High-efficiency structured packings can achieve HETP of 0.2 to 0.4 m regardless of diameter, provided precision multi-point distributors (>= 100 drip points/m2) are installed.",
+          "variations_and_discrepancies": "Ulrich p. 580; Turton Table 11.15; Excel sheet 'Packed Towers'.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Separators",
+              "page": 580
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.15",
+              "page": 388
+            }
+          ],
+          "tags": [
+            "packed tower",
+            "HETP",
+            "absorption",
+            "Ulrich equation",
+            "structured packing",
+            "redistributor"
+          ]
+        },
+        {
+          "id": "DIST-009",
+          "family": "separations_distillation_and_absorption",
+          "subfamily_or_equipment": "absorption_exit_temperature",
+          "rule": "In physical and chemical gas absorption columns, the exit gas temperature is typically within 2 C of the entering liquid absorbent temperature.",
+          "explanation_and_derivation": "Because the heat capacity flow rate of the entering liquid absorbent is typically significantly larger than that of the gas stream, the exiting gas reaches thermal equilibrium with the cold entering liquid at the top of the tower.",
+          "quantitative_guidelines": {
+            "gas_liquid_temperature_approach": "T_gas_out - T_liq_in <= 2 C",
+            "heat_of_absorption": "Exothermic heat of absorption creates a temperature bulge in the middle or bottom of the column; intercoolers may be required if solvent loading capacity drops significantly with temperature."
+          },
+          "conditions_and_limitations": "In cases with low liquid-to-gas ratios (L/G < 1.0) and high gas temperatures, gas may exit hotter than liquid feed.",
+          "variations_and_discrepancies": "Ulrich Appendix C (Gas Absorption, p. 579).",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Gas Absorption",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "gas absorption",
+            "temperature approach",
+            "absorber",
+            "intercooling"
+          ]
+        }
+      ]
+    },
+    "separations_liquid_liquid_extraction": {
+      "name": "Separations: Liquid-Liquid Extraction (LLE)",
+      "description": "Rules for solvent selection, phase dispersion, contactor equipment (mixer-settlers, agitated columns, centrifugal extractors), and theoretical stage requirements.",
+      "rules": [
+        {
+          "id": "EXTR-001",
+          "family": "separations_liquid_liquid_extraction",
+          "subfamily_or_equipment": "extraction_applicability",
+          "rule": "Specify liquid-liquid extraction (LLE) when components have low relative volatility (alpha < 1.05), form close-boiling azeotropes, contain non-volatile or inorganic solutes, or involve thermally sensitive materials (biochemicals, polymers) where distillation temperatures cause degradation.",
+          "explanation_and_derivation": "Extraction operates at ambient or near-ambient temperatures, avoiding thermal decomposition. However, extraction introduces a foreign solvent that must be recovered downstream (usually by distillation), making extraction a two-unit separation system that must be economically justified against direct distillation.",
+          "quantitative_guidelines": {
+            "volatility_boundary": "alpha < 1.05 or boiling point difference Delta T_b < 5 C",
+            "temperature_advantage": "Can operate at 20 to 50 C, avoiding 150+ C distillation conditions."
+          },
+          "conditions_and_limitations": "Ensure solvent can be completely stripped from the raffinate and extract streams without creating secondary azeotropes.",
+          "variations_and_discrepancies": "Turton Table 11.16; Seider Rule 9; Ulrich p. 579.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.5",
+              "page": 110
+            },
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 9",
+              "page": 1
+            }
+          ],
+          "tags": [
+            "liquid-liquid extraction",
+            "solvent extraction",
+            "azeotropes",
+            "heat sensitive",
+            "LLE"
+          ]
+        },
+        {
+          "id": "EXTR-002",
+          "family": "separations_liquid_liquid_extraction",
+          "subfamily_or_equipment": "solvent_selection_criteria",
+          "rule": "Select extraction solvents satisfying: 1. High selectivity (beta = (y_A/x_A) / (y_B/x_B) >= 5 to 10). 2. High distribution coefficient (K_D >= 1.5 to 2.0). 3. Density difference Delta rho >= 0.05 to 0.10 g/cm3 (50 to 100 kg/m3) for rapid gravity phase disengagement. 4. Interfacial tension gamma = 5 to 25 mN/m (dyne/cm). 5. Chemical stability, non-toxicity, and easy downstream solvent recovery.",
+          "explanation_and_derivation": "High selectivity minimizes required theoretical stages. High distribution coefficient minimizes required solvent-to-feed ratio (S/F), reducing solvent circulation pump and distillation stripper sizes. A density difference < 0.05 g/cm3 causes slow settling and severe phase entrainment. Interfacial tension < 1 mN/m promotes stable emulsions that resist coalescence.",
+          "quantitative_guidelines": {
+            "selectivity": "beta >= 5.0 (ideally > 10.0)",
+            "distribution_coefficient": "K_D >= 1.5",
+            "density_difference": "Delta rho >= 0.05 to 0.10 g/cm3 (50 to 100 kg/m3)",
+            "interfacial_tension": "5 to 25 mN/m (values < 1-2 mN/m form unseparable emulsions; values > 40 mN/m require excessive agitation power)",
+            "solvent_feed_ratio": "Typically S/F = 0.5 to 3.0 by volume."
+          },
+          "conditions_and_limitations": "Solvents with high flammability, toxicity, or environmental persistence (PFAS) should be avoided in modern inherently safe design.",
+          "variations_and_discrepancies": "Turton Table 11.16; Walas Chapter 16.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Section 2.5 & Table 11.16, Rule 5",
+              "page": 110
+            }
+          ],
+          "tags": [
+            "solvent selection",
+            "distribution coefficient",
+            "selectivity",
+            "density difference",
+            "interfacial tension"
+          ]
+        },
+        {
+          "id": "EXTR-003",
+          "family": "separations_liquid_liquid_extraction",
+          "subfamily_or_equipment": "contactor_selection_and_stages",
+          "rule": "Most commercial extraction cascades require 4 to 10 theoretical stages. Select equipment based on stage requirements: 1. Mixer-settlers for 1 to 4 stages, large volumetric capacities, and when high stage efficiency (80-90% per mixer) is required. 2. Agitated columns (Karr, Scheibel, Kühni, RDC) for 4 to 12 stages, moderate floor space, and systems with low interfacial tension. 3. Centrifugal extractors (Podbielniak) for rapid contact (< 10 s residence time), hazardous/radioactive systems, or dense emulsions.",
+          "explanation_and_derivation": "Unagitated packed/sieve extraction columns suffer from very poor stage efficiency (10-20% per theoretical stage) due to droplet coalescence. Mechanical agitation provides controlled droplet breakup, maintaining high interfacial area per unit volume.",
+          "quantitative_guidelines": {
+            "theoretical_stages": "Typically 4 to 8 stages (rarely > 12 to 15 stages in a single column).",
+            "mixer_settler_efficiency": "80% to 95% per physical stage.",
+            "agitated_column_efficiency": "25% to 50% per mechanical compartment.",
+            "settler_superficial_velocity": "0.5 to 1.5 gpm/ft2 (1.2 to 3.6 m3/(h m2)) for gravity settling."
+          },
+          "conditions_and_limitations": "Mixer-settlers consume extensive plot footprint; column contractors consume vertical space but minimize ground area.",
+          "variations_and_discrepancies": "Turton Table 11.16; Ulrich Appendix C.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.16, Rules 3-9",
+              "page": 389
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Separators",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "contactor selection",
+            "mixer-settler",
+            "agitated column",
+            "centrifugal extractor",
+            "stages"
+          ]
+        },
+        {
+          "id": "EXTR-004",
+          "family": "separations_liquid_liquid_extraction",
+          "subfamily_or_equipment": "phase_dispersion_rule",
+          "rule": "Disperse the phase with the higher volumetric flow rate in column extractors to maximize interfacial mass transfer area, unless that phase has significantly higher viscosity. Alternatively, disperse the phase that does not preferentially wet the column internals.",
+          "explanation_and_derivation": "Dispersing the larger volumetric flow creates a higher holdup fraction of droplets, increasing interfacial area (a = 6 * phi / d_32). However, if the dispersed phase preferentially wets the metal/plastic internals, droplets coalesce into large sheets, destroying interfacial area.",
+          "quantitative_guidelines": {
+            "dispersed_phase_holdup": "Operating droplet holdup fraction phi is typically 10% to 25% (flooding occurs above 30-35%).",
+            "wetting_rule": "The continuous phase should preferentially wet the internals (contact angle < 90 deg)."
+          },
+          "conditions_and_limitations": "If mass transfer resistance resides predominantly in the continuous phase, dispersing the other phase may be optimal.",
+          "variations_and_discrepancies": "Walas Chapter 16; Turton Table 11.16.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.16, Rule 1",
+              "page": 389
+            }
+          ],
+          "tags": [
+            "phase dispersion",
+            "wetting",
+            "droplet holdup",
+            "interfacial area"
+          ]
+        }
+      ]
+    },
+    "separations_solids_and_slurries": {
+      "name": "Separations & Processing: Solids and Slurries",
+      "description": "Rules for crystallization (cooling, evaporative, melt), multiple-effect evaporators, filtration, centrifugation, solids drying, particle size reduction/enlargement, and solids conveying.",
+      "rules": [
+        {
+          "id": "SOLID-001",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "crystallization_mechanism",
+          "rule": "Crystallize inorganic chemicals from concentrated aqueous solutions by cooling/chilling when solubility decreases sharply with temperature; use evaporative crystallization when solubility is nearly temperature-independent (e.g. NaCl). Separate organic compounds by melt crystallization (suspension or layer crystallization) when close-boiling isomers or solid eutectics are present.",
+          "explanation_and_derivation": "Cooling crystallization requires only sensible heat removal and is energy-efficient when dC*/dT is steep. For flat solubility curves, cooling produces negligible yield, requiring water evaporation to induce supersaturation. Melt crystallization operates near freezing points without solvents, achieving ultra-high purities (> 99.9%) for isomers (e.g. p-xylene).",
+          "quantitative_guidelines": {
+            "chilling_crystallization": "Maintain solution at most 1 to 2 F (0.5 to 1 C) below saturation temperature.",
+            "evaporative_crystallization": "Common for flat solubility curves or when solvent evaporation and crystallization occur simultaneously in vacuum crystallizers."
+          },
+          "conditions_and_limitations": "Organic melts that form solid solutions rather than simple eutectics require multi-stage fractional crystallization or zone refining.",
+          "variations_and_discrepancies": "Seider Heuristics 12 and 14; Excel sheet 'Crystallization'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 12 & 14",
+              "page": 1
+            }
+          ],
+          "tags": [
+            "crystallization",
+            "cooling",
+            "evaporative",
+            "melt crystallization",
+            "supersaturation",
+            "solubility"
+          ]
+        },
+        {
+          "id": "SOLID-002",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "supersaturation_control",
+          "rule": "Control crystallizer growth rate and crystal size distribution by limiting the supersaturation ratio S = C / C_sat tightly in the range 1.02 to 1.05. Growth rates are roughly equal in all crystallographic directions, but crystals are never perfect spheres.",
+          "explanation_and_derivation": "Operating within the metastable zone (S = 1.02 - 1.05) allows solute to deposit onto existing seed crystals without triggering uncontrolled homogeneous secondary nucleation, preventing a flood of unfilterable sub-micron fines.",
+          "quantitative_guidelines": {
+            "supersaturation_ratio": "1.02 <= S <= 1.05",
+            "latex_formula": "S = \\frac{C}{C_{\\text{sat}}} \\in [1.02, 1.05]",
+            "temperature_depression": "Delta T_subcooling = 1 to 2 F (0.5 to 1.1 C) below saturation.",
+            "crystal_growth_rate": "Typically 0.1 to 1.0 mm/hr (10^-8 to 10^-7 m/s)."
+          },
+          "conditions_and_limitations": "Trace impurities or tailored habit modifiers can dramatically accelerate or poison growth along specific crystal faces.",
+          "variations_and_discrepancies": "Identical in Seider Heuristic 13 and Excel sheet 'Crystallization'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 13",
+              "page": 1
+            }
+          ],
+          "tags": [
+            "supersaturation",
+            "metastable zone",
+            "crystal growth",
+            "nucleation control"
+          ]
+        },
+        {
+          "id": "SOLID-003",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "multiple_effect_evaporators",
+          "rule": "In multiple-effect evaporators, recover and reuse latent heat across stages. Steam economy scales approximately as: 1 effect ~ 0.8 kg vapor/kg steam; 2 effects ~ 1.6; 3 effects ~ 2.4; N effects ~ 0.8N. Optimum number of effects is 4 to 6 when boiling point elevation (BPE) > 4 C (7 F); up to 8 to 10 effects when BPE is negligible.",
+          "explanation_and_derivation": "Vapor boiled off in one effect is condensed at lower pressure in the heating tubes of the next effect. However, dissolved compounds cause boiling point elevation (BPE), which consumes available temperature driving force across the train. High BPE reduces the net Delta T available, limiting the practical number of effects.",
+          "quantitative_guidelines": {
+            "steam_economy_formula": "Economy ~ 0.8 * N  (kg evaporated / kg live steam)",
+            "single_effect_economy": "0.8",
+            "two_effect_economy": "1.6",
+            "three_effect_economy": "2.4",
+            "large_bpe_effects": "4 to 6 effects (when BPE > 3.9 C / 7 F)",
+            "small_bpe_effects": "8 to 10 effects (when BPE is near zero)",
+            "heat_transfer_threshold": "If overall U < 500 W/(m2 K) in any effect, switch evaporator type or rearrange feed sequence."
+          },
+          "conditions_and_limitations": "Steam-jet thermocompressors or mechanical vapor recompression (MVR) should be evaluated to boost low-pressure vapors when electricity is cheaper than boiler fuel.",
+          "variations_and_discrepancies": "Seider Heuristic 15; Ulrich Appendix C (Evaporators, p. 576); Excel sheet 'Evaporation'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 15",
+              "page": 1
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Evaporators",
+              "page": 576
+            }
+          ],
+          "tags": [
+            "evaporator",
+            "multiple effect",
+            "steam economy",
+            "BPE",
+            "latent heat recovery"
+          ]
+        },
+        {
+          "id": "SOLID-004",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "evaporator_feed_arrangement",
+          "rule": "In multiple-effect evaporator trains, select flow arrangement based on feed temperature and viscosity: 1. Use forward feed (liquid and vapor flow co-currently from high to low pressure) for hot liquid feeds and fewer stages, as liquid flows by pressure differential without intermediate pumps. 2. Use backward/reverse feed (liquid pumped counter-currently from low to high pressure) for cold feeds and solutions that become highly viscous as they concentrate.",
+          "explanation_and_derivation": "In backward feed, the most concentrated, viscous syrup is heated by the hottest prime steam in the first effect, maximizing heat transfer coefficients (U) and minimizing required heat transfer area, though intermediate transfer pumps are required.",
+          "quantitative_guidelines": {
+            "forward_feed_criteria": "Use forward feed if U_1 > U_last by less than 50% and feed is near boiling point.",
+            "forced_circulation_velocity": "15 to 20 ft/s (4.5 to 6.0 m/s) in tube passes to suppress boiling inside tubes and prevent scaling."
+          },
+          "conditions_and_limitations": "Backward feed requires reliable canned or magnetic drive pumps capable of handling boiling slurry feeds under vacuum.",
+          "variations_and_discrepancies": "Seider Heuristic 16; Ulrich p. 576; Excel sheet 'Evaporation'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 16",
+              "page": 2
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Evaporators",
+              "page": 576
+            }
+          ],
+          "tags": [
+            "evaporator flow",
+            "forward feed",
+            "backward feed",
+            "viscosity",
+            "forced circulation"
+          ]
+        },
+        {
+          "id": "SOLID-005",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "vaporizer_superficial_velocity",
+          "rule": "Size vaporizers and evaporators using the verified Ulrich equation for superficial vapor velocity: u = 0.06 * sqrt((rho_l - rho_g) / rho_g). If calculated diameter exceeds 4 m, specify a horizontal vessel, multiple vertical vessels, or specialized entrainment separators. Allow one additional diameter for vapor disengagement; if total height > 4 * diameter, install internal heating coils.",
+          "explanation_and_derivation": "Superficial vapor velocity is limited by droplet entrainment (modified Souders-Brown form with k = 0.06 m/s). Exceeding this velocity causes liquid carryover into vapor piping and downstream condensers.",
+          "quantitative_guidelines": {
+            "superficial_velocity_formula": "u = 0.06 * ((rho_l - rho_g) / rho_g)^0.5",
+            "latex_formula": "u = 0.06 \\left(\\frac{\\rho_l - \\rho_g}{\\rho_g}\\right)^{0.5}",
+            "heat_duty_formula": "Q_dot = m_dot * lambda",
+            "max_vertical_diameter": "4.0 m (13.1 ft)",
+            "disengagement_height": "H_disengagement = 1.0 * D_vessel",
+            "max_height_to_diameter": "H_total <= 4 * D_vessel (use internal coils if exceeded)."
+          },
+          "conditions_and_limitations": "Ensure demister pads are installed if mist carryover poisons downstream catalysts.",
+          "variations_and_discrepancies": "Ulrich & Vasudevan Appendix C (Evaporators and Vaporizers, p. 575); verified against high-resolution visual scan.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Vaporizers",
+              "page": 575
+            }
+          ],
+          "tags": [
+            "vaporizer velocity",
+            "evaporator sizing",
+            "Ulrich equation",
+            "disengagement",
+            "entrainment"
+          ]
+        },
+        {
+          "id": "SOLID-006",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "filtration_equipment_selection",
+          "rule": "Classify slurry filtration rates using a laboratory vacuum leaf test: 1. Rapid filtering (cake buildup 0.1 to 10 cm/s): use top-feed horizontal belt filters, pan filters, or pusher centrifuges. 2. Medium filtering (buildup 0.1 to 10 cm/min): use rotary vacuum drum or disk filters. 3. Slow filtering (buildup 0.1 to 10 cm/h): use plate-and-frame filter presses, leaf pressure filters, or sedimenting centrifuges.",
+          "explanation_and_derivation": "Fast-filtering slurries settle rapidly and require top-feed designs to avoid plugging feed troughs. Slow-filtering slurries have high specific cake resistance, requiring high driving pressures (3 to 15 bar in a filter press) that vacuum filters (limited to ~0.8 bar Delta P) cannot provide.",
+          "quantitative_guidelines": {
+            "rapid_filtering_rate": "0.1 to 10.0 cm/s",
+            "medium_filtering_rate": "0.1 to 10.0 cm/min",
+            "slow_filtering_rate": "0.1 to 10.0 cm/h",
+            "continuous_filter_limit": "Do not specify continuous filtration if at least 0.35 to 0.5 cm cake cannot form in under 5 minutes.",
+            "filter_sludge_solids": "Dewatered filter sludges typically contain ~50 wt% solids."
+          },
+          "conditions_and_limitations": "Rotary drum precoat filters (using diatomaceous earth) are required for dilute, slimy, or gelatinous solids that blind standard filter media.",
+          "variations_and_discrepancies": "Seider Heuristic 17; Ulrich p. 582; Excel sheet 'Filtration'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 17",
+              "page": 2
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Filters",
+              "page": 582
+            }
+          ],
+          "tags": [
+            "filtration",
+            "cake buildup",
+            "rotary drum",
+            "filter press",
+            "leaf filter",
+            "cake washability"
+          ]
+        },
+        {
+          "id": "SOLID-007",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "centrifugation_selection",
+          "rule": "Specify solid-bowl / decanter centrifuges for continuous liquid-solid clarification when cake solids may contain fines and mother liquor purity is flexible. Specify basket / peeler / centrifugal filters when thorough cake washing and minimum residual moisture content are required.",
+          "explanation_and_derivation": "Solid-bowl decanters rely on centrifugal sedimentation (G-forces 1,000 to 4,000 g) without a filter media, preventing blinding from slimy solids. Perforated basket centrifuges filter through a cloth, achieving thorough displacement washing and low cake moisture.",
+          "quantitative_guidelines": {
+            "particle_size_centrifugal_filter": "Particles > 150 microns (sand-like crystals)",
+            "settling_velocity_limit": "Use centrifuges when gravity settling velocity is < 0.001 m/s.",
+            "slurry_concentration": "Helical conveyor centrifuges suitable for high-solids slurries (10 to 50 wt% solids)."
+          },
+          "conditions_and_limitations": "Centrifuges have high rotating kinetic energy; avoid handling pyrophoric or explosive mixtures without nitrogen inerting.",
+          "variations_and_discrepancies": "Seider Heuristic 18; Ulrich p. 581.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 18",
+              "page": 2
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Centrifugal Separators",
+              "page": 581
+            }
+          ],
+          "tags": [
+            "centrifuge",
+            "decanter",
+            "solid bowl",
+            "peeler centrifuge",
+            "slurry separation"
+          ]
+        },
+        {
+          "id": "SOLID-008",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "solids_dryers_selection",
+          "rule": "Select solids drying equipment based on particle size and physical state: 1. Granular solids (3 to 15 mm): continuous tray or belt dryers (drying time 10-200 min). 2. Small free-flowing particles (1 to 3 mm): pneumatic flash conveying dryers (air velocity 10-30 m/s, residence time ~1 min). 3. Very small particles (< 1 mm): fluidized bed dryers. 4. Free-flowing heat-tolerant bulk solids: rotary cylindrical dryers (residence time 5-90 min, air velocity 1.5-3.0 m/s). 5. Pastes and viscous slurries: drum dryers (contact time 3-12 s). 6. Solutions and pumpable slurries: spray dryers (drying time a few seconds).",
+          "explanation_and_derivation": "Spray and flash dryers expose enormous interfacial surface area per unit volume, evaporating moisture in seconds to prevent heat damage. Rotary dryers tumble robust minerals in a heavy shell with flights for gentle convective drying.",
+          "quantitative_guidelines": {
+            "spray_dryer_time": "1 to 30 seconds",
+            "rotary_dryer_time": "5 to 90 minutes; drum rpm * D(ft) = 15 to 25; 85% free cross-sectional area.",
+            "tray_belt_dryer_time": "10 to 200 minutes",
+            "drum_dryer_time": "3 to 12 seconds; flakes 1 to 3 mm thick; max evap ~3,000 lb/h (1,360 kg/h).",
+            "pneumatic_dryer_air_velocity": "33 to 100 ft/s (10 to 30 m/s); residence time ~1 minute."
+          },
+          "conditions_and_limitations": "Ensure exhaust air dust collectors (baghouses or cyclones) are grounded to prevent electrostatic dust explosions.",
+          "variations_and_discrepancies": "Seider Heuristics 19 & 20; Excel sheet 'Drying Solids'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 19 & 20",
+              "page": 2
+            }
+          ],
+          "tags": [
+            "dryers",
+            "spray drying",
+            "rotary dryer",
+            "fluidized bed dryer",
+            "flash dryer",
+            "drum dryer"
+          ]
+        },
+        {
+          "id": "SOLID-009",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "solids_conveying",
+          "rule": "Select solids conveying equipment based on material properties: 1. Small, low-density, non-sticky, non-abrasive particles (< 3 mm): pneumatic conveying with air at 1 to 7 ft3 air/ft3 solids (0.03 to 0.5 m3/m3) and velocity 35 to 120 ft/s (11 to 37 m/s) for distances up to 400 ft (120 m). 2. Sticky, abrasive, or lumpy solids: screw conveyors or bucket elevators for distances up to 150 ft (45 m). 3. Bulk, non-sticky solids of any size: belt conveyors for long distances (up to miles), with inclinations up to 30 degrees.",
+          "explanation_and_derivation": "Pneumatic conveying encloses dust within piping, ideal for plant transfer without spills. Abrasive materials erode pipe elbows, requiring mechanical transport (belts/screws). Belt conveyors handle huge tonnage with minimum specific energy consumption.",
+          "quantitative_guidelines": {
+            "pneumatic_air_ratio": "1 to 7 ft3 air / ft3 solids",
+            "pneumatic_velocity": "35 to 120 ft/s (11 to 37 m/s); pressure 6 to 12 psig (0.4 to 0.8 bar)",
+            "pneumatic_distance": "< 400 ft (120 m)",
+            "belt_conveyor_max_incline": "30 degrees",
+            "screw_conveyor_distance": "< 150 ft (45 m)"
+          },
+          "conditions_and_limitations": "Do not use pneumatic conveying for explosive dusts without inert N2 conveying gas or explosion suppression vents.",
+          "variations_and_discrepancies": "Seider Heuristic 48; Ulrich p. 574; Excel sheet 'Conveyors'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 48",
+              "page": 4
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Conveyors",
+              "page": 574
+            }
+          ],
+          "tags": [
+            "conveying",
+            "pneumatic conveyor",
+            "belt conveyor",
+            "screw conveyor",
+            "bucket elevator"
+          ]
+        },
+        {
+          "id": "SOLID-010",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "size_reduction_crushers_and_mills",
+          "rule": "Apply size reduction in stages: 1. Coarse crushing: Jaw crushers (reduce lumps 4 in-3 ft to 1-4 in); Gyratory crushers (slabby feed 8 in-6 ft to 1-10 in); Cone crushers (secondary reduction of 2 in-1 ft to 0.2-2 in). 2. Fine grinding: Rod mills (reduce feed up to 20 mm to 10-35 mesh); Ball mills (reduce 1-10 mm to < 140 mesh / < 100 microns); Fluid energy / jet mills (reduce to ultrafine 0.1 to 1.0 micron).",
+          "explanation_and_derivation": "Comminution energy follows Rittinger/Bond laws (energy scales with new surface area generated). Single-stage reduction from meter-scale rocks to micron powder causes extreme mechanical jamming and energy inefficiency.",
+          "quantitative_guidelines": {
+            "jaw_crusher_feed": "0.1 to 1.0 m (4 in to 3 ft) -> product 25 to 100 mm (1 to 4 in)",
+            "gyratory_crusher_feed": "0.2 to 2.0 m (8 in to 6 ft) -> product 25 to 250 mm",
+            "ball_mill_product": "< 100 microns (< 140 mesh)",
+            "fluid_energy_mill": "0.1 to 1.0 micron"
+          },
+          "conditions_and_limitations": "Wet milling requires 20-30% less power than dry milling but introduces downstream slurry filtration steps.",
+          "variations_and_discrepancies": "Seider Heuristics 49 & 50; Ulrich p. 574–575.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 49 & 50",
+              "page": 4
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Crushers, Mills, Grinders",
+              "page": 574
+            }
+          ],
+          "tags": [
+            "crushers",
+            "ball mill",
+            "jaw crusher",
+            "grinding",
+            "size reduction",
+            "Bond work index"
+          ]
+        },
+        {
+          "id": "SOLID-011",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "size_enlargement_and_granulation",
+          "rule": "For particle size enlargement: 1. Use rotary compression tableting presses for extreme uniformity in size and weight (pharmaceuticals/catalysts up to 1.5 in). 2. Use roll compactors and pellet mills for high-capacity briquetting. 3. Use screw extruders for pastes and melts. 4. Use rotating drum or disk granulators with liquid binders for bulk fertilizers (2 to 25 mm). 5. Use prilling towers for melt droplets solidified into uniform spheres.",
+          "explanation_and_derivation": "Fine powders create dust hazards, poor flowability in hoppers, and cake during shipping. Agglomeration, tableting, and prilling convert powders into free-flowing, dust-free bulk granules.",
+          "quantitative_guidelines": {
+            "tablets": "Up to 38 mm (1.5 in) diameter",
+            "granulator_granules": "2 to 25 mm diameter",
+            "prilling_requirement": "Material must possess sharp melting point and low melt viscosity."
+          },
+          "conditions_and_limitations": "Prilling towers require substantial vertical height (30 to 60 m) to ensure complete droplet freezing before hitting the tower floor.",
+          "variations_and_discrepancies": "Seider Heuristic 51; Ulrich p. 582.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 51",
+              "page": 5
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Size-Enlargement",
+              "page": 582
+            }
+          ],
+          "tags": [
+            "size enlargement",
+            "tableting",
+            "granulation",
+            "extruder",
+            "prilling",
+            "pelletizing"
+          ]
+        },
+        {
+          "id": "SOLID-012",
+          "family": "separations_solids_and_slurries",
+          "subfamily_or_equipment": "screening_and_solid_gas_separators",
+          "rule": "Separate solids by size: 1. Grizzly bars for particles > 5 cm (2 in). 2. Revolving screens (trommels) for 6 to 38 mm (0.25 to 1.5 in). 3. Flat vibrating screens for 3 to 80 mesh (0.18 to 6 mm). 4. Air classifiers for fine powders < 80 mesh (< 180 microns). 5. Cyclones to remove solid particles or liquid droplets down to 10 microns from gas streams. 6. Hydroclones to remove solid particles down to 5 microns from liquids.",
+          "explanation_and_derivation": "Screens below 80 mesh blind rapidly due to electrostatic forces and moisture capillary bridging; air classifiers use centrifugal and drag forces to separate sub-sieve particles cleanly. Cyclones use centrifugal acceleration (50 to 500 g) to throw particles against walls without moving parts.",
+          "quantitative_guidelines": {
+            "grizzly_cutoff": "> 5 cm (2 in)",
+            "vibrating_screen_cutoff": "3 to 80 mesh (6.7 mm to 0.18 mm)",
+            "air_classifier_cutoff": "< 80 mesh (< 180 microns)",
+            "cyclone_gas_cutoff": ">= 10 microns (d_50 ~ 5-10 um; Delta P ~ 5 to 15 kPa / 2 to 6 in H2O)",
+            "hydroclone_liquid_cutoff": ">= 5 microns"
+          },
+          "conditions_and_limitations": "Cyclones cannot collect sub-micron dust; baghouses or electrostatic precipitators are required for particles < 1-2 microns.",
+          "variations_and_discrepancies": "Seider Heuristics 52 & 53; Ulrich p. 581–582.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 52 & 53",
+              "page": 5
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Screens & Separators",
+              "page": 581
+            }
+          ],
+          "tags": [
+            "screening",
+            "cyclone",
+            "hydroclone",
+            "air classifier",
+            "grizzly",
+            "separation"
+          ]
+        }
+      ]
+    },
+    "heat_transfer_exchangers_and_furnaces": {
+      "name": "Heat Transfer: Exchangers, Furnaces & Boilers",
+      "description": "Rules for shell-and-tube heat exchangers, tube dimensions, fluid allocation, LMTD F-factor, U-values, minimum approach Delta T, reboiler nucleate boiling limits, and fired furnaces.",
+      "rules": [
+        {
+          "id": "HEX-001",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "shell_and_tube_geometry",
+          "rule": "For standard shell-and-tube heat exchangers, specify 3/4-inch (19.05 mm) OD tubes on a 1-inch (25.4 mm) triangular pitch, with standard tube lengths of 16 ft (4.88 m) or 20 ft (6.10 m). A 1-ft (30 cm) diameter shell contains approximately 100 ft2 (9.3 m2) of surface area; area scales roughly with D_shell^2.",
+          "explanation_and_derivation": "The 3/4-inch tube on 1-inch triangular pitch provides the optimal balance between high surface area density, turbulent flow friction, and external tube cleaning access. Triangular pitch provides 15% more heat transfer area than square pitch for the same shell diameter (use square pitch only if shell-side mechanical cleaning is required).",
+          "quantitative_guidelines": {
+            "tube_od": "3/4 inch (19 mm) or 1 inch (25 mm)",
+            "tube_pitch": "1.0 inch triangular (1.25 * OD) for clean fluids; 1.0 inch square for mechanical cleaning",
+            "standard_lengths": "8 ft (2.4 m), 12 ft (3.7 m), 16 ft (4.9 m), 20 ft (6.1 m)",
+            "shell_area_rule_of_thumb": "Shell diameter 1 ft -> ~100 ft2; 2 ft -> ~450 ft2; 3 ft -> ~1,100 ft2 (Area ~ 100 * D(ft)^2.15)",
+            "max_shell_diameter": "Typically 1.2 to 1.5 m (48 to 60 inches); split into parallel shells if larger."
+          },
+          "conditions_and_limitations": "For viscous fluids with shell-side Reynolds number < 2000, 1-inch tubes on square or rotated square pitch reduce pressure drop.",
+          "variations_and_discrepancies": "Identical in Turton Table 11.11, Seider, and Excel sheet 'Heat Exchangers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Rules 2 & 3",
+              "page": 384
+            }
+          ],
+          "tags": [
+            "shell and tube",
+            "tube dimensions",
+            "triangular pitch",
+            "heat exchanger",
+            "TEMA",
+            "surface area"
+          ]
+        },
+        {
+          "id": "HEX-002",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "fluid_allocation_tube_vs_shell",
+          "rule": "Allocate fluids between tube side and shell side according to the standard priority hierarchy: 1. Tube side: corrosive fluids (alloys needed only for tubes/channels, not thick shell), fouling/scaling streams (easier mechanical cleaning), high-pressure streams (> 10 bar, avoids thick shell wall), high-temperature streams, and toxic fluids. 2. Shell side: viscous liquids (baffles promote turbulence and cross-flow), condensing vapors, boiling liquids, and streams requiring low pressure drop.",
+          "explanation_and_derivation": "Building high-pressure or corrosion-resistant metallurgy into the shell wall is prohibitively expensive compared to containing it within thin-walled tubes. Shell-side baffles induce cross-flow turbulence at much lower Reynolds numbers (Re ~ 200) than straight tube interiors (Re ~ 2300), benefiting viscous fluids.",
+          "quantitative_guidelines": {
+            "pressure_threshold": "Put fluid > 10-15 bar on tube side.",
+            "fouling_velocity": "Maintain tube-side liquid velocity at 1.5 to 2.5 m/s (5 to 8 ft/s) for cooling water to prevent silt deposition.",
+            "plate_exchanger_limit": "Plate-and-frame exchangers are not recommended for pressures exceeding 10 bara."
+          },
+          "conditions_and_limitations": "If both fluids are corrosive and high-pressure, double-pipe or special all-alloy welded blocks are required.",
+          "variations_and_discrepancies": "Turton Table 11.11; Ulrich p. 577–578; Excel sheet 'Heat Exchangers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Rule 1",
+              "page": 384
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Heat Exchangers",
+              "page": 577
+            }
+          ],
+          "tags": [
+            "fluid allocation",
+            "tube side",
+            "shell side",
+            "corrosion",
+            "fouling",
+            "high pressure"
+          ]
+        },
+        {
+          "id": "HEX-003",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "area_lmtd_and_f_factor",
+          "rule": "Calculate required heat exchanger surface area from: A = Q_dot / (U * F * LMTD). Maintain the LMTD correction factor F >= 0.80 to 0.90 (use F = 0.90 as initial shortcut). If calculated F < 0.80, a severe temperature cross exists; switch to multiple shells in series or a true countercurrent 1-1 exchanger.",
+          "explanation_and_derivation": "In multi-pass shell-and-tube exchangers (e.g. 1-2 TEMA E), shell-side fluid flows both co-currently and counter-currently relative to tube passes. When F drops below 0.80, the LMTD correction curve plunges steeply, making the exchanger unstable and hypersensitive to minor flow or temperature fluctuations.",
+          "quantitative_guidelines": {
+            "design_equation": "A = Q_dot / (U * F * LMTD)",
+            "latex_formula": "A = \\frac{\\dot{Q}}{U \\cdot F \\cdot \\Delta T_{\\text{lm}}}",
+            "lmtd_formula": "LMTD = (Delta_T_1 - Delta_T_2) / ln(Delta_T_1 / Delta_T_2)",
+            "f_factor_threshold": "F >= 0.80 (target F >= 0.85-0.90)",
+            "heat_loss_allowance": "Allow up to 5% to 10% heat loss depending on shell operating temperature."
+          },
+          "conditions_and_limitations": "Do not use simple LMTD if fluid heat capacity (Cp) varies significantly with temperature or during non-linear condensation of multi-component mixtures; perform zone-by-zone enthalpy analysis.",
+          "variations_and_discrepancies": "Turton Table 11.11; Ulrich p. 578; Excel sheet 'Heat Exchangers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Rule 4",
+              "page": 384
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Heat Exchangers",
+              "page": 578
+            }
+          ],
+          "tags": [
+            "LMTD",
+            "F-factor",
+            "heat transfer area",
+            "temperature cross",
+            "multi-shell"
+          ]
+        },
+        {
+          "id": "HEX-004",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "minimum_approach_temperatures",
+          "rule": "Specify near-optimal minimum approach temperatures (Delta T_min) based on temperature regime: 1. Sub-ambient / cryogenic temperatures: <= 10 F (5.5 C) or down to 2-3 C for refrigeration circuits. 2. Ambient up to 300 F (150 C): 20 F (11 C) for liquids and high-U systems. 3. High temperatures and gases: 50 F (28 C) for low-U systems. 4. Fired furnaces: 250 to 350 F (140 to 195 C) between flue gas exit and inlet process fluid.",
+          "explanation_and_derivation": "Approach Delta T represents the economic trade-off between heat exchanger capital cost (which approaches infinity as Delta T -> 0) and operating utility cost. In cryogenic service, refrigeration work is extremely expensive (Carnot efficiency: W = Q*(T_ambient - T_cold)/T_cold), justifying huge exchanger area to achieve tight approach.",
+          "quantitative_guidelines": {
+            "cryogenic_delta_T_min": "<= 10 F (5.5 C)",
+            "ambient_liquid_delta_T_min": "20 F (11 C) [Ulrich quotes ~10 C]",
+            "gas_high_temp_delta_T_min": "50 F (28 C) [Ulrich quotes ~50 C]",
+            "furnace_flue_gas_delta_T_min": "250 to 350 F (140 to 195 C)"
+          },
+          "conditions_and_limitations": "In heat integration networks, reducing Delta T_min below 10-15 C can cause uncontrollable heat oscillations between coupled distillation towers.",
+          "variations_and_discrepancies": "Seider Heuristic 26; Ulrich p. 578; Turton Table 11.11.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 26",
+              "page": 2
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Heat Exchangers",
+              "page": 578
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11",
+              "page": 384
+            }
+          ],
+          "tags": [
+            "minimum approach",
+            "delta T min",
+            "pinch",
+            "cryogenic",
+            "furnace approach"
+          ]
+        },
+        {
+          "id": "HEX-005",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "typical_overall_u_values",
+          "rule": "Use standard typical overall heat transfer coefficients (U) for preliminary scoping: 1. Liquid-to-liquid (water/organics): 300 to 900 W/(m2 K) [50 to 160 Btu/(hr ft2 F)]. 2. Gas-to-gas: 15 to 50 W/(m2 K) [3 to 10 Btu/(hr ft2 F)]. 3. Boiling water / steam reboiler: 1,500 to 4,000 W/(m2 K) [260 to 700 Btu/(hr ft2 F)]. 4. Condensing steam to liquid: 1,000 to 2,500 W/(m2 K) [175 to 440 Btu/(hr ft2 F)]. 5. Condensing hydrocarbons: 300 to 800 W/(m2 K) [50 to 140 Btu/(hr ft2 F)].",
+          "explanation_and_derivation": "The overall resistance (1/U) is the sum of internal film, external film, metal wall, and two fouling resistances. Because gas heat transfer coefficients are very low (~20-80 W/m2 K), gas-gas exchangers require extended surfaces (fins) or enormous areas. Phase-change boiling and condensation achieve very high film coefficients (> 3,000 W/m2 K).",
+          "quantitative_guidelines": {
+            "water_water": "800 to 1,500 W/(m2 K) [140 to 260 Btu/(hr ft2 F)]",
+            "organic_organic": "200 to 500 W/(m2 K) [35 to 90 Btu/(hr ft2 F)]",
+            "gas_gas": "15 to 50 W/(m2 K) [3 to 10 Btu/(hr ft2 F)]",
+            "steam_condenser": "1,500 to 3,000 W/(m2 K) [260 to 530 Btu/(hr ft2 F)]",
+            "air_cooled_exchanger_liquid": "300 to 700 W/(m2 K) [50 to 120 Btu/(hr ft2 bare tube F)]",
+            "air_cooled_exchanger_gas": "50 to 200 W/(m2 K) [10 to 35 Btu/(hr ft2 bare tube F)]"
+          },
+          "conditions_and_limitations": "Always account for fouling resistances: add R_f = 0.0002 to 0.0004 (m2 K)/W for process hydrocarbons, and 0.0002 (m2 K)/W for treated cooling water.",
+          "variations_and_discrepancies": "Turton Table 11.11; Ulrich Table 4.15 & p. 578; Excel sheet 'Heat Exchangers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Table 11.2",
+              "page": 384
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Step 4",
+              "page": 578
+            }
+          ],
+          "tags": [
+            "overall heat transfer coefficient",
+            "U values",
+            "thermal resistance",
+            "fouling",
+            "sizing"
+          ]
+        },
+        {
+          "id": "HEX-006",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "pressure_drops_heat_exchangers",
+          "rule": "Estimate typical allowable pressure drops in heat exchangers: 1. Liquid heating, cooling, or boiling: 0.2 to 0.6 bar (3 to 9 psi, standard 5 psi / 0.35 bar). 2. High-viscosity liquids: 0.5 to 0.7 bar (7 to 10 psi). 3. Condensing vapors or gas streams: 0.05 to 0.15 bar (0.7 to 2.0 psi, standard 0.1 bar / 1.5 psi). 4. Process fluids passing through fired furnaces: 1.4 bar (20 psi).",
+          "explanation_and_derivation": "Pumping power and piping head loss dictate reasonable economic pressure drops. Gas streams have low absolute pressures and large volumetric rates, making high pressure drops unacceptable due to compressor operating costs.",
+          "quantitative_guidelines": {
+            "liquid_delta_P": "0.2 to 0.6 bar (3 to 9 psi)",
+            "gas_delta_P": "0.05 to 0.15 bar (0.7 to 2.0 psi)",
+            "condensing_boiling_delta_P": "0.10 bar (1.5 psi)",
+            "furnace_coil_delta_P": "1.4 bar (20 psi)"
+          },
+          "conditions_and_limitations": "In deep vacuum condensers, allowable Delta P is strictly limited to < 0.01 to 0.03 bar (< 5 to 15 mmHg) to protect column top pressure.",
+          "variations_and_discrepancies": "Seider Heuristic 31; Ulrich p. 578; Turton Table 11.11.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 31",
+              "page": 3
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Step 6",
+              "page": 578
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11",
+              "page": 384
+            }
+          ],
+          "tags": [
+            "pressure drop",
+            "heat exchanger hydraulics",
+            "furnace coil",
+            "allowable Delta P"
+          ]
+        },
+        {
+          "id": "HEX-007",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "reboiler_nucleate_boiling_limit",
+          "rule": "In reboilers and vaporizers, maintain the maximum overall temperature driving force Delta T_driving <= 45 F (25 C) to ensure nucleate boiling and avoid film boiling burnout.",
+          "explanation_and_derivation": "When the temperature difference between tube wall and boiling liquid exceeds the critical Delta T (~25 C / 45 F), boiling transitions from nucleate to film boiling. A continuous vapor film blankets the tube surface, acting as a thermal insulator that collapses the boiling heat transfer coefficient by 80% to 90%.",
+          "quantitative_guidelines": {
+            "max_reboiler_delta_T": "<= 45 F (25 C)",
+            "critical_heat_flux": "Limit heat flux q/A to < 35,000 to 50,000 W/m2 (11,000 to 16,000 Btu/(hr ft2)) for boiling organics.",
+            "thermosiphon_submergence": "Maintain liquid level in column sump so that 100% of reboiler tube length is submerged."
+          },
+          "conditions_and_limitations": "High-boiling heavy hydrocarbons with severe fouling tendencies require lower Delta T (< 15-20 C) to prevent tube wall skin coking.",
+          "variations_and_discrepancies": "Seider Heuristic 28; Turton Table 11.11.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 28",
+              "page": 2
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Rule 6",
+              "page": 384
+            }
+          ],
+          "tags": [
+            "reboiler",
+            "nucleate boiling",
+            "film boiling",
+            "critical heat flux",
+            "burnout",
+            "driving force"
+          ]
+        },
+        {
+          "id": "HEX-008",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "fired_heaters_and_furnaces",
+          "rule": "Specify fired heaters/furnaces when process fluid temperatures must exceed 750 F (400 C). Hydrocarbon combustion yields an adiabatic flame temperature of ~3,500 F (1,925 C); supply 15% to 25% excess air to ensure complete combustion and limit firebox flue gas to 2,000 F (1,100 C). Set stack gas temperature at 650 to 950 F (340 to 510 C) or > 300 F (150 C) with an economizer/air preheater to prevent acid dew-point condensation.",
+          "explanation_and_derivation": "Steam headers cannot practically supply heat above ~250-300 C, and synthetic heat transfer oils degrade above 350-400 C. Fired heaters burn fuel gas/oil directly. Flue gases contain SO2/SO3; if stack temperature drops below the sulfurous/sulfuric acid dew point (~130-150 C), catastrophic acid corrosion destroys ducts and stacks.",
+          "quantitative_guidelines": {
+            "temperature_cutoff": "Use fired furnace if T_process > 400 C (750 F)",
+            "excess_air": "10% to 20% for natural gas; 15% to 25% for fuel oil",
+            "max_firebox_temp": "2,000 F (1,100 C) to protect tube support metallurgy",
+            "radiant_heat_flux": "30,000 to 45,000 W/m2 (10,000 to 14,000 Btu/(hr ft2))",
+            "convective_heat_flux": "15,000 to 25,000 W/m2",
+            "thermal_efficiency": "75% to 80% without air preheat; 85% to 92% with air preheat/economizer."
+          },
+          "conditions_and_limitations": "Do not exceed maximum film temperature for thermally degradable feeds (e.g. vacuum residue, ethylene cracking).",
+          "variations_and_discrepancies": "Seider Heuristics 25 & 30; Ulrich p. 576; Turton Table 11.11.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 25",
+              "page": 2
+            },
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 30",
+              "page": 3
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Furnaces",
+              "page": 576
+            }
+          ],
+          "tags": [
+            "fired heater",
+            "furnace",
+            "combustion",
+            "flue gas",
+            "stack temperature",
+            "acid dew point"
+          ]
+        },
+        {
+          "id": "HEX-009",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "hot_stream_quench",
+          "rule": "Quench very hot process streams (> 1,150 F / 620 C, e.g. reactor effluents) to below 1,150 F before sending to shell-and-tube exchangers for additional cooling/condensation. Use recycled downstream cold liquid, cold reactant, or liquid water as the direct-contact quench fluid.",
+          "explanation_and_derivation": "Above 600-650 C, heavy hydrocarbons rapidly crack into carbonaceous coke on metallic heat exchanger surfaces, destroying heat transfer and causing tube pluggage. Direct liquid quench evaporates instantly, cooling the gas in milliseconds.",
+          "quantitative_guidelines": {
+            "quench_target_temp": "<= 1,150 F (620 C)",
+            "quench_fluids": "Downstream recycled liquid, cold feed, or boiler feedwater."
+          },
+          "conditions_and_limitations": "Quenching with water adds steam to the process stream, which must be condensed and handled in downstream wastewater systems.",
+          "variations_and_discrepancies": "Seider Heuristic 32.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 32",
+              "page": 3
+            }
+          ],
+          "tags": [
+            "quench",
+            "thermal cracking",
+            "coking prevention",
+            "reactor effluent",
+            "direct contact"
+          ]
+        },
+        {
+          "id": "HEX-010",
+          "family": "heat_transfer_exchangers_and_furnaces",
+          "subfamily_or_equipment": "double_pipe_exchangers",
+          "rule": "Specify double-pipe or multi-pipe hairpin heat exchangers when required heat transfer area is small (< 100 to 200 ft2 / 10 to 20 m2), or when operating pressures are very high (> 100 bar).",
+          "explanation_and_derivation": "Shell-and-tube exchangers have significant fixed fabrication costs for tube sheets, shell flanges, and channel covers that are uneconomical for small duties. Double-pipe units consist of standard pipe fittings, provide true pure countercurrent flow (F = 1.0), and easily withstand extreme pressures.",
+          "quantitative_guidelines": {
+            "area_limit": "A < 100 to 200 ft2 (10 to 20 m2)",
+            "pipe_sizes": "Typically 2-inch pipe inside 3-inch pipe, or 3-inch inside 4-inch."
+          },
+          "conditions_and_limitations": "Uneconomical for large heat loads (> 50 m2) due to excessive footprint, manifold piping, and leak points.",
+          "variations_and_discrepancies": "Turton Table 11.11 (Rule 9); Excel sheet 'Heat Exchangers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.11, Rule 9",
+              "page": 384
+            }
+          ],
+          "tags": [
+            "double-pipe",
+            "hairpin exchanger",
+            "small duty",
+            "high pressure",
+            "countercurrent"
+          ]
+        }
+      ]
+    },
+    "cooling_towers_and_refrigeration": {
+      "name": "Cooling Towers, Utilities & Refrigeration",
+      "description": "Rules for cooling water temperatures, cooling tower approach, utility steam distribution headers, refrigeration tonnage, and refrigerant selection.",
+      "rules": [
+        {
+          "id": "UTIL-REF-001",
+          "family": "cooling_towers_and_refrigeration",
+          "subfamily_or_equipment": "cooling_water_temperatures",
+          "rule": "Standard cooling tower water is supplied to process exchangers at 85 to 90 F (29 to 32 C) and returned at a maximum allowable temperature of 115 to 120 F (46 to 49 C). In European/temperate climates, design for 30 C supply and 45 C return.",
+          "explanation_and_derivation": "Above 120 F (49 C), calcium carbonate and calcium phosphate solubility drops sharply (inverse solubility), causing severe mineral scale formation on heat exchanger tube walls. This scaling drastically degrades heat transfer (scaling resistance R_f surges) and restricts flow passages.",
+          "quantitative_guidelines": {
+            "cooling_water_supply_us": "85 to 90 F (29 to 32 C)",
+            "cooling_water_max_return_us": "120 F (49 C)",
+            "cooling_water_supply_metric": "30 C (86 F) [Ulrich p. 573]",
+            "cooling_water_return_metric": "45 C (113 F) [Ulrich p. 573]",
+            "allowable_temperature_rise": "10 to 15 C (18 to 30 F)",
+            "supply_pressure": "Typically 3 to 5 barg (45 to 75 psig) at battery limit."
+          },
+          "conditions_and_limitations": "In arid or cold climates, cooling water can be supplied at 20 to 25 C, allowing tighter condenser temperatures.",
+          "variations_and_discrepancies": "Seider Heuristic 27 (90 F in, 120 F max out); Ulrich p. 573 (30 C in, 45 C out); Turton Table 11.18.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 27",
+              "page": 2
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Cooling Water",
+              "page": 573
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.18",
+              "page": 391
+            }
+          ],
+          "tags": [
+            "cooling water",
+            "cooling tower",
+            "scaling limit",
+            "return temperature",
+            "calcium carbonate"
+          ]
+        },
+        {
+          "id": "UTIL-REF-002",
+          "family": "cooling_towers_and_refrigeration",
+          "subfamily_or_equipment": "cooling_tower_performance",
+          "rule": "Industrial mechanical-draft cooling towers cool circulating water to within 5 to 10 F (3 to 5.5 C) of the ambient air wet-bulb temperature, typically achieving 90% of theoretical saturation.",
+          "explanation_and_derivation": "Evaporative cooling is limited by the ambient wet-bulb temperature. Closing the approach below 5 F requires exponentially larger tower packing volume and fan horsepower.",
+          "quantitative_guidelines": {
+            "approach_to_wet_bulb": "5 to 10 F (2.8 to 5.6 C)",
+            "cooling_range": "15 to 25 F (8 to 14 C) Delta T across the tower",
+            "drift_loss": "< 0.005% of circulating water rate with modern drift eliminators",
+            "evaporation_loss": "~1% of circulating flow rate per 10 F (5.6 C) of cooling range",
+            "blowdown_cycles": "Cycles of concentration typically maintained between 3 and 7."
+          },
+          "conditions_and_limitations": "Wet-bulb temperatures vary seasonally; base design on summer 1% or 2% ASHRAE/meteorological wet-bulb design values.",
+          "variations_and_discrepancies": "Turton Table 11.18; Excel sheet 'Cooling Towers'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.18",
+              "page": 391
+            }
+          ],
+          "tags": [
+            "cooling tower",
+            "wet-bulb",
+            "approach",
+            "blowdown",
+            "evaporative cooling"
+          ]
+        },
+        {
+          "id": "UTIL-REF-003",
+          "family": "cooling_towers_and_refrigeration",
+          "subfamily_or_equipment": "process_steam_distribution",
+          "rule": "Specify utility steam distribution at standardized header pressure levels: 1. High Pressure (HP): 40 to 45 bara (580 to 650 psig), 400 C (750 F) superheated. 2. Medium-High Pressure: 33 bara (480 psig), 239 C sat. 3. Moderate / Medium Pressure (MP): 10 to 17 bara (150 to 250 psig), 185 to 205 C sat. 4. Medium-Low Pressure: 9 bara (130 psig), 175 C sat. 5. Low Pressure (LP): 3.5 to 5.0 bara (50 to 75 psig), 140 to 155 C sat.",
+          "explanation_and_derivation": "Standardizing header pressures enables cogeneration (expanding HP steam through backpressure turbines to generate electricity while exhausting MP/LP steam for process reboilers).",
+          "quantitative_guidelines": {
+            "hp_steam": "40 to 45 bara, 400 C superheated",
+            "mp_steam": "10 to 17 bara, saturated",
+            "lp_steam": "4.5 bara (65 psia), 148 C saturated",
+            "latent_heat_lp_steam": "~2,120 kJ/kg (910 Btu/lb)",
+            "latent_heat_mp_steam": "~1,920 kJ/kg (825 Btu/lb)",
+            "boiler_feedwater_solids": "30 to 40 ppm dissolved solids."
+          },
+          "conditions_and_limitations": "Steam lines must be sloped with steam traps every 30 to 50 m to remove condensate and prevent water hammer.",
+          "variations_and_discrepancies": "Ulrich p. 573; Turton Table 11.18; Excel sheet 'Refrigeration & Utilities'.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Process Steam",
+              "page": 573
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.18",
+              "page": 391
+            }
+          ],
+          "tags": [
+            "steam headers",
+            "HP steam",
+            "MP steam",
+            "LP steam",
+            "cogeneration",
+            "utilities"
+          ]
+        },
+        {
+          "id": "UTIL-REF-004",
+          "family": "cooling_towers_and_refrigeration",
+          "subfamily_or_equipment": "refrigeration_tonnage_and_power",
+          "rule": "One ton of refrigeration equals the heat removal rate of 12,000 Btu/h = 12,660 kJ/h = 3.517 kW. Estimate compressor work per ton: ~1.0 hp/ton (0.75 kW/ton) at 40 F (4 C) evaporator temperature; ~2.0 hp/ton (1.5 kW/ton) at 0 F (-18 C); ~3.5 hp/ton (2.6 kW/ton) at -40 F (-40 C); and up to 5 to 7 hp/ton at -100 F (-73 C).",
+          "explanation_and_derivation": "Carnot cycle thermodynamics govern coefficient of performance (COP = T_cold / (T_hot - T_cold)). As refrigeration temperature drops, compressor pressure ratio and power per kilowatt of cooling surge exponentially.",
+          "quantitative_guidelines": {
+            "ton_refrigeration_def": "1 ton = 12,000 Btu/h = 12,660 kJ/h = 3.517 kW",
+            "power_at_40F": "~1.0 hp / ton (COP ~ 4.7)",
+            "power_at_0F": "~2.0 hp / ton (COP ~ 2.4)",
+            "power_at_minus_40F": "~3.5 hp / ton (COP ~ 1.3)",
+            "power_at_minus_100F": "~6.0 hp / ton"
+          },
+          "conditions_and_limitations": "For evaporator temperatures below -30 C, use two-stage compression with economizer flash intercooling; below -60 C, use two-fluid cascade systems (e.g. ethylene-propylene).",
+          "variations_and_discrepancies": "Turton Table 11.18; Excel sheet 'Refrigeration & Utilities'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.18",
+              "page": 391
+            }
+          ],
+          "tags": [
+            "refrigeration",
+            "ton of refrigeration",
+            "compressor power",
+            "COP",
+            "Carnot",
+            "chilling"
+          ]
+        },
+        {
+          "id": "UTIL-REF-005",
+          "family": "cooling_towers_and_refrigeration",
+          "subfamily_or_equipment": "refrigerant_selection",
+          "rule": "Select refrigerants according to required process temperature level: 1. Above 0 C (32 to 50 F): chilled water. 2. 0 to -15 C (14 to 32 F): chilled aqueous glycol or calcium chloride brine. 3. -10 to -45 C (-50 to 14 F): Ammonia (NH3), Propane (R-290), or R-134a. 4. -45 to -100 C (-150 to -50 F): Ethylene, Ethane, or two-fluid cascade cycles. 5. Below -100 C: Cryogenic expander / nitrogen Claude cycles.",
+          "explanation_and_derivation": "Refrigerants must maintain positive suction pressure (> 1 bara / 14.7 psia) at the evaporator to prevent atmospheric air and moisture inleakage, and reasonable condenser discharge pressures (< 15 to 20 bar) to allow condensation using cooling tower water.",
+          "quantitative_guidelines": {
+            "ammonia_range": "-33 C to +35 C (atmospheric boiling point = -33.3 C / -28 F)",
+            "propane_range": "-42 C to +40 C (atmospheric boiling point = -42.1 C / -44 F)",
+            "ethane_range": "-88 C (atmospheric boiling point)",
+            "fluorocarbon_range": "+5 C to -60 C [Ulrich p. 574]"
+          },
+          "conditions_and_limitations": "Ammonia is toxic and flammable (B2L); propane/ethylene are highly flammable (A3); ensure safety zoning in accordance with API RP 500 / EN 378.",
+          "variations_and_discrepancies": "Turton Table 11.18; Ulrich p. 574; Excel sheet 'Refrigeration & Utilities'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.18",
+              "page": 391
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Refrigerant",
+              "page": 574
+            }
+          ],
+          "tags": [
+            "refrigerants",
+            "ammonia",
+            "propane",
+            "cascade refrigeration",
+            "glycol",
+            "temperature bands"
+          ]
+        }
+      ]
+    },
+    "fluid_handling_pumps_and_piping": {
+      "name": "Fluid Handling: Pumps & Piping Hydraulics",
+      "description": "Rules for pump selection (centrifugal, reciprocating, gear), pump power formulas, NPSH cavitation margins, liquid/gas piping sizing, and control valve allowances.",
+      "rules": [
+        {
+          "id": "PUMP-001",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "pump_selection_matrix",
+          "rule": "Select pump type based on flow rate, differential head, and fluid viscosity: 1. Centrifugal pumps: primary choice for heads up to 3,200 ft (1,000 m) and flow rates of 10 to 5,000 gpm (2 to 1,200 m3/h) with low to moderate viscosities (< 200 cP). 2. Reciprocating positive displacement pumps: for ultra-high heads up to 20,000 ft (6,000 m) and moderate/low flows (< 500 gpm / 115 m3/h), or precise chemical dosing. 3. Rotary gear/screw pumps: for viscous liquids (> 200 to 100,000 cP) at heads up to 3,000 ft and flows < 1,500 gpm. 4. Axial flow pumps: for high volumetric flow rates (20 to 100,000 gpm) at very low differential head (< 40 ft / 12 m).",
+          "explanation_and_derivation": "Centrifugal pumps impart kinetic energy via impeller rotation; their efficiency drops precipitously above 100-200 cP due to disk friction. Positive displacement pumps trap discrete fluid packets, making flow independent of discharge pressure and highly efficient for thick viscous fluids.",
+          "quantitative_guidelines": {
+            "centrifugal_flow_range": "10 to 5,000 gpm (2.3 to 1,140 m3/h)",
+            "centrifugal_max_head": "Single-stage up to 600 ft (180 m); multi-stage up to 3,200 ft (1,000 m)",
+            "reciprocating_max_pressure": "Up to 10,000 psi (700 bar)",
+            "rotary_viscosity_limit": "Effective up to 50,000+ cP",
+            "axial_flow_head": "< 40 ft (12 m)"
+          },
+          "conditions_and_limitations": "Centrifugal pumps require minimum continuous flow (spillback line) to prevent overheating and internal recirculation damage.",
+          "variations_and_discrepancies": "Seider Heuristic 37; Turton Table 11.9; Ulrich p. 580; Excel sheet 'Pumps'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 37",
+              "page": 3
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.9",
+              "page": 383
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Pumps",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "pumps",
+            "centrifugal pump",
+            "reciprocating pump",
+            "gear pump",
+            "axial pump",
+            "viscosity"
+          ]
+        },
+        {
+          "id": "PUMP-002",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "pump_power_sizing",
+          "rule": "Calculate pumping hydraulic power from: Theoretical Horsepower THp = (gpm * Delta P (psi)) / 1714, or in metric units: Shaft Power P (kW) = [1.67 * Flow (m3/min) * Delta P (bar)] / eta. Centrifugal pump efficiencies typically range from 45% at 10-20 gpm up to 80-85% at 1,000+ gpm.",
+          "explanation_and_derivation": "Hydraulic power is the dot product of volumetric flow and total dynamic pressure rise (W_dot = Q * Delta P). Pump shaft power includes mechanical seal, bearing, and hydraulic recirculation losses.",
+          "quantitative_guidelines": {
+            "thp_formula_us": "THp = (Flow_gpm * Delta_P_psi) / 1,714",
+            "latex_us": "\\text{THp} = \\frac{\\text{gpm} \\cdot \\Delta P_{\\text{psi}}}{1,714}",
+            "power_formula_metric": "P_kW = (1.67 * Q_m3_min * Delta_P_bar) / eta",
+            "latex_metric": "P\\ [\\text{kW}] = \\frac{1.67 \\cdot Q\\ [\\text{m}^3/\\text{min}] \\cdot \\Delta P\\ [\\text{bar}]}{\\eta}",
+            "efficiency_ranges": "Flow < 50 gpm: eta = 0.40 - 0.55; Flow 50-200 gpm: eta = 0.55 - 0.70; Flow > 500 gpm: eta = 0.75 - 0.85.",
+            "electric_motor_efficiency": "85% to 95% (use 90% default)."
+          },
+          "conditions_and_limitations": "For liquids with specific gravity != 1.0, verify motor sizing using actual liquid density: BHP = THp * SG / eta.",
+          "variations_and_discrepancies": "Seider Heuristic 39; Turton Table 11.9; Excel sheet 'Pumps'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 39",
+              "page": 4
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.9",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "pump power",
+            "hydraulic power",
+            "brake horsepower",
+            "efficiency",
+            "motor sizing"
+          ]
+        },
+        {
+          "id": "PUMP-003",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "npsh_and_cavitation",
+          "rule": "Ensure Net Positive Suction Head Available (NPSHA) exceeds Net Positive Suction Head Required (NPSHR) by at least 2 to 3 ft (0.6 to 1.0 m) safety margin: NPSHA >= NPSHR + 0.6-1.0 m. For boiling liquids at bubble point in column sumps or reflux drums, NPSHA is generated solely by the static elevation head of the liquid above the pump centerline minus suction pipe friction.",
+          "explanation_and_derivation": "If pressure at the impeller eye falls below the liquid vapor pressure, vapor bubbles form and violently collapse against the impeller metal (cavitation), creating extreme acoustic shock waves that pit the metal and destroy bearings/seals within hours.",
+          "quantitative_guidelines": {
+            "npsha_definition": "NPSHA = (P_suction_abs - P_vap) / (rho * g) + v^2 / (2*g)",
+            "latex_formula": "\\text{NPSHA} = \\frac{P_{\\text{suction}} - P_{\\text{vap}}}{\\rho \\cdot g} \\ge \\text{NPSHR} + (0.6 \\text{ to } 1.0\\text{ m})",
+            "suction_elevation_boiling": "Elevate distillation column skirt by 2.5 to 4.5 m (8 to 15 ft) to provide required 2 to 4 m NPSHA for bottoms pump."
+          },
+          "conditions_and_limitations": "Hydrocarbons with dissolved light ends have higher vapor pressures than pure components; verify true bubble point pressure.",
+          "variations_and_discrepancies": "Turton Table 11.9; Excel sheet 'Pumps'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.9, Rule 2",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "NPSH",
+            "cavitation",
+            "suction head",
+            "skirt height",
+            "bubble point"
+          ]
+        },
+        {
+          "id": "PIPE-001",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "liquid_piping_sizing",
+          "rule": "Size liquid process piping based on standard economic velocity and pressure drop guidelines: 1. Pump discharge lines: size for velocity v = (5 + D/3) ft/s [~1.5 to 2.5 m/s] and pressure drop Delta P ~ 2.0 psi/100 ft of pipe (0.45 bar/100 m). 2. Pump suction lines: size for velocity v = (1.3 + D/6) ft/s [~0.5 to 1.2 m/s] and pressure drop Delta P ~ 0.4 psi/100 ft of pipe (0.09 bar/100 m), where D is pipe inner diameter in inches. Ulrich guideline: 1 to 4 m/s for general liquids.",
+          "explanation_and_derivation": "Pipe diameter reflects the classic economic balance between pipe capital cost (which increases with D) and pumping electrical power (which scales inversely with D^5 by the Darcy-Weisbach equation). Suction lines are sized larger with lower velocity to prevent suction cavitation.",
+          "quantitative_guidelines": {
+            "discharge_velocity_us": "v = (5 + D/3) ft/s  (D in inches)",
+            "suction_velocity_us": "v = (1.3 + D/6) ft/s  (D in inches)",
+            "general_liquid_metric": "1.0 to 4.0 m/s [Ulrich p. 573]",
+            "discharge_delta_P": "2.0 psi / 100 ft (0.45 bar / 100 m)",
+            "suction_delta_P": "0.4 psi / 100 ft (0.09 bar / 100 m)",
+            "gravity_drainage": "v = 0.3 to 0.8 m/s (1 to 2.5 ft/s); slope >= 1:100."
+          },
+          "conditions_and_limitations": "For abrasive slurries, limit velocity to < 1.5-2.0 m/s to prevent pipe erosion; for settling slurries, maintain velocity above minimum deposition velocity (~1.2-1.5 m/s).",
+          "variations_and_discrepancies": "Turton Table 11.8; Ulrich p. 573; Excel sheet 'Piping'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.8, Rules 1 & 2",
+              "page": 382
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, General",
+              "page": 573
+            }
+          ],
+          "tags": [
+            "piping",
+            "line sizing",
+            "liquid velocity",
+            "pressure drop",
+            "suction piping",
+            "discharge piping"
+          ]
+        },
+        {
+          "id": "PIPE-002",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "gas_and_steam_piping_sizing",
+          "rule": "Size gas, vapor, and steam piping for velocity v = 20 * D ft/s (where D is nominal diameter in inches) or typically 15 to 30 m/s (50 to 100 ft/s), with allowable pressure drop Delta P ~ 0.5 psi/100 ft of pipe (0.1 bar/100 m). For low-pressure gases (< 2 bar), size for 3 to 10 m/s; for vacuum vapor lines, limit pressure drop to < 0.1 psi/100 ft.",
+          "explanation_and_derivation": "Due to low gas density, high velocities are economical without excessive pressure drop. However, velocities exceeding 30-40 m/s generate excessive aerodynamic noise, acoustic vibration, and erosion at pipe elbows.",
+          "quantitative_guidelines": {
+            "gas_velocity_formula_us": "v = 20 * D ft/s  (D in inches)",
+            "steam_velocity": "25 to 35 m/s (80 to 120 ft/s)",
+            "low_pressure_gas_metric": "3 to 10 m/s [Ulrich p. 573]",
+            "high_pressure_gas_metric": "10 to 25 m/s",
+            "gas_delta_P": "0.5 psi / 100 ft (0.10 bar / 100 m)"
+          },
+          "conditions_and_limitations": "In corrosive or wet-gas service, limit velocity to < 15-20 m/s to prevent stripping of protective oxide/corrosion inhibitor films (API RP 14E erosional velocity: v_e = C / sqrt(rho)).",
+          "variations_and_discrepancies": "Turton Table 11.8; Ulrich p. 573; Excel sheet 'Piping'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.8, Rule 3",
+              "page": 382
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, General",
+              "page": 573
+            }
+          ],
+          "tags": [
+            "gas piping",
+            "steam piping",
+            "erosional velocity",
+            "pressure drop",
+            "line sizing"
+          ]
+        },
+        {
+          "id": "PIPE-003",
+          "family": "fluid_handling_pumps_and_piping",
+          "subfamily_or_equipment": "control_valves_and_static_head",
+          "rule": "In hydraulic circuits, allocate at least 10 psi (0.7 bar) or 25% to 33% of total dynamic system friction across control valves to ensure stable flow controllability. For each 10-ft (3.05 m) rise in liquid elevation, allocate 4.0 to 4.3 psi (0.28 to 0.30 bar) static head pressure drop for water-like liquids (Delta P_static = rho * g * Delta z).",
+          "explanation_and_derivation": "A control valve must represent a significant fraction of total circuit resistance to modulate flow effectively. If line friction dominates (> 90%), closing the valve has little effect until it is nearly seated, causing severe control hunting and non-linearity.",
+          "quantitative_guidelines": {
+            "control_valve_min_delta_P": ">= 10 psi (0.7 bar)",
+            "control_valve_fraction": "Delta P_valve / Delta P_system_dynamic >= 0.25 to 0.33",
+            "static_elevation_head": "4.0 psi per 10 ft of elevation (for water / SG=1.0)",
+            "metric_static_head": "0.1 bar per meter of elevation (for water)"
+          },
+          "conditions_and_limitations": "Ensure control valve sizing factor C_v operates between 20% and 80% open during normal turndown to avoid seat cavitation.",
+          "variations_and_discrepancies": "Seider Heuristic 38; Turton Table 11.8.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 38",
+              "page": 4
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.8",
+              "page": 382
+            }
+          ],
+          "tags": [
+            "control valve",
+            "pressure drop",
+            "static head",
+            "elevation",
+            "flow control"
+          ]
+        }
+      ]
+    },
+    "gas_compression_and_vacuum": {
+      "name": "Gas Compression, Vacuum & Power Recovery",
+      "description": "Rules for fans, blowers, compressors, multi-stage compression with intercooling, air inleakage formulas, steam-jet ejectors, liquid-ring vacuum pumps, and turboexpanders.",
+      "rules": [
+        {
+          "id": "COMP-001",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "gas_mover_selection",
+          "rule": "Select gas moving equipment based on required differential pressure: 1. Fans: for Delta P < 40 in H2O gauge (1.47 psig / 10.1 kPa / 0.1 bar) near atmospheric pressure; gas density variation < 10%; efficiencies 60-80%. 2. Blowers: for Delta P from 3 kPa to 30 psig (0.03 to 2.0 barg / 5 bar absolute); efficiencies 70-85%. 3. Compressors: for high-pressure operation from 2 barg up to 3,000 bar; efficiencies 60-80%.",
+          "explanation_and_derivation": "Fans operate in the nearly incompressible fluid regime where blades move large gas volumes against low duct resistance. Blowers compress gas moderately. Compressors handle significant density changes and extreme mechanical stresses, requiring cooling and heavy casings.",
+          "quantitative_guidelines": {
+            "fan_pressure_range": "< 40 in H2O (10.1 kPa / 1.47 psig)",
+            "blower_pressure_range": "3 kPa to 2.0 barg (30 psig / up to 5 bara)",
+            "compressor_pressure_range": "2 barg to 3,000 bara",
+            "fan_efficiency": "60% to 80%",
+            "blower_efficiency": "70% to 85%",
+            "compressor_efficiency": "60% to 80%"
+          },
+          "conditions_and_limitations": "Gas compression generates significant heat; discharge temperatures must not exceed 150-200 C to protect seals, lube oils, and prevent gas auto-ignition.",
+          "variations_and_discrepancies": "Seider Heuristic 34; Ulrich p. 576–577; Turton Table 11.10; Excel sheet 'Compressors and Vacuum'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 34",
+              "page": 3
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Gas Movers",
+              "page": 576
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "gas movers",
+            "fans",
+            "blowers",
+            "compressors",
+            "differential pressure",
+            "efficiency"
+          ]
+        },
+        {
+          "id": "COMP-002",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "compressor_staging_and_intercooling",
+          "rule": "Limit the compression ratio per stage to r_p = P_out / P_in <= 3.5 to 4.0. For overall pressure ratios > 4.0, stage the compressors with intercooling between stages. Staging guideline: P_final / P_inlet < 4 -> 1 stage; 4 to 16 -> 2 stages; 16 to 64 -> 3 stages; 64 to 256 -> 4 stages. Allocate approximately equal compression ratios across all stages, and assume 2 psi (15 kPa / 0.15 bar) pressure drop through each intercooler.",
+          "explanation_and_derivation": "High compression ratios cause excessive discharge temperatures (T_out = T_in * (P_out/P_in)^((k-1)/k)), which breakdown lubricating oils and cause mechanical seizure. Staging with intercoolers approaches isothermal compression, reducing total electrical power by 15% to 30% and knocking out condensed liquids.",
+          "quantitative_guidelines": {
+            "max_compression_ratio_per_stage": "r_p <= 4.0 (typically 2.5 to 3.5)",
+            "staging_matrix": {
+              "ratio_under_4": 1,
+              "ratio_4_to_16": 2,
+              "ratio_16_to_64": 3,
+              "ratio_64_to_256": 4
+            },
+            "equal_stage_ratio": "r_p_stage = (P_final / P_initial)^(1 / N_stages)",
+            "intercooler_pressure_drop": "2 psi (15 kPa / 0.14 bar)",
+            "intercooler_cool_temp": "Cool gas back down to 35 to 45 C (95 to 115 F) with cooling water."
+          },
+          "conditions_and_limitations": "Ensure knock-out drums are installed downstream of every intercooler to remove condensed liquid droplets before the next compression stage.",
+          "variations_and_discrepancies": "Seider Heuristic 36; Ulrich p. 577; Turton Table 11.10; Excel sheet 'Compressors and Vacuum'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 36",
+              "page": 3
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10, Rule 2",
+              "page": 383
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Compressors",
+              "page": 577
+            }
+          ],
+          "tags": [
+            "compressor staging",
+            "compression ratio",
+            "intercooling",
+            "knockout drum",
+            "gas compression"
+          ]
+        },
+        {
+          "id": "COMP-003",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "compressor_power_and_temperature_equations",
+          "rule": "Calculate theoretical adiabatic horsepower THp and exit temperature T_2 for gas compression from: THp = SCFM * [T_1 / (8130 * a)] * [(P_2 / P_1)^a - 1], and exit temperature: T_2 = T_1 * (P_2 / P_1)^a, where a = (k - 1) / k, with k = C_p / C_v, T in deg R, and SCFM at 60 F and 1 atm (379 SCF/lbmol). Shaft brake horsepower BHP = THp / eta_ad.",
+          "explanation_and_derivation": "Derived from isentropic expansion thermodynamics for an ideal gas. Polytropic or adiabatic efficiency accounts for internal fluid shear, turbulence, and blade losses.",
+          "quantitative_guidelines": {
+            "adiabatic_power_formula": "THp = SCFM * (T_1 / (8130 * a)) * ((P_2 / P_1)^a - 1)",
+            "latex_power": "\\text{THp} = \\text{SCFM} \\left(\\frac{T_1}{8,130 a}\\right) \\left[\\left(\\frac{P_2}{P_1}\\right)^a - 1\\right]",
+            "exit_temp_formula": "T_2 = T_1 * (P_2 / P_1)^a",
+            "latex_temp": "T_2 = T_1 \\left(\\frac{P_2}{P_1}\\right)^a",
+            "a_exponent": "a = (k - 1) / k = (C_p - C_v) / C_p",
+            "typical_k_values": "k ~ 1.4 for air/diatomics (a = 0.286); k ~ 1.25 to 1.30 for methane/hydrocarbons (a = 0.20 to 0.23).",
+            "adiabatic_efficiency": "eta_ad = 0.65 to 0.78 for centrifugal; 0.75 to 0.85 for reciprocating."
+          },
+          "conditions_and_limitations": "At high pressures (> 50 bar), real gas compressibility (Z) must be included: multiply power by Z_avg = (Z_1 + Z_2)/2.",
+          "variations_and_discrepancies": "Seider Heuristic 35; Turton Table 11.10; Excel sheet 'Compressors and Vacuum'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 35",
+              "page": 3
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "compressor power",
+            "adiabatic horsepower",
+            "discharge temperature",
+            "heat capacity ratio",
+            "sizing equation"
+          ]
+        },
+        {
+          "id": "VAC-001",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "air_inleakage_equation",
+          "rule": "Estimate ambient air inleakage into vacuum equipment from: w = k * V^0.667, where w is air inleakage in lb/hr, V is total equipment internal volume in ft3, and k is the pressure-dependent leakage factor: k = 0.20 for P > 90 torr; k = 0.15 for 21 to 89 torr; k = 0.10 for 3.1 to 20 torr; k = 0.051 for 1 to 3 torr.",
+          "explanation_and_derivation": "Air leaks through flanged joints, sight glasses, valve packings, and pump shaft seals. Because leak locations occur at perimeter seals rather than internal volume, inleakage scales with equipment surface area (V^(2/3)). At deeper vacuum, higher differential pressure drives higher critical sonic flow through microscopic crevices.",
+          "quantitative_guidelines": {
+            "inleakage_formula": "w = k * V^0.667",
+            "latex_formula": "w = k \\cdot V^{0.667}",
+            "k_factors": {
+              "P_greater_90_torr": 0.2,
+              "P_21_to_89_torr": 0.15,
+              "P_3_1_to_20_torr": 0.1,
+              "P_1_to_3_torr": 0.051
+            },
+            "metric_equivalent": "w [kg/h] = 0.4536 * k * (V [m3] * 35.315)^0.667"
+          },
+          "conditions_and_limitations": "Add 20% to 50% safety factor for agitator stuffing boxes, rotary sight glasses, or equipment with numerous flanged nozzle connections.",
+          "variations_and_discrepancies": "Seider Heuristic 44; Turton Table 11.10; Walas.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 44",
+              "page": 4
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10, Rule 5",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "vacuum inleakage",
+            "air leak equation",
+            "vacuum sizing",
+            "HEI standards",
+            "seals"
+          ]
+        },
+        {
+          "id": "VAC-002",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "vacuum_precondensers",
+          "rule": "If the temperature of gas sent to a vacuum system exceeds 100 F (38 C), install a pre-condenser using cooling water upstream of the vacuum unit. The gas leaving the condenser will be saturated at a dew point of 100 F at prevailing vacuum pressure.",
+          "explanation_and_derivation": "Volumetric flow rate under vacuum is massive. Condensing condensable organic or water vapors before the ejector/vacuum pump reduces volumetric loading by 80% to 95%, dramatically shrinking ejector size and motive steam consumption.",
+          "quantitative_guidelines": {
+            "temperature_cutoff": "Install pre-condenser if T_gas > 100 F (38 C)",
+            "condenser_exit_dew_point": "100 F (38 C) at prevailing vacuum pressure."
+          },
+          "conditions_and_limitations": "In deep vacuum (< 10-20 torr), water vapor will not condense at 38 C; chilled water or surface desublimation is required.",
+          "variations_and_discrepancies": "Seider Heuristic 45; Turton Table 11.10.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristic 45",
+              "page": 4
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10, Rule 6",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "precondenser",
+            "vacuum system",
+            "cooling water",
+            "condensable vapor",
+            "volumetric reduction"
+          ]
+        },
+        {
+          "id": "VAC-003",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "vacuum_equipment_selection",
+          "rule": "Specify vacuum producing machinery according to pressure and flow: 1. Liquid-ring vacuum pumps: for pressures down to 10 torr (13 mbar) and volumetric capacities up to 10,000 cfm (17,000 m3/h). 2. Steam-jet ejectors: for pressures down to 2 torr (2.7 mbar) and massive gas capacities up to 1,000,000 cfm (1,700,000 m3/h). Staging: 1 stage for 100 to 760 torr; 2 stages for 15 to 100 torr; 3 stages for 2 to 15 torr. A 3-stage steam ejector reaching 2 torr requires ~100 lb of 100 psig steam per lb of gas.",
+          "explanation_and_derivation": "Steam ejectors have zero moving parts, tolerate corrosive and dusty vapors, and have very low capital cost. However, thermodynamic efficiency is low (25-30%), requiring significant motive steam. Liquid-ring pumps have higher mechanical efficiency but require seal fluid cooling.",
+          "quantitative_guidelines": {
+            "liquid_ring_cutoff": "Down to 10 torr, flow < 10,000 cfm",
+            "steam_ejector_stages": {
+              "100_to_760_torr": "1 stage",
+              "15_to_100_torr": "2 stages with intercondenser",
+              "2_to_15_torr": "3 stages with intercondensers"
+            },
+            "steam_consumption_3_stage": "~100 lb steam (100 psig) per lb non-condensable gas at 2 torr",
+            "ejector_efficiency": "25% to 30% [Ulrich p. 577]"
+          },
+          "conditions_and_limitations": "Direct-contact barometric condensers between ejector stages generate large volumes of contaminated wastewater; surface condensers are preferred for hazardous organics.",
+          "variations_and_discrepancies": "Seider Heuristics 46 & 47; Ulrich p. 577; Turton Table 11.10.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 46 & 47",
+              "page": 4
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Ejectors",
+              "page": 577
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.10",
+              "page": 383
+            }
+          ],
+          "tags": [
+            "vacuum ejectors",
+            "liquid-ring pump",
+            "steam ejector",
+            "motive steam",
+            "vacuum staging"
+          ]
+        },
+        {
+          "id": "EXP-001",
+          "family": "gas_compression_and_vacuum",
+          "subfamily_or_equipment": "power_recovery_expanders",
+          "rule": "Evaluate power recovery expanders / turboexpanders when more than 20 to 100 kW (25 to 130 hp) of shaft power can be recovered from a high-pressure gas stream. Evaluate hydraulic pressure-recovery turbines for liquids when recoverable power exceeds 100 to 150 hp (75 to 110 kW). For lower recoveries, use throttling valves.",
+          "explanation_and_derivation": "Expanding high-pressure gas across a turbine produces isentropic work and deep cryogenic cooling. Expanding high-pressure liquid (e.g. rich amine from a high-pressure absorber) across a reverse-running pump/hydraulic turbine recovers 50% to 75% of pumping power.",
+          "quantitative_guidelines": {
+            "gas_expander_threshold": "> 20 hp (15 kW) [Seider] to > 100 kW [Ulrich]",
+            "liquid_turbine_threshold": "> 150 hp (110 kW) [Seider]",
+            "gas_power_formula": "THp = SCFM * (T_1 / (8130*a)) * [1 - (P_2 / P_1)^a]",
+            "liquid_power_formula": "THp = gpm * Delta_P_psi / 1,714",
+            "turboexpander_max_temp": "Radial flow turboexpanders limited to inlet T <= 550 C [Ulrich p. 575]."
+          },
+          "conditions_and_limitations": "Gas expansion across a turbine causes condensation (wet expansion); limit liquid condensation at turbine exhaust to < 10-15 wt% to avoid blade erosion.",
+          "variations_and_discrepancies": "Seider Heuristics 40, 41, 42; Ulrich p. 575; Turton Table 11.5; Excel sheet 'Drivers'.",
+          "references": [
+            {
+              "source": "Seider et al. (2010)",
+              "table_or_section": "Table 6.2, Heuristics 40-42",
+              "page": 4
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Power Recovery",
+              "page": 575
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.5",
+              "page": 379
+            }
+          ],
+          "tags": [
+            "turboexpander",
+            "power recovery",
+            "hydraulic turbine",
+            "isentropic expansion",
+            "throttling"
+          ]
+        }
+      ]
+    },
+    "pressure_vessels_and_storage": {
+      "name": "Pressure Vessels, Drums & Storage",
+      "description": "Rules for vessel orientation, L/D ratios, liquid holdup times, Souders-Brown gas-liquid separator sizing, liquid-liquid decanters, design pressure/temperature margins, and storage tanks.",
+      "rules": [
+        {
+          "id": "VES-001",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "drum_orientation_and_slenderness",
+          "rule": "Specify liquid surge drums as horizontal vessels; specify gas-liquid vapor separators, knockouts, and flash drums as vertical vessels. The optimum length-to-diameter ratio L/D is typically 3.0, with an allowable economic range of 2.5 to 5.0. Process drums commonly range up to 4 m (13 ft) in diameter and 20 m (65 ft) in length.",
+          "explanation_and_derivation": "Horizontal orientation provides a large liquid surface area and shallow liquid depth, ideal for decanting immiscible phases and liquid surge. Vertical orientation minimizes vessel footprint and provides maximum disengagement height between vapor inlet nozzle and mist eliminator pad to prevent re-entrainment.",
+          "quantitative_guidelines": {
+            "optimum_l_over_d": "3.0 (range 2.5 to 5.0)",
+            "max_standard_diameter": "4.0 m (13 ft) due to highway/rail transport limits; larger vessels require field welding",
+            "max_standard_length": "20 to 30 m (65 to 100 ft)",
+            "wall_thickness": "t = (P * R) / (S * E - 0.6 * P) + C_corrosion (ASME Boiler & Pressure Vessel Code Sec VIII)."
+          },
+          "conditions_and_limitations": "For very large gas-liquid separation flows, horizontal knockouts with wire mesh pads may be required if vertical diameter exceeds 4.5 m.",
+          "variations_and_discrepancies": "Turton Table 11.6; Ulrich p. 579; Excel sheet 'Drum Vessels'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.6, Rules 1 & 2",
+              "page": 380
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Process Vessels",
+              "page": 579
+            }
+          ],
+          "tags": [
+            "process vessels",
+            "drums",
+            "L/D ratio",
+            "orientation",
+            "vertical separator",
+            "horizontal drum"
+          ]
+        },
+        {
+          "id": "VES-002",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "liquid_holdup_times",
+          "rule": "Size liquid surge drums based on standard holdup/residence times: 1. Reflux drums (half-full): 5 minutes holdup based on overhead distillate plus reflux flow. 2. Drums feeding another distillation column: 5 to 10 minutes holdup to absorb upstream upsets. 3. Drums feeding a fired furnace/boiler: 30 minutes holdup to prevent dry-tube firing during unit trips. 4. Compressor suction knock-out drums: sized for 10 times the maximum expected liquid accumulation per minute. 5. Flash drums: 5 to 10 minutes (300 to 600 s) liquid residence time.",
+          "explanation_and_derivation": "Liquid holdup cushions downstream equipment against upstream control upsets, valve stiction, and feed fluctuations. A fired furnace requires generous holdup because losing liquid feed while burners are firing causes catastrophic tube rupture within minutes.",
+          "quantitative_guidelines": {
+            "reflux_drum_holdup": "5 minutes (half-full)",
+            "column_feed_holdup": "5 to 10 minutes",
+            "furnace_feed_holdup": "30 minutes",
+            "compressor_knockout_holdup": "10 minutes of liquid flow",
+            "flash_drum_residence_time": "300 to 600 s (5 to 10 min) [Ulrich p. 580]"
+          },
+          "conditions_and_limitations": "In batch or campaign transfers, design feed drums for 8 hours capacity (one shift) or 1,800 s minimum.",
+          "variations_and_discrepancies": "Turton Table 11.6; Ulrich p. 580; Excel sheet 'Drum Vessels'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.6, Rules 3, 4, 5",
+              "page": 380
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Process Vessels",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "holdup time",
+            "residence time",
+            "reflux drum",
+            "furnace feed",
+            "knockout drum",
+            "surge capacity"
+          ]
+        },
+        {
+          "id": "VES-003",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "gas_liquid_separator_velocity",
+          "rule": "Calculate maximum allowable vapor velocity in gas-liquid separators using the Souders-Brown equation: v_vapor = k * sqrt((rho_l - rho_v) / rho_v). Values of k: k = 0.35 ft/s (0.107 m/s) with a horizontal mesh de-entrainment pad; k = 0.167 ft/s (0.051 m/s) with a vertical mesh pad; k = 0.10 ft/s (0.030 m/s) without a mesh pad. Standard mesh pad thickness is 6 inches (150 mm), with 6 to 18 inches disengagement before the pad and 12 inches after.",
+          "explanation_and_derivation": "The Souders-Brown formula balances upward drag force on entrained liquid droplets against downward gravitational settling force. The k-factor accounts for droplet coalescence in knitted wire mesh pads.",
+          "quantitative_guidelines": {
+            "souders_brown_formula": "v_vapor = k * ((rho_l - rho_v) / rho_v)^0.5",
+            "latex_formula": "v_{\\text{vapor}} = k \\left(\\frac{\\rho_l - \\rho_v}{\\rho_v}\\right)^{0.5}",
+            "k_values_us": {
+              "horizontal_mesh_pad": "0.35 ft/s",
+              "vertical_mesh_pad": "0.167 ft/s",
+              "no_mesh_pad": "0.10 ft/s"
+            },
+            "k_values_metric": {
+              "horizontal_mesh_pad": "0.107 m/s",
+              "vertical_mesh_pad": "0.051 m/s",
+              "no_mesh_pad": "0.030 m/s"
+            },
+            "mesh_pad_thickness": "6 inches (150 mm)",
+            "disengagement_space": "6 to 18 inches before pad, 12 inches after pad to gas outlet."
+          },
+          "conditions_and_limitations": "At high operating pressures (> 40-50 bar), vapor density approaches liquid density and surface tension collapses; reduce k by 20% to 40% (GPSA guidelines).",
+          "variations_and_discrepancies": "Turton Table 11.6; Excel sheet 'Drum Vessels'; Seider Heuristic 53.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.6, Rules 7, 8, 9",
+              "page": 380
+            }
+          ],
+          "tags": [
+            "Souders-Brown",
+            "vapor velocity",
+            "demister pad",
+            "mesh de-entrainer",
+            "separator sizing"
+          ]
+        },
+        {
+          "id": "VES-004",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "liquid_liquid_decanters",
+          "rule": "Size horizontal liquid-liquid decanters / phase separators for gravity settling velocities of 2 to 3 inches/min (0.85 to 1.27 mm/s). Typical residence times are 300 to 600 s (5 to 10 min), with vessel L/D ratios of 2.0 to 4.0.",
+          "explanation_and_derivation": "Decantation relies on Stokes' law settling of dispersed droplets through a continuous immiscible phase. Because droplets are small (~100-200 microns) and density differences may be modest, horizontal plug flow with minimal turbulence is required.",
+          "quantitative_guidelines": {
+            "settling_velocity": "2 to 3 in/min (0.85 to 1.3 mm/s / ~0.001 m/s)",
+            "residence_time": "300 to 600 s (5 to 10 min) [Ulrich p. 580]",
+            "l_over_d_ratio": "2.0 to 4.0",
+            "overflow_weir": "Install adjustable overflow weir or siphon loop to maintain interfacial level."
+          },
+          "conditions_and_limitations": "If settling velocity is < 0.001 m/s (< 2.4 in/min), gravity settling drums are impractical; install coalescer mesh/vane packs, centrifugal separators, or chemical demulsifiers.",
+          "variations_and_discrepancies": "Turton Table 11.6; Ulrich p. 580; Excel sheet 'Drum Vessels'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.6, Rule 6",
+              "page": 380
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Settler Drums",
+              "page": 580
+            }
+          ],
+          "tags": [
+            "decanter",
+            "liquid-liquid separator",
+            "settling velocity",
+            "residence time",
+            "Stokes law"
+          ]
+        },
+        {
+          "id": "VES-005",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "pressure_vessel_design_margins",
+          "rule": "Set pressure vessel design pressure at 10% or 10 to 25 psi (0.69 to 1.7 bar) above maximum operating pressure, whichever is greater (maximum operating pressure is typically at least 25 psi / 1.7 bar above normal operating). Set design temperature 25 C (50 F) above maximum operating temperature for operation between -30 and 345 C (-22 to 653 F).",
+          "explanation_and_derivation": "Design margins prevent relief valves from simmering or lifting during normal operational swings. ASME Boiler and Pressure Vessel Code (Section VIII) requires formal design pressure/temperature envelopes for mechanical stress rating.",
+          "quantitative_guidelines": {
+            "design_pressure_margin": "Max(10% above max operating, 10 to 25 psi / 0.7 to 1.7 bar)",
+            "design_temperature_margin": "+25 C (+50 F / 77 F in Excel) above max operating temperature",
+            "minimum_design_pressure": "Standard atmospheric vessels rated for at least 50 psig (3.5 barg) if steam cleanout is possible",
+            "full_vacuum_rating": "Vessels operating under vacuum or susceptible to steam condensation must be designed for full external vacuum (15 psi external / 1.0 bar external)."
+          },
+          "conditions_and_limitations": "Above 345 C (653 F), allowable metal stress drops rapidly due to metal creep; design temperature margins increase to 50 C.",
+          "variations_and_discrepancies": "Turton Table 11.7; Sinnott & Towler Chapter 1; Excel sheet 'Pressure and Storage Vessels'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.7, Rules 1 & 2",
+              "page": 381
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.6",
+              "page": 20
+            }
+          ],
+          "tags": [
+            "design pressure",
+            "design temperature",
+            "safety margins",
+            "ASME Section VIII",
+            "overdesign factor"
+          ]
+        },
+        {
+          "id": "VES-006",
+          "family": "pressure_vessels_and_storage",
+          "subfamily_or_equipment": "bulk_storage_tanks",
+          "rule": "Specify 30 days of storage capacity for raw materials and finished products to ensure uninterrupted plant operation against supply chain or transport delays. Ensure bulk storage tanks are sized at least 1.5 times the size of the delivery transport vessel (tanker truck, railcar, barge). Day tanks are designed with ~8 hours capacity (one operating shift).",
+          "explanation_and_derivation": "Storage decouples continuous chemical processing from discrete shipping logistics. Sizing at >= 1.5x delivery vessel volume guarantees that a transport carrier can be unloaded immediately even if the tank is not completely empty.",
+          "quantitative_guidelines": {
+            "bulk_inventory_capacity": "30 days production/consumption",
+            "transport_unloading_ratio": "Tank volume >= 1.5 * Transport vessel volume",
+            "day_tank_capacity": "8 hours",
+            "internal_transfer_residence": "1,800 s (30 min) for feed tanks; allow 15 min per batch transfer shift [Ulrich p. 583]",
+            "atmospheric_storage_types": "Cone roof for non-volatile liquids; floating roof or internal blanket for volatile VOCs (P_vap > 1.5 psia / 0.1 bar)."
+          },
+          "conditions_and_limitations": "Pressurized gases (LPG, propylene) stored in pressurized bullets or spheres (Horton spheres) designed to API 620/650 standards.",
+          "variations_and_discrepancies": "Ulrich p. 583; Turton Table 11.7; Excel sheet 'Pressure and Storage Vessels'.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Storage Vessels",
+              "page": 583
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.7",
+              "page": 381
+            }
+          ],
+          "tags": [
+            "storage tanks",
+            "30 days inventory",
+            "floating roof",
+            "day tank",
+            "tank farm",
+            "API 650"
+          ]
+        }
+      ]
+    },
+    "mixing_and_agitation": {
+      "name": "Mixing & Agitation",
+      "description": "Rules for agitation intensity, volumetric power consumption (kW/m3, hp/1000 gal), impeller types and tip speeds, tank geometry, baffles, and gas spargers.",
+      "rules": [
+        {
+          "id": "MIX-001",
+          "family": "mixing_and_agitation",
+          "subfamily_or_equipment": "agitation_power_and_intensity",
+          "rule": "Specify agitation power based on process mixing intensity: 1. Mild blending of miscible liquids: 0.2 to 0.5 hp/1,000 gal (0.03 to 0.10 kW/m3). 2. Moderate reaction and heat transfer: 0.5 to 1.5 hp/1,000 gal (0.10 to 0.30 kW/m3) [Ulrich quotes 0.3 to 0.7 kW/m3 for miscible liquids]. 3. Intense agitation / solids suspension: 1.5 to 3.0 hp/1,000 gal (0.30 to 0.60 kW/m3). 4. Gas dispersion / heavy slurries: 4.0 to 10.0 hp/1,000 gal (0.80 to 2.0 kW/m3).",
+          "explanation_and_derivation": "Power per unit volume (P/V) determines turbulent kinetic energy dissipation rate (epsilon), which governs micro-mixing, droplet breakup in liquid-liquid systems, and boundary layer heat transfer at vessel walls.",
+          "quantitative_guidelines": {
+            "blending_miscible": "0.2 to 0.5 hp / 1,000 gal (0.03 - 0.10 kW/m3)",
+            "reaction_heat_transfer": "0.5 to 1.5 hp / 1,000 gal (0.10 - 0.30 kW/m3)",
+            "moderate_agitation_metric": "0.3 to 0.7 kW/m3 [Ulrich p. 578]",
+            "slurry_suspension": "1.5 to 3.0 hp / 1,000 gal (0.30 - 0.60 kW/m3)",
+            "gas_dispersion": "4.0 to 10.0 hp / 1,000 gal (0.80 - 2.0 kW/m3)",
+            "superficial_fluid_velocities": "Mild agitation: 0.10 to 0.20 ft/s (0.03 to 0.06 m/s); Intense: 0.70 to 1.0 ft/s (0.21 to 0.30 m/s)."
+          },
+          "conditions_and_limitations": "In non-Newtonian or highly viscous fluids (> 50-100 Pa s), turbine impellers only mix a cavern near the hub; use helical ribbon or anchor agitators.",
+          "variations_and_discrepancies": "Turton Table 11.17; Ulrich p. 578; Excel sheet 'Mixing'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.17",
+              "page": 390
+            },
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Mixers",
+              "page": 578
+            }
+          ],
+          "tags": [
+            "mixing",
+            "agitation power",
+            "kW/m3",
+            "HP/1000 gal",
+            "turbulent dissipation",
+            "superficial velocity"
+          ]
+        },
+        {
+          "id": "MIX-002",
+          "family": "mixing_and_agitation",
+          "subfamily_or_equipment": "impeller_types_and_dimensions",
+          "rule": "Select impeller types based on service: 1. Marine propellers: high speed (400 to 1750 rpm), axial flow, low shear; diameters seldom exceed 0.5 m. 2. Flat-blade turbines (Rushton turbines): high shear, radial flow, for gas dispersion and droplet breakup; diameters typically 0.3 to 0.5 times vessel diameter (D_impeller / D_vessel = 0.3 to 0.5), limited to ~3 m. 3. Hydrofoil impellers: high pumping efficiency for solids suspension at low power.",
+          "explanation_and_derivation": "Axial flow impellers maximize bulk circulation (pumping number N_q), making them energy-efficient for blending and solid suspension. Radial flat-blade turbines maximize turbulent shear (power number N_p = 5.0), required to shear gas bubbles or liquid droplets down to micron sizes.",
+          "quantitative_guidelines": {
+            "propeller_max_diameter": "0.5 m (20 inches) [Ulrich p. 578]",
+            "turbine_max_diameter": "3.0 m (10 ft) [Ulrich p. 578]",
+            "impeller_diameter_ratio": "D_impeller / D_vessel = 0.30 to 0.50 (typically 1/3)",
+            "tip_speeds": "Blending: 5 to 10 ft/s (1.5 to 3 m/s); Reaction/Suspension: 10 to 15 ft/s (3 to 4.5 m/s); Dispersion: 15 to 22 ft/s (4.5 to 6.7 m/s)."
+          },
+          "conditions_and_limitations": "Ensure shaft critical speed is at least 20% to 30% above operating speed to avoid resonance vibration.",
+          "variations_and_discrepancies": "Ulrich p. 578; Excel sheet 'Mixing'.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Mixers",
+              "page": 578
+            }
+          ],
+          "tags": [
+            "impeller selection",
+            "propeller",
+            "Rushton turbine",
+            "tip speed",
+            "power number"
+          ]
+        },
+        {
+          "id": "MIX-003",
+          "family": "mixing_and_agitation",
+          "subfamily_or_equipment": "tank_geometry_and_baffling",
+          "rule": "In cylindrical agitated vessels, standard geometry specifies: liquid height H_liq = 1.0 to 1.5 times vessel diameter; total vessel height H_tank = 1.5 to 2.0 times diameter. Install 4 vertical wall baffles with width W_b = D_vessel / 10 to D_vessel / 12 (typically 1/12 D) to suppress central surface vortexing and convert swirling flow into top-to-bottom circulation.",
+          "explanation_and_derivation": "Without baffles, fluid swirls as a solid body with very little relative velocity between fluid layers, pulling a deep surface air vortex that can unseat the impeller. Wall baffles disrupt circumferential momentum, forcing flow down the shaft and up the vessel walls.",
+          "quantitative_guidelines": {
+            "liquid_height_ratio": "H_liq / D_vessel = 1.0 to 1.5 [Ulrich p. 579]",
+            "vessel_height_ratio": "H_tank / D_vessel = 1.5 to 2.0 [Ulrich p. 579]",
+            "number_of_baffles": "4 vertical baffles spaced at 90 degrees",
+            "baffle_width": "W_b = D_vessel / 12 (or D / 10 for low-viscosity fluids)",
+            "baffle_wall_clearance": "Clearance from wall ~ 0.15 * W_b to prevent solids accumulation behind baffles."
+          },
+          "conditions_and_limitations": "In viscous liquids (> 10-20 Pa s), baffles cause stagnant dead zones behind them; unbaffled vessels or off-center shafts are preferred.",
+          "variations_and_discrepancies": "Ulrich p. 579; Excel sheet 'Mixing'.",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Mixers",
+              "page": 579
+            }
+          ],
+          "tags": [
+            "tank geometry",
+            "baffles",
+            "vortex suppression",
+            "liquid height",
+            "agitation"
+          ]
+        },
+        {
+          "id": "MIX-004",
+          "family": "mixing_and_agitation",
+          "subfamily_or_equipment": "gas_sparger_flow_rates",
+          "rule": "For gas sparging in corrosive or simple agitated vessels without mechanical impellers, specify gas rates per square meter of tank cross-section: 1. Mild agitation: 0.004 m3/(s m2) [0.8 cfm/ft2]. 2. Relatively complete agitation: 0.008 m3/(s m2) [1.6 cfm/ft2]. 3. Violent agitation: 0.02 m3/(s m2) [4.0 cfm/ft2].",
+          "explanation_and_derivation": "Rising gas bubbles pump surrounding liquid upward by buoyancy (airlift effect). While energy efficiency is lower than mechanical impellers, spargers avoid rotating shaft seals in highly toxic, corrosive, or high-pressure reactors.",
+          "quantitative_guidelines": {
+            "mild_agitation_gas_rate": "0.004 m3/(s m2)",
+            "complete_agitation_gas_rate": "0.008 m3/(s m2)",
+            "violent_agitation_gas_rate": "0.020 m3/(s m2)"
+          },
+          "conditions_and_limitations": "Sparging alone provides poor solids suspension for particles > 100 microns with settling velocity > 0.01 m/s.",
+          "variations_and_discrepancies": "Ulrich & Vasudevan Appendix C (Mixers, p. 578).",
+          "references": [
+            {
+              "source": "Ulrich & Vasudevan (2004)",
+              "table_or_section": "Appendix C, Mixers",
+              "page": 578
+            }
+          ],
+          "tags": [
+            "gas sparger",
+            "aeration",
+            "airlift mixing",
+            "gas-liquid contact",
+            "cross-section flow"
+          ]
+        }
+      ]
+    },
+    "materials_of_construction": {
+      "name": "Materials of Construction (MOC)",
+      "description": "Rules for selecting carbon steel, austenitic stainless steels, nickel alloys, titanium, and corrosion allowances.",
+      "rules": [
+        {
+          "id": "MOC-001",
+          "family": "materials_of_construction",
+          "subfamily_or_equipment": "carbon_steel",
+          "rule": "Carbon steel is the lowest cost and most common structural material for chemical plant equipment. It provides excellent resistance to dry gases, hydrocarbons, non-corrosive organic solvents, alkaline streams (pH > 8 to 14), and concentrated sulfuric acid (> 70 wt% at ambient temperatures). However, it has very poor resistance to dilute acids and strong chlorides, and exhibits brittle impact fracture below -29 C (-20 F) without Charpy V-notch impact testing.",
+          "explanation_and_derivation": "Carbon steel forms a protective passivating carbonate or oxide film in alkaline or non-aqueous media. In dilute acids, hydrogen evolution rapidly dissolves iron. Low temperatures cause a transition from ductile shear failure to brittle cleavage fracture (ductile-to-brittle transition).",
+          "quantitative_guidelines": {
+            "temperature_limit_low": "-29 C (-20 F) standard; requires impact-tested fine-grain steel down to -46 C (-50 F)",
+            "temperature_limit_high": "425 C (800 F) max, above which graphitization and severe creep occur",
+            "standard_corrosion_allowance": "1.5 to 3.0 mm (1/16 to 1/8 inch) added to calculated pressure wall thickness."
+          },
+          "conditions_and_limitations": "Never use carbon steel for moist acidic streams or when product iron contamination / discoloration cannot be tolerated.",
+          "variations_and_discrepancies": "Turton Table 11.4; Sinnott & Towler Section 1.5; Excel sheet 'MOC'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.4",
+              "page": 379
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.5",
+              "page": 19
+            }
+          ],
+          "tags": [
+            "materials of construction",
+            "carbon steel",
+            "corrosion allowance",
+            "ductile-brittle transition",
+            "MOC"
+          ]
+        },
+        {
+          "id": "MOC-002",
+          "family": "materials_of_construction",
+          "subfamily_or_equipment": "austenitic_stainless_steels",
+          "rule": "Specify austenitic stainless steels (Type 304, 316, 316L) for nitric acid, organic acids, food, pharmaceutical, and high-purity applications. Type 316 (containing 2-3% Molybdenum) provides superior resistance to localized pitting and crevice corrosion. CRITICAL WARNING: Austenitic stainless steels suffer catastrophic stress corrosion cracking (SCC) in the presence of trace chloride ions at temperatures exceeding 60 C (140 F); use duplex stainless steels (e.g. 2205) or nickel alloys instead.",
+          "explanation_and_derivation": "Stainless steel passivity depends on a microscopic, self-healing chromium oxide (Cr2O3) film. Chloride ions penetrate and break down this passive layer locally; combined with residual tensile stresses, transgranular micro-cracks propagate rapidly, causing sudden catastrophic brittle failure.",
+          "quantitative_guidelines": {
+            "chloride_scc_threshold": "> 60 C (140 F) with Cl- concentrations as low as 10 to 50 ppm",
+            "type_304_composition": "18% Cr, 8% Ni",
+            "type_316_composition": "16% Cr, 10% Ni, 2-3% Mo",
+            "low_carbon_grade": "Use 'L' grades (304L, 316L, C <= 0.03%) for welded construction to prevent intergranular sensitization / chromium carbide precipitation."
+          },
+          "conditions_and_limitations": "Do not insulate stainless steel with chloride-bearing insulation without waterproof barriers (ASTM C795).",
+          "variations_and_discrepancies": "Turton Table 11.4; Sinnott & Towler Section 1.5; Excel sheet 'MOC'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.4",
+              "page": 379
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.5",
+              "page": 19
+            }
+          ],
+          "tags": [
+            "stainless steel",
+            "316L",
+            "stress corrosion cracking",
+            "chlorides",
+            "sensitization",
+            "MOC"
+          ]
+        },
+        {
+          "id": "MOC-003",
+          "family": "materials_of_construction",
+          "subfamily_or_equipment": "nickel_alloys_and_titanium",
+          "rule": "Specify specialized corrosion-resistant alloys for extreme chemical environments: 1. Monel (70Ni-30Cu): excellent for hydrofluoric acid (HF), seawater, and non-oxidizing salts. 2. Inconel (Ni-Cr-Fe): for high-temperature oxidation (> 800 C) and carburizing atmospheres. 3. Hastelloy (Ni-Mo-Cr, e.g. C-276): superior resistance to hot hydrochloric acid, wet chlorine, and mixed reducing/oxidizing acids. 4. Titanium: outstanding resistance to wet chlorine gas, chlorates, and seawater; DANGER: Titanium ignites and burns pyrophorically in dry chlorine gas (moisture content must exceed 1.5% to maintain passivity).",
+          "explanation_and_derivation": "Nickel forms exceptionally stable passive complexes in aggressive acidic and alkaline regimes where iron-based lattices dissolve. Titanium develops a rock-hard titanium dioxide (TiO2) film that resists chlorides but requires trace water molecules to self-repair.",
+          "quantitative_guidelines": {
+            "titanium_moisture_limit": "Minimum 1.5 to 2.0 wt% H2O required in wet chlorine to prevent pyrophoric combustion",
+            "hastelloy_c276": "Resists HCl at all concentrations up to 50 C, and boiling dilute HCl",
+            "monel_hf_acid": "Industry standard for HF alkylation units."
+          },
+          "conditions_and_limitations": "High raw material cost (Hastelloy is 10-15x more expensive than carbon steel); use clad plate or loose linings where feasible.",
+          "variations_and_discrepancies": "Turton Table 11.4; Sinnott & Towler Section 1.5; Excel sheet 'MOC'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.4",
+              "page": 379
+            },
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.5",
+              "page": 19
+            }
+          ],
+          "tags": [
+            "nickel alloys",
+            "Hastelloy",
+            "Monel",
+            "Inconel",
+            "Titanium",
+            "chlorine safety",
+            "MOC"
+          ]
+        },
+        {
+          "id": "MOC-004",
+          "family": "materials_of_construction",
+          "subfamily_or_equipment": "corrosion_allowance_guidelines",
+          "rule": "Specify design corrosion allowances based on fluid corrosivity: 1. Non-corrosive hydrocarbons and refined chemicals: 1.5 mm (1/16 inch). 2. Mildly corrosive process fluids and boiler steam: 3.0 mm (1/8 inch). 3. Highly corrosive environments: if required corrosion allowance exceeds 6.0 mm (1/4 inch) over a 20-year design life, do not add steel thickness; upgrade metallurgy to a corrosion-resistant alloy, cladding, or polymer/glass lining.",
+          "explanation_and_derivation": "Adding carbon steel thickness beyond 6 mm produces heavy, difficult-to-weld vessels without guaranteeing integrity against localized pitting or stress corrosion. Clad plate (e.g. 3 mm 316L explosion-bonded to 25 mm carbon steel) provides both structural strength and corrosion resistance at reasonable cost.",
+          "quantitative_guidelines": {
+            "clean_service_allowance": "1.5 mm (0.0625 in)",
+            "standard_service_allowance": "3.0 mm (0.125 in)",
+            "max_economic_allowance": "6.0 mm (0.250 in)",
+            "cladding_thickness": "Typically 2.5 to 3.5 mm alloy on carbon steel backing."
+          },
+          "conditions_and_limitations": "Heat exchanger tubes are thin-walled (1.2 to 2.1 mm / 18 to 14 BWG); no corrosion allowance is possible; tubes must be made of corrosion-resistant material.",
+          "variations_and_discrepancies": "Sinnott & Towler Section 1.5; Turton Table 11.4; Excel sheet 'MOC'.",
+          "references": [
+            {
+              "source": "Sinnott & Towler (2013)",
+              "table_or_section": "Section 1.5",
+              "page": 19
+            },
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.4",
+              "page": 379
+            }
+          ],
+          "tags": [
+            "corrosion allowance",
+            "cladding",
+            "design life",
+            "ASME",
+            "metallurgy"
+          ]
+        }
+      ]
+    },
+    "physical_properties_and_shortcuts": {
+      "name": "Physical Properties & Shortcut Approximations",
+      "description": "Rules of thumb and benchmark values for liquid/gas densities, heat capacities, latent heats, Trouton's rule, and viscosities.",
+      "rules": [
+        {
+          "id": "PROP-001",
+          "family": "physical_properties_and_shortcuts",
+          "subfamily_or_equipment": "density_approximations",
+          "rule": "For order-of-magnitude preliminary design and verification: 1. Water density: ~1,000 kg/m3 (62.4 lb/ft3 / 8.33 lb/gal). 2. Typical organic liquids / hydrocarbons: 700 to 900 kg/m3 (44 to 56 lb/ft3 / SG = 0.70 to 0.90). 3. Chlorinated solvents: 1,200 to 1,500 kg/m3 (75 to 94 lb/ft3 / SG = 1.2 to 1.5). 4. Atmospheric air / ideal gas at 20 C: 1.2 kg/m3 (0.075 lb/ft3). Gas density scales with ideal gas law: rho_gas = (P * MW) / (R * T).",
+          "explanation_and_derivation": "Liquid hydrocarbons have lower density than water due to open tetrahedral carbon chains; halogenated hydrocarbons are denser due to heavy halogen atomic weights.",
+          "quantitative_guidelines": {
+            "water_density": "1,000 kg/m3 (62.4 lb/ft3)",
+            "hydrocarbon_density_range": "700 to 900 kg/m3 (SG 0.7 - 0.9)",
+            "chlorinated_solvent_range": "1,200 to 1,500 kg/m3 (SG 1.2 - 1.5)",
+            "air_ambient_density": "1.20 kg/m3 at 20 C, 1 atm",
+            "ideal_gas_density_formula": "rho = (P * MW) / (8.314 * T_K)  [kg/m3]"
+          },
+          "conditions_and_limitations": "Near the thermodynamic critical point (T_r > 0.9), liquid density drops sharply and compressibility expands.",
+          "variations_and_discrepancies": "Turton Table 11.2(a); Excel sheet 'Physical Properties'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.2(a)",
+              "page": 376
+            }
+          ],
+          "tags": [
+            "density",
+            "specific gravity",
+            "ideal gas law",
+            "order of magnitude",
+            "physical properties"
+          ]
+        },
+        {
+          "id": "PROP-002",
+          "family": "physical_properties_and_shortcuts",
+          "subfamily_or_equipment": "heat_capacity_approximations",
+          "rule": "Use shortcut heat capacities (C_p) for rapid thermal checks: 1. Liquid water: 4.18 kJ/(kg K) [1.0 Btu/(lb F)]. 2. Typical organic liquids: 1.5 to 2.5 kJ/(kg K) [0.35 to 0.60 Btu/(lb F)] (roughly half that of water). 3. Steam: ~2.0 kJ/(kg K) [0.48 Btu/(lb F)]. 4. Air and diatomic gases: ~1.0 kJ/(kg K) [0.24 Btu/(lb F)]. 5. Solid minerals / metals: 0.4 to 0.9 kJ/(kg K) [0.10 to 0.22 Btu/(lb F)].",
+          "explanation_and_derivation": "Water has an exceptionally high heat capacity due to extensive intermolecular hydrogen bonding networks. Organic liquids lack this cohesive hydrogen-bonding lattice and therefore require only ~40-60% of the thermal energy per kilogram to achieve the same temperature rise.",
+          "quantitative_guidelines": {
+            "water_cp": "4.18 kJ/(kg C) [1.0 Btu/(lb F)]",
+            "organic_liquids_cp": "1.5 to 2.5 kJ/(kg C) [0.35 - 0.60 Btu/(lb F)]",
+            "steam_cp": "2.0 kJ/(kg C) [0.48 Btu/(lb F)]",
+            "air_gas_cp": "1.0 kJ/(kg C) [0.24 Btu/(lb F)]",
+            "typical_minerals_metals": "0.5 to 0.9 kJ/(kg C)"
+          },
+          "conditions_and_limitations": "Heat capacities rise significantly with temperature; use polynomial temperature correlations for accurate high-temperature exchanger design.",
+          "variations_and_discrepancies": "Turton Table 11.2(a); Excel sheet 'Physical Properties'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.2(a)",
+              "page": 376
+            }
+          ],
+          "tags": [
+            "heat capacity",
+            "Cp",
+            "thermal balance",
+            "enthalpy",
+            "physical properties"
+          ]
+        },
+        {
+          "id": "PROP-003",
+          "family": "physical_properties_and_shortcuts",
+          "subfamily_or_equipment": "latent_heat_and_troutons_rule",
+          "rule": "Estimate latent heat of vaporization (lambda): 1. Water at 1 atm: ~2,260 kJ/kg (970 Btu/lb). 2. Typical organic solvents and hydrocarbons: 250 to 400 kJ/kg (110 to 175 Btu/lb) (roughly 1/6 to 1/8 that of water). 3. Estimate molar heat of vaporization for non-polar liquids using Trouton's Rule: Delta H_vap / T_b ~ 88 J/(mol K) [21 cal/(mol K)], where T_b is normal boiling point in Kelvin.",
+          "explanation_and_derivation": "Trouton's rule reflects the nearly constant entropy change of vaporization (Delta S_vap ~ 88 J/(mol K)) when an unordered liquid expands into an ideal gas. Highly hydrogen-bonded fluids (water, alcohols, carboxylic acids) have higher Delta S_vap (~105-115 J/(mol K)).",
+          "quantitative_guidelines": {
+            "water_latent_heat": "2,257 kJ/kg (970.3 Btu/lb) at 100 C",
+            "organic_latent_heat_range": "250 to 400 kJ/kg (110 to 175 Btu/lb)",
+            "trouton_constant": "Delta_H_vap / T_b ~ 88 J / (mol K)",
+            "latex_formula": "\\frac{\\Delta H_{\\text{vap}}}{T_b} \\approx 88\\ \\frac{\\text{J}}{\\text{mol}\\cdot\\text{K}} \\quad (21\\ \\text{cal}/(\\text{mol}\\cdot\\text{K}))"
+          },
+          "conditions_and_limitations": "Latent heat decreases with temperature, vanishing to zero at the thermodynamic critical temperature (Watson correlation: Delta H_2 = Delta H_1 * ((1 - T_r2)/(1 - T_r1))^0.38).",
+          "variations_and_discrepancies": "Turton Table 11.2(a); Excel sheet 'Physical Properties'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.2(a)",
+              "page": 376
+            }
+          ],
+          "tags": [
+            "latent heat",
+            "Trouton rule",
+            "vaporization",
+            "Watson correlation",
+            "physical properties"
+          ]
+        },
+        {
+          "id": "PROP-004",
+          "family": "physical_properties_and_shortcuts",
+          "subfamily_or_equipment": "viscosity_approximations",
+          "rule": "Shortcut viscosity benchmarks: 1. Water at 20 C: 1.0 cP (1.0 mPa s = 0.001 Pa s = 0.000672 lb/(ft s)). 2. Light liquid hydrocarbons: 0.2 to 0.8 cP. 3. Viscous organics / light oils: 2.0 to 10 cP. 4. Heavy fuel oils / polymers: 50 to 1,000+ cP. 5. Common gases at atmospheric pressure: 0.01 to 0.02 cP (10 to 20 micro-Pa s). Liquid viscosity decreases exponentially with temperature (Andrade equation); gas viscosity increases with temperature (mu_gas ~ T^0.7).",
+          "explanation_and_derivation": "In liquids, momentum transfer occurs across intermolecular potential wells that are disrupted by thermal kinetic motion (viscosity drops with T). In gases, viscosity arises from molecular collisions, whose frequency and momentum transfer increase with molecular thermal velocity (viscosity rises with T).",
+          "quantitative_guidelines": {
+            "water_viscosity": "1.00 cP at 20 C; 0.28 cP at 100 C",
+            "gas_viscosity_range": "0.010 to 0.020 cP (0.00001 to 0.00002 Pa s)",
+            "light_solvent_viscosity": "0.3 to 0.6 cP (e.g. hexane, acetone, benzene)",
+            "centipoise_conversion": "1 cP = 1 mPa s = 0.001 Pa s = 2.42 lb/(ft hr)"
+          },
+          "conditions_and_limitations": "Ensure fluid shear behavior is Newtonian before applying standard Reynolds number equations; non-Newtonian slurries require rheometry.",
+          "variations_and_discrepancies": "Turton Table 11.2(a) & 11.2(b); Excel sheet 'Physical Properties'.",
+          "references": [
+            {
+              "source": "Turton (2012)",
+              "table_or_section": "Table 11.2(a), Table 11.2(b)",
+              "page": 376
+            }
+          ],
+          "tags": [
+            "viscosity",
+            "centipoise",
+            "temperature dependence",
+            "Newtonian",
+            "fluid properties"
+          ]
+        }
+      ]
+    }
+  }
+}
