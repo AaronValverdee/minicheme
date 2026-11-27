@@ -1,10 +1,9 @@
-"""Automated test suite for Minicheme 2.0 CLI, workflow rules, heuristics engine, JS parity, and HTTP server."""
+"""Automated test suite for Minicheme CLI, Red/Blue/Green Douglas workflow, heuristics engine, JS parity, and HTTP server."""
 
 from __future__ import annotations
 
 import io
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -53,45 +52,56 @@ class TestMinichemeWorkflow(unittest.TestCase):
         # Token optimization check: compact briefing stays well under 3,500 chars (~800 tokens)
         self.assertLess(len(out), 3500)
 
+        # Freshly initialized blocks are all pending (BP-01 ready, downstream locked)
+        board = minicheme.load_process(self.pfile)
+        bmap = minicheme.block_map(board)
+        self.assertEqual(minicheme.view_state(bmap["BP-01"], bmap), "pending")
+        self.assertEqual(minicheme.view_state(bmap["RX-01"], bmap), "locked")
+
     def test_douglas_hierarchy_gating_and_cycles(self):
-        # Cannot start SP-01 while upstream blocks are unfinished
+        # Cannot start SP-01 while upstream blocks are unsolved
         code, _, err = run_cli("start", "SP-01", "-p", str(self.proc_dir))
         self.assertNotEqual(code, 0)
-        self.assertIn("blocked by unfinished dependency", err)
+        self.assertIn("locked (Red) by unsolved dependency", err)
 
         # Reject cycle BP-01 -> RX-01
         code, _, err = run_cli("depend", "BP-01", "RX-01", "-p", str(self.proc_dir))
         self.assertNotEqual(code, 0)
         self.assertIn("cycle", err.lower())
 
-    def test_heuristics_search_and_validation(self):
+    def test_sequential_progression_and_heuristic_validation(self):
         code, out, err = run_cli("heuristics", "--search", "reflux", "--limit", "4")
         self.assertEqual(code, 0, err)
         self.assertIn("DIST-004", out)
 
-        # Advance to RX-01 using YOLO to test RX-01 strict heuristic validation
-        run_cli("yolo", "RX-01", "-p", str(self.proc_dir))
+        # Sequential progression: finish moves directly to solved (Green) and unlocks next Douglas block
         for bid in ("BP-01", "BP-02"):
             self.assertEqual(run_cli("start", bid, "-p", str(self.proc_dir))[0], 0)
-            payload = json.dumps({"proposal": f"Solved {bid}", "rationale": "First principles.", "heuristics": [{"id": "PROC-002", "applied": "Continuous"}]})
-            self.assertEqual(run_cli("finish", bid, "-p", str(self.proc_dir), "--stdin", stdin_text=payload)[0], 0)
+            payload = json.dumps({"findings": f"Documented {bid} from bibliography.", "rationale": "First principles.", "heuristics": [{"id": "PROC-002", "applied": "Continuous"}]})
+            code, out, err = run_cli("finish", bid, "-p", str(self.proc_dir), "--stdin", stdin_text=payload)
+            self.assertEqual(code, 0, err)
+            self.assertIn("-> solved (Green)", out)
 
-        self.assertEqual(run_cli("start", "RX-01", "-p", str(self.proc_dir))[0], 0)
+        # RX-01 is now unlocked; start turns it Blue (processing)
+        code, out, err = run_cli("start", "RX-01", "-p", str(self.proc_dir))
+        self.assertEqual(code, 0, err)
+        self.assertIn("processing (Blue", out)
+
         # Missing heuristic on RX-01 must fail
-        bad_no_h = json.dumps({"proposal": "Exothermic", "rationale": "ΔH = -37 kJ/mol"})
+        bad_no_h = json.dumps({"findings": "Exothermic", "rationale": "ΔH = -37 kJ/mol"})
         code, _, err = run_cli("finish", "RX-01", "-p", str(self.proc_dir), "--stdin", stdin_text=bad_no_h)
         self.assertNotEqual(code, 0)
         self.assertIn("heuristic", err.lower())
 
         # Hallucinated heuristic ID must fail
-        bad_id = json.dumps({"proposal": "Exothermic", "rationale": "ΔH = -37 kJ/mol", "heuristics": [{"id": "REACT-999", "applied": "Fake"}]})
+        bad_id = json.dumps({"findings": "Exothermic", "rationale": "ΔH = -37 kJ/mol", "heuristics": [{"id": "REACT-999", "applied": "Fake"}]})
         code, _, err = run_cli("finish", "RX-01", "-p", str(self.proc_dir), "--stdin", stdin_text=bad_id)
         self.assertNotEqual(code, 0)
         self.assertIn("Unknown heuristic ID", err)
 
-        # Valid heuristic auto-hydrates summary & source and moves RX-01 (YOLO target) to review
+        # Valid heuristic auto-hydrates summary & source and moves RX-01 directly to solved (Green)
         good = json.dumps({
-            "proposal": "Moderately exothermic liquid-phase synthesis.",
+            "findings": "Moderately exothermic liquid-phase synthesis per reference.",
             "rationale": "ΔT_ad = 42.4 °C with C4 diluent heat sink.",
             "parameters": [{"name": "ΔT_ad", "value": "42.4", "unit": "°C", "note": "C4 inerts"}],
             "heuristics": [{"id": "REACT-004", "applied": "C4 inerts absorb reaction heat."}],
@@ -99,46 +109,56 @@ class TestMinichemeWorkflow(unittest.TestCase):
         })
         code, out, err = run_cli("finish", "RX-01", "-p", str(self.proc_dir), "--stdin", stdin_text=good)
         self.assertEqual(code, 0, err)
-        self.assertIn("-> review", out)
+        self.assertIn("-> solved (Green)", out)
 
         board = minicheme.load_process(self.pfile)
-        rx1 = minicheme.block_map(board)["RX-01"]
-        self.assertEqual(rx1["state"], "review")
+        bmap = minicheme.block_map(board)
+        rx1 = bmap["RX-01"]
+        self.assertEqual(rx1["state"], "solved")
         self.assertTrue(rx1["heuristics"][0]["source"])
         self.assertTrue(rx1["heuristics"][0]["summary"])
+        # RX-02 is automatically unlocked and ready for the agent
+        self.assertEqual(minicheme.view_state(bmap["RX-02"], bmap), "pending")
 
-    def test_ask_answer_and_sendback_loop(self):
+    def test_block_provide_and_reopen_loop(self):
         self.assertEqual(run_cli("start", "BP-01", "-p", str(self.proc_dir))[0], 0)
-        code, _, err = run_cli(
-            "ask", "BP-01", "What purity spec is required?",
+        code, out, err = run_cli(
+            "block", "BP-01", "Product purity spec is missing from user input and bibliography.",
             "--missing", "Product purity",
-            "--why", "Sets column stages",
-            "--baseline", "99.9 wt%",
+            "--why", "Sets column stages and recycle load",
+            "--baseline", "Not specified in references",
             "-p", str(self.proc_dir),
         )
         self.assertEqual(code, 0, err)
+        self.assertIn("Blocked BP-01 (Red", out)
 
-        # `next` must stop and surface the question
+        # State returns to pending with view_state == blocked (Red)
+        board = minicheme.load_process(self.pfile)
+        bmap = minicheme.block_map(board)
+        self.assertEqual(bmap["BP-01"]["state"], "pending")
+        self.assertEqual(minicheme.view_state(bmap["BP-01"], bmap), "blocked")
+
+        # `next` must STOP and report Red Blocked
         code, out, _ = run_cli("next", "-p", str(self.proc_dir))
         self.assertEqual(code, 0)
-        self.assertIn("STOP — Waiting for human answer", out)
+        self.assertIn("STOP — BLOCKED (RED)", out)
 
-        # Cannot finish while question is unanswered
-        payload = json.dumps({"proposal": "Continuous 10,000 t/yr"})
+        # Cannot finish while blocked due to missing info
+        payload = json.dumps({"findings": "Continuous 10,000 t/yr at 99.9 wt% spec."})
         code, _, err = run_cli("finish", "BP-01", "-p", str(self.proc_dir), "--stdin", stdin_text=payload)
         self.assertNotEqual(code, 0)
-        self.assertIn("unanswered question", err)
+        self.assertIn("blocked (Red) with missing information", err)
 
-        # Answer clears waiting state -> finish succeeds -> review
-        self.assertEqual(run_cli("answer", "BP-01", "Use 99.9 wt% MTBE.", "-p", str(self.proc_dir))[0], 0)
+        # Team provides missing info -> unblocks -> finish succeeds -> solved (Green)
+        self.assertEqual(run_cli("provide", "BP-01", "Use 99.9 wt% MTBE.", "-p", str(self.proc_dir))[0], 0)
         code, out, err = run_cli("finish", "BP-01", "-p", str(self.proc_dir), "--stdin", stdin_text=payload)
         self.assertEqual(code, 0, err)
-        self.assertIn("-> review", out)
+        self.assertIn("-> solved (Green)", out)
 
-        # Human sends back with feedback -> `next` surfaces feedback
-        self.assertEqual(run_cli("accept", "BP-01", "--send-back", "Add 50% turndown constraint", "-p", str(self.proc_dir))[0], 0)
+        # Engineering team reopens with new constraint -> back to pending (Red) & `next` surfaces team note
+        self.assertEqual(run_cli("reopen", "BP-01", "-m", "Add 50% turndown constraint", "-p", str(self.proc_dir))[0], 0)
         code, out, _ = run_cli("next", "-p", str(self.proc_dir))
-        self.assertIn("REVIEW FEEDBACK TO ADDRESS", out)
+        self.assertIn("TEAM NOTE TO ADDRESS", out)
         self.assertIn("50% turndown", out)
 
     def test_props_and_exports(self):
@@ -166,6 +186,9 @@ class TestMinichemeWorkflow(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertIn("0 errors", out)
 
+        board = minicheme.load_process(ex1)
+        self.assertTrue(all(b["state"] == "solved" for b in board["blocks"]))
+
         if not shutil.which("node"):
             self.skipTest("node not installed")
 
@@ -174,7 +197,6 @@ class TestMinichemeWorkflow(unittest.TestCase):
         start = html_text.index("const VALID_STATES =")
         end = html_text.index("function blockMap(board)")
         js_core = html_text[start:end]
-        board_json = ex1.read_text(encoding="utf-8")
         script = (
             js_core
             + "\nconst fs = require('fs');\n"
@@ -182,7 +204,7 @@ class TestMinichemeWorkflow(unittest.TestCase):
             + "process.stdout.write(serializeBoard(b));\n"
         )
         res = subprocess.run(["node", "-e", script], capture_output=True, text=True, check=True, encoding="utf-8")
-        py_out = minicheme.dumps(minicheme.load_process(ex1))
+        py_out = minicheme.dumps(board)
         self.assertEqual(res.stdout, py_out)
 
 
@@ -216,6 +238,7 @@ class TestMinichemeServer(unittest.TestCase):
             boards = json.loads(r.read())["boards"]
             self.assertEqual(len(boards), 1)
             slug = boards[0]["slug"]
+            self.assertIn("solved", boards[0])
 
         # GET /<slug>/ serves minicheme.html (200 OK, no redirect loop)
         with self._get(f"/{slug}/") as r:

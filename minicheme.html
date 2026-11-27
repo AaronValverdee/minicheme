@@ -24,14 +24,13 @@
   --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.04);
   --shadow-lg: 0 12px 32px rgba(15,23,42,0.14);
 
-  --st-proposed: #8b5cf6; --st-proposed-bg: #f5f3ff; --st-proposed-bd: #c4b5fd;
-  --st-blocked: #64748b;  --st-blocked-bg: #f1f5f9;  --st-blocked-bd: #cbd5e1;
-  --st-todo: #2563eb;     --st-todo-bg: #eff6ff;     --st-todo-bd: #93c5fd;
-  --st-doing: #ea580c;    --st-doing-bg: #fff7ed;    --st-doing-bd: #fdba74;
-  --st-waiting: #6d28d9;  --st-waiting-bg: #ede9fe;  --st-waiting-bd: #a78bfa;
-  --st-review: #db2777;   --st-review-bg: #fdf2f8;   --st-review-bd: #f472b6;
-  --st-done: #16a34a;     --st-done-bg: #f0fdf4;     --st-done-bd: #86efac;
-  --yolo: #f59e0b;        --yolo-bg: #fef3c7;        --yolo-text: #92400e;
+  --st-blocked: #dc2626;    --st-blocked-bg: #fef2f2;    --st-blocked-bd: #ef4444;
+  --st-locked: #b91c1c;     --st-locked-bg: #fff5f5;     --st-locked-bd: #fca5a5;
+  --st-pending: #e11d48;    --st-pending-bg: #fff1f2;    --st-pending-bd: #fda4af;
+  --st-processing: #2563eb; --st-processing-bg: #eff6ff; --st-processing-bd: #60a5fa;
+  --st-solved: #16a34a;     --st-solved-bg: #f0fdf4;     --st-solved-bd: #86efac;
+  --st-done: #16a34a;
+  --warn: #f59e0b;          --warn-bg: #fef3c7;          --warn-text: #92400e;
 
   --stage-teal: #0d9488;
   --stage-blue: #2563eb;
@@ -61,14 +60,13 @@
   --shadow: 0 2px 6px rgba(0,0,0,0.35);
   --shadow-lg: 0 16px 40px rgba(0,0,0,0.55);
 
-  --st-proposed: #a78bfa; --st-proposed-bg: #221a3b; --st-proposed-bd: #5b4399;
-  --st-blocked: #94a3b8;  --st-blocked-bg: #1a202e;  --st-blocked-bd: #334155;
-  --st-todo: #60a5fa;     --st-todo-bg: #14223b;     --st-todo-bd: #2a4c82;
-  --st-doing: #fb923c;    --st-doing-bg: #2e1d12;    --st-doing-bd: #9a4412;
-  --st-waiting: #c4b5fd;  --st-waiting-bg: #261b47;  --st-waiting-bd: #7c3aed;
-  --st-review: #f472b6;   --st-review-bg: #33162a;   --st-review-bd: #9d2960;
-  --st-done: #4ade80;     --st-done-bg: #11291c;     --st-done-bd: #21663e;
-  --yolo: #fbbf24;        --yolo-bg: #3b2a08;        --yolo-text: #fde68a;
+  --st-blocked: #f87171;    --st-blocked-bg: #361318;    --st-blocked-bd: #ef4444;
+  --st-locked: #fca5a5;     --st-locked-bg: #261419;     --st-locked-bd: #7f1d1d;
+  --st-pending: #fb7185;    --st-pending-bg: #2d141c;    --st-pending-bd: #be123c;
+  --st-processing: #60a5fa; --st-processing-bg: #122342; --st-processing-bd: #3b82f6;
+  --st-solved: #4ade80;     --st-solved-bg: #11291c;     --st-solved-bd: #21663e;
+  --st-done: #4ade80;
+  --warn: #fbbf24;          --warn-bg: #3b2a08;          --warn-text: #fde68a;
 }
 
 * { box-sizing: border-box; }
@@ -79,31 +77,31 @@ code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2);
 
 /* Header */
 header {
-  height: 52px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  height: 52px; display: flex; align-items: center; gap: 6px; padding: 0 10px;
   background: var(--surface); border-bottom: 1px solid var(--border); z-index: 30; position: relative;
 }
-.brand { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; }
+.brand { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; flex-shrink: 0; }
 .brand-logo {
   width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #4f46e5, #0d9488);
   color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
 }
 .proc-btn {
-  display: flex; align-items: center; gap: 6px; border: 1px solid transparent; background: transparent;
-  padding: 5px 8px; border-radius: 8px; font-weight: 600; max-width: 240px;
+  display: flex; align-items: center; gap: 5px; border: 1px solid transparent; background: transparent;
+  padding: 5px 7px; border-radius: 8px; font-weight: 600; max-width: 190px; min-width: 0;
 }
 .proc-btn:hover { background: var(--surface-2); border-color: var(--border); }
 .proc-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .pct-pill {
-  display: flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 99px;
-  background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--text-2);
+  display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 99px;
+  background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--text-2); flex-shrink: 0; white-space: nowrap;
 }
-.pct-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-done); }
+.pct-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-solved); }
 
 .filter-pills { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
 .fpill {
   display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent;
-  background: transparent; padding: 3px 7px; border-radius: 99px; font-size: 11.5px; color: var(--text-2);
+  background: transparent; padding: 2px 6px; border-radius: 99px; font-size: 11.5px; color: var(--text-2);
   white-space: nowrap; transition: background 0.12s, border-color 0.12s;
 }
 .fpill:hover { background: var(--surface-2); }
@@ -112,38 +110,33 @@ header {
 .fpill b { font-weight: 700; color: var(--text); }
 .fpill.active b { color: var(--accent-text); }
 
-.yolo-pill {
-  display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 99px;
-  background: var(--yolo-bg); color: var(--yolo-text); font-weight: 700; font-size: 12px; border: 1px solid var(--yolo);
-}
+.spacer { flex: 1; min-width: 4px; }
 
-.spacer { flex: 1; }
-
-.search-wrap { position: relative; display: flex; align-items: center; }
+.search-wrap { position: relative; display: flex; align-items: center; flex-shrink: 0; }
 .search-wrap input {
-  width: 140px; padding: 5px 22px 5px 24px; border: 1px solid var(--border); border-radius: 8px;
+  width: 115px; padding: 5px 20px 5px 22px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--surface-2); font-size: 12px; outline: none; transition: width 0.15s, border-color 0.15s;
 }
-.search-wrap input:focus { width: 190px; border-color: var(--accent); background: var(--surface); }
-.search-wrap .s-ic { position: absolute; left: 8px; color: var(--text-3); pointer-events: none; font-size: 12px; }
+.search-wrap input:focus { width: 165px; border-color: var(--accent); background: var(--surface); }
+.search-wrap .s-ic { position: absolute; left: 7px; color: var(--text-3); pointer-events: none; font-size: 12px; }
 .search-wrap .s-kbd {
-  position: absolute; right: 6px; font-size: 10.5px; color: var(--text-3); border: 1px solid var(--border);
+  position: absolute; right: 5px; font-size: 10.5px; color: var(--text-3); border: 1px solid var(--border);
   border-radius: 4px; padding: 0 4px; pointer-events: none;
 }
 
 .seg {
-  display: inline-flex; background: var(--surface-2); padding: 2px; border-radius: 8px; border: 1px solid var(--border);
+  display: inline-flex; background: var(--surface-2); padding: 2px; border-radius: 8px; border: 1px solid var(--border); flex-shrink: 0;
 }
 .seg button {
-  border: 0; background: transparent; padding: 4px 9px; border-radius: 6px; font-size: 12px;
-  color: var(--text-2); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;
+  border: 0; background: transparent; padding: 4px 8px; border-radius: 6px; font-size: 12px;
+  color: var(--text-2); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
 }
 .seg button.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 
 .icon-btn {
   height: 30px; min-width: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--surface); color: var(--text-2); display: inline-flex; align-items: center; justify-content: center;
-  gap: 5px; font-size: 12.5px; position: relative;
+  gap: 5px; font-size: 12.5px; position: relative; flex-shrink: 0; white-space: nowrap;
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--text); }
 .icon-btn:disabled { opacity: 0.4; cursor: default; }
@@ -156,14 +149,14 @@ header {
   font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
 }
 .primary-btn:hover { filter: brightness(1.08); }
-.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-done); flex-shrink: 0; }
-.sync-dot.offline { background: var(--st-doing); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-solved); flex-shrink: 0; }
+.sync-dot.offline { background: var(--warn); }
 .sync-dot.readonly { background: var(--st-blocked); }
 
 /* Banners */
 .banner {
-  background: var(--yolo-bg); color: var(--yolo-text); padding: 6px 14px; font-size: 12.5px;
-  display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--yolo);
+  background: var(--warn-bg); color: var(--warn-text); padding: 6px 14px; font-size: 12.5px;
+  display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--warn);
 }
 
 /* Main Workspace */
@@ -198,9 +191,9 @@ header {
   border-radius: 10px; padding: 12px; margin-bottom: 14px; border: 1px solid var(--border);
   background: var(--surface-2);
 }
-.action-card.review { background: var(--st-review-bg); border-color: var(--st-review-bd); }
-.action-card.waiting { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); }
-.action-card.proposed { background: var(--st-proposed-bg); border-color: var(--st-proposed-bd); }
+.action-card.blocked { background: var(--st-blocked-bg); border-color: var(--st-blocked-bd); border-width: 1.5px; }
+.action-card.processing { background: var(--st-processing-bg); border-color: var(--st-processing-bd); }
+.action-card.solved { background: var(--st-solved-bg); border-color: var(--st-solved-bd); }
 .action-card h4 { margin: 0 0 6px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
 .action-btns { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
 .btn {
@@ -210,7 +203,7 @@ header {
 .btn:hover { background: var(--surface-2); }
 .btn.ok { background: var(--st-done); border-color: var(--st-done); color: #fff; }
 .btn.ok:hover { filter: brightness(1.06); }
-.btn.warn { background: var(--yolo); border-color: var(--yolo); color: #111; }
+.btn.warn { background: var(--warn); border-color: var(--warn); color: #111; }
 .btn.danger { color: #dc2626; border-color: #fca5a5; }
 
 .sec { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
@@ -260,8 +253,8 @@ header {
   padding: 8px 10px; border-radius: 8px; background: var(--surface-2); margin-bottom: 7px;
   border: 1px solid var(--border); font-size: 12.5px;
 }
-.note-item.ask { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); }
-.note-item.feedback { background: var(--st-doing-bg); border-color: var(--st-doing-bd); }
+.note-item.ask { background: var(--st-blocked-bg); border-color: var(--st-blocked-bd); }
+.note-item.feedback { background: var(--warn-bg); border-color: var(--warn); }
 .note-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
 .note-by { font-weight: 700; color: var(--text-2); }
 
@@ -315,17 +308,14 @@ header {
 .card.flash { animation: flashPulse 1.2s ease; }
 @keyframes flashPulse { 0% { box-shadow: 0 0 0 6px rgba(99,102,241,0.45); } 100% { box-shadow: var(--shadow); } }
 
-.card.st-proposed { background: var(--st-proposed-bg); border-style: dashed; border-color: var(--st-proposed-bd); }
-.card.st-blocked {
-  background: repeating-linear-gradient(-45deg, var(--surface), var(--surface) 8px, var(--st-blocked-bg) 8px, var(--st-blocked-bg) 16px);
-  border-color: var(--st-blocked-bd);
+.card.st-blocked { background: var(--st-blocked-bg); border-color: var(--st-blocked-bd); border-width: 2px; }
+.card.st-locked {
+  background: repeating-linear-gradient(-45deg, var(--surface), var(--surface) 8px, var(--st-locked-bg) 8px, var(--st-locked-bg) 16px);
+  border-color: var(--st-locked-bd);
 }
-.card.st-todo { border-color: var(--st-todo-bd); }
-.card.st-doing { background: var(--st-doing-bg); border-color: var(--st-doing-bd); }
-.card.st-waiting { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); border-width: 2px; }
-.card.st-review { background: var(--st-review-bg); border-color: var(--st-review-bd); border-width: 2px; }
-.card.st-done { background: var(--st-done-bg); border-color: var(--st-done-bd); }
-.card.yolo-ring { box-shadow: 0 0 0 2px var(--yolo), var(--shadow); }
+.card.st-pending { background: var(--st-pending-bg); border-color: var(--st-pending-bd); }
+.card.st-processing { background: var(--st-processing-bg); border-color: var(--st-processing-bd); border-width: 2px; }
+.card.st-solved { background: var(--st-solved-bg); border-color: var(--st-solved-bd); }
 
 .card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 .card-id { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text-3); }
@@ -333,17 +323,11 @@ header {
 .st-pill {
   font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.01em;
 }
-.st-pill.proposed { background: var(--st-proposed); color: #fff; }
-.st-pill.blocked { background: var(--surface-2); color: var(--st-blocked); border: 1px solid var(--border); }
-.st-pill.todo { background: var(--st-todo-bg); color: var(--st-todo); border: 1px solid var(--st-todo-bd); }
-.st-pill.doing { background: var(--st-doing); color: #fff; }
-.st-pill.waiting { background: var(--st-waiting); color: #fff; }
-.st-pill.review { background: var(--st-review); color: #fff; }
-.st-pill.done { background: var(--st-done-bg); color: var(--st-done); border: 1px solid var(--st-done-bd); }
-.yolo-chip {
-  font-size: 10px; font-weight: 800; padding: 1.5px 5px; border-radius: 5px;
-  background: var(--yolo); color: #111;
-}
+.st-pill.blocked { background: var(--st-blocked); color: #fff; }
+.st-pill.locked { background: var(--st-locked-bg); color: var(--st-locked); border: 1px solid var(--st-locked-bd); }
+.st-pill.pending { background: var(--st-pending-bg); color: var(--st-pending); border: 1px solid var(--st-pending-bd); }
+.st-pill.processing { background: var(--st-processing); color: #fff; }
+.st-pill.solved { background: var(--st-solved-bg); color: var(--st-solved); border: 1px solid var(--st-solved-bd); }
 .card-title { font-weight: 700; font-size: 13.5px; line-height: 1.3; color: var(--text); }
 .card-snippet {
   font-size: 11.5px; color: var(--text-2); line-height: 1.35;
@@ -490,7 +474,6 @@ header {
     <div class="pct-pill" id="pct-pill"><span class="pct-dot"></span><span id="pct-txt">0%</span></div>
 
     <div class="filter-pills" id="filter-pills"></div>
-    <button class="yolo-pill" id="yolo-pill" style="display:none" title="Blocks covered by active YOLO chain">⚡ <span id="yolo-cnt">0</span></button>
 
     <div class="spacer"></div>
 
@@ -508,7 +491,7 @@ header {
 
     <button class="icon-btn" id="btn-orient" title="Toggle Left→Right / Top→Bottom layout (L)">⇄</button>
     <button class="icon-btn" id="btn-heuristics" title="Browse 90 Verified Heuristics (H)">📖 <span style="font-size:11.5px">Rules</span></button>
-    <button class="icon-btn" id="btn-bell" title="Waiting questions & Review queue">🔔 <span class="badge-cnt" id="bell-cnt" style="display:none">0</span></button>
+    <button class="icon-btn" id="btn-bell" title="Blocked blocks — Information required">🔔 <span class="badge-cnt" id="bell-cnt" style="display:none">0</span></button>
     <button class="icon-btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>↶</button>
     <button class="icon-btn" id="btn-redo" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
     <button class="icon-btn" id="btn-theme" title="Toggle light / dark theme">◐</button>
@@ -587,7 +570,8 @@ header {
 /* ============================================================================
  * Canonical Serializer & Pure Domain Logic (kept identical to minicheme.py)
  * ========================================================================== */
-const VALID_STATES = ["proposed", "todo", "doing", "review", "done"];
+const VALID_STATES = ["pending", "processing", "solved"];
+const LEGACY_STATE_MAP = { done: "solved", doing: "processing", todo: "pending", proposed: "pending", review: "pending" };
 const STAGE_COLORS = {
   teal: "var(--stage-teal)",
   blue: "var(--stage-blue)",
@@ -622,7 +606,9 @@ function canonicalNote(n) {
 }
 
 function canonicalBlock(b) {
-  const st = VALID_STATES.includes(String(b.state || "").toLowerCase()) ? String(b.state).toLowerCase() : "todo";
+  const rawSt = String(b.state || "pending").toLowerCase();
+  const mapped = LEGACY_STATE_MAP[rawSt] || rawSt;
+  const st = VALID_STATES.includes(mapped) ? mapped : "pending";
   const deps = [];
   for (const d of (b.deps || [])) {
     const s = String(d).trim();
@@ -663,14 +649,12 @@ function canonicalBlock(b) {
   if (params.length) out.parameters = params;
   if (heurs.length) out.heuristics = heurs;
   if (String(b.mermaid || "").trim()) out.mermaid = String(b.mermaid).trim();
-  if (b.yolo) out.yolo = true;
-  if (b.yolo_before) out.yolo_before = true;
   if (b.started && b.started.by) out.started = { at: String(b.started.at || nowIso()), by: String(b.started.by) };
   if (b.at) out.at = String(b.at);
   if (b.by) out.by = String(b.by);
   if (notes.length) out.notes = notes;
   return orderedObj(out, [
-    "id", "stage", "title", "state", "deps", "yolo", "yolo_before", "at", "by", "started",
+    "id", "stage", "title", "state", "deps", "at", "by", "started",
     "objective", "recommended_heuristics", "proposal", "rationale", "parameters", "heuristics", "mermaid", "notes"
   ]);
 }
@@ -739,7 +723,7 @@ function blockMap(board) {
 }
 
 function unmetDeps(block, bmap) {
-  return (block.deps || []).filter(d => bmap.has(d) && bmap.get(d).state !== "done");
+  return (block.deps || []).filter(d => bmap.has(d) && bmap.get(d).state !== "solved");
 }
 
 function openQuestion(block) {
@@ -747,15 +731,17 @@ function openQuestion(block) {
   for (let i = notes.length - 1; i >= 0; i--) {
     const k = notes[i].kind || "note";
     if (k === "ask") return notes[i];
-    if (["answer", "note", "review", "feedback", "plan"].includes(k)) return null;
+    if (["answer", "note", "solved", "review", "feedback", "plan"].includes(k)) return null;
   }
   return null;
 }
 
 function viewState(block, bmap) {
-  if (block.state === "todo" && unmetDeps(block, bmap).length) return "blocked";
-  if (block.state === "doing" && openQuestion(block)) return "waiting";
-  return block.state;
+  if (block.state === "solved") return "solved";
+  if (openQuestion(block)) return "blocked";
+  if (block.state === "processing") return "processing";
+  if (unmetDeps(block, bmap).length) return "locked";
+  return "pending";
 }
 
 function upstreamIds(bmap, startId) {
@@ -801,28 +787,6 @@ function reaches(board, start, goal) {
     for (const d of (bmap.get(cur).deps || [])) stack.push(d);
   }
   return false;
-}
-
-function yoloCover(board) {
-  const bmap = blockMap(board);
-  const cover = {};
-  const targets = board.blocks.filter(b => b.yolo && !["review", "done"].includes(b.state));
-  const stops = board.blocks.filter(b => b.yolo_before && !["review", "done"].includes(b.state));
-  const tSet = new Set(targets.map(b => b.id));
-  for (const b of targets) {
-    cover[b.id] = "target";
-    for (const u of upstreamIds(bmap, b.id)) cover[u] = "auto";
-  }
-  for (const b of stops) {
-    if (!cover[b.id]) cover[b.id] = "stop";
-    for (const u of upstreamIds(bmap, b.id)) if (cover[u] !== "auto") cover[u] = "auto";
-  }
-  for (const tid of tSet) {
-    for (const other of tSet) {
-      if (other !== tid && upstreamIds(bmap, other).has(tid)) cover[tid] = "auto";
-    }
-  }
-  return cover;
 }
 
 function nextIdForStage(board, stageId) {
@@ -1306,53 +1270,42 @@ function renderAll() {
 function updateTitleBadge() {
   if (!state.board) return;
   const bmap = blockMap(state.board);
-  const waits = state.board.blocks.filter(b => viewState(b, bmap) === "waiting").length;
-  const revs = state.board.blocks.filter(b => b.state === "review").length;
-  const n = waits + revs;
-  document.title = (n ? `(${n}) ` : "") + `${state.board.title} · Minicheme`;
+  const blockedN = state.board.blocks.filter(b => viewState(b, bmap) === "blocked").length;
+  document.title = (blockedN ? `(${blockedN} Info Required) ` : "") + `${state.board.title} · Minicheme`;
   const bc = $("bell-cnt");
-  if (n) { bc.style.display = "inline-grid"; bc.textContent = String(n); }
+  if (blockedN) { bc.style.display = "inline-grid"; bc.style.background = "var(--st-blocked)"; bc.textContent = String(blockedN); }
   else bc.style.display = "none";
 }
 
 function renderHeader() {
   const b = state.board;
   const bmap = blockMap(b);
-  const cover = yoloCover(b);
   $("proc-title").textContent = b.title;
 
   const total = b.blocks.length;
-  const done = b.blocks.filter(x => x.state === "done").length;
-  $("pct-txt").textContent = `${total ? Math.round(100 * done / total) : 0}%`;
+  const solved = b.blocks.filter(x => x.state === "solved").length;
+  $("pct-txt").textContent = `${total ? Math.round(100 * solved / total) : 0}%`;
 
-  const counts = { proposed: 0, blocked: 0, todo: 0, doing: 0, waiting: 0, review: 0, done: 0 };
+  const counts = { blocked: 0, locked: 0, pending: 0, processing: 0, solved: 0 };
   for (const x of b.blocks) counts[viewState(x, bmap)]++;
 
   const defs = [
-    ["proposed", "Proposed", "var(--st-proposed)"],
-    ["blocked", "Blocked", "var(--st-blocked)"],
-    ["todo", "Ready", "var(--st-todo)"],
-    ["doing", "Doing", "var(--st-doing)"],
-    ["waiting", "Waiting", "var(--st-waiting)"],
-    ["review", "Review", "var(--st-review)"],
-    ["done", "Done", "var(--st-done)"],
+    ["blocked", "Info Required", "var(--st-blocked)"],
+    ["pending", "Pending", "var(--st-pending)"],
+    ["locked", "Locked", "var(--st-locked)"],
+    ["processing", "Processing", "var(--st-processing)"],
+    ["solved", "Solved", "var(--st-solved)"],
   ];
   const fp = $("filter-pills");
   fp.innerHTML = "";
   for (const [k, label, col] of defs) {
-    if (k === "proposed" && !counts[k]) continue;
-    if (k === "waiting" && !counts[k]) continue;
+    if (k === "blocked" && !counts[k]) continue;
     const btn = document.createElement("button");
     btn.className = "fpill" + (state.filterState === k ? " active" : "");
     btn.innerHTML = `<span class="dot" style="background:${col}"></span>${label} <b>${counts[k]}</b>`;
     btn.onclick = () => { state.filterState = state.filterState === k ? "" : k; renderAll(); };
     fp.appendChild(btn);
   }
-
-  const yoloCnt = Object.keys(cover).length;
-  const yp = $("yolo-pill");
-  if (yoloCnt) { yp.style.display = "inline-flex"; $("yolo-cnt").textContent = `YOLO ${yoloCnt}`; }
-  else yp.style.display = "none";
 
   $("btn-undo").disabled = !state.undoStack.length;
   $("btn-redo").disabled = !state.redoStack.length;
@@ -1374,7 +1327,6 @@ function matchesFilter(blk, bmap) {
 function renderGraph() {
   const b = state.board;
   const bmap = blockMap(b);
-  const cover = yoloCover(b);
   const L = computeLayout(b, state.vertical);
   state.layout = L;
 
@@ -1404,15 +1356,15 @@ function renderGraph() {
     el.style.top = lane.y + "px";
     el.style.width = lane.w + "px";
     el.style.height = lane.h + "px";
-    const done = lane.blocks.filter(x => x.state === "done").length;
+    const solved = lane.blocks.filter(x => x.state === "solved").length;
     const tot = lane.blocks.length;
     const col = STAGE_COLORS[lane.stage.color] || "var(--accent)";
     el.innerHTML = `
       <div class="lane-head">
         <span class="lane-dot" style="background:${col}"></span>
         <span>${esc(lane.stage.name)}</span>
-        <span class="lane-stat">${lane.stage.id} ${done}/${tot}</span>
-        <div class="lane-bar"><div class="lane-bar-fill" style="width:${tot ? (100 * done / tot) : 0}%"></div></div>
+        <span class="lane-stat">${lane.stage.id} ${solved}/${tot}</span>
+        <div class="lane-bar"><div class="lane-bar-fill" style="width:${tot ? (100 * solved / tot) : 0}%"></div></div>
         ${state.mode !== "snapshot" ? `<button class="lane-add" title="Add block to ${esc(lane.stage.name)}">+</button>` : ""}
       </div>
     `;
@@ -1425,13 +1377,10 @@ function renderGraph() {
   svg.innerHTML = `
     <defs>
       <marker id="arr-def" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 1 L 10 5 L 0 9 z" fill="#8b95aa"/>
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
       </marker>
       <marker id="arr-hi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 1 L 10 5 L 0 9 z" fill="#4f46e5"/>
-      </marker>
-      <marker id="arr-yolo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
       </marker>
       <marker id="arr-done" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
         <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a"/>
@@ -1472,12 +1421,10 @@ function renderGraph() {
       }
 
       const inFocus = lineage && lineage.has(depId) && lineage.has(blk.id);
-      const isYolo = cover[depId] && cover[blk.id];
-      const isDone = bmap.get(depId)?.state === "done" && blk.state === "done";
-      let stroke = "#8b95aa", marker = "url(#arr-def)", sw = 2, op = lineage ? (inFocus ? 1 : 0.16) : 0.85;
-      if (inFocus) { stroke = "#4f46e5"; marker = "url(#arr-hi)"; sw = 2.6; }
-      else if (isYolo) { stroke = "#f59e0b"; marker = "url(#arr-yolo)"; sw = 2.3; }
-      else if (isDone) { stroke = "#16a34a"; marker = "url(#arr-done)"; op = lineage ? 0.18 : 0.55; }
+      const isSolved = bmap.get(depId)?.state === "solved";
+      let stroke = "#dc2626", marker = "url(#arr-def)", sw = 2, op = lineage ? (inFocus ? 1 : 0.16) : 0.72;
+      if (inFocus) { stroke = "#2563eb"; marker = "url(#arr-hi)"; sw = 2.6; }
+      else if (isSolved) { stroke = "#16a34a"; marker = "url(#arr-done)"; op = lineage ? 0.18 : 0.65; }
 
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", d);
@@ -1486,7 +1433,7 @@ function renderGraph() {
       path.setAttribute("stroke-width", sw);
       path.setAttribute("opacity", op);
       path.setAttribute("marker-end", marker);
-      if (bmap.get(depId)?.state !== "done" && !isYolo) path.setAttribute("stroke-dasharray", "5 4");
+      if (bmap.get(depId)?.state !== "solved") path.setAttribute("stroke-dasharray", "5 4");
       svg.appendChild(path);
 
       const hit = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -1501,7 +1448,7 @@ function renderGraph() {
   for (const blk of b.blocks) {
     const pos = L.positions.get(blk.id);
     if (!pos) continue;
-    const card = buildCardEl(blk, bmap, cover, false);
+    const card = buildCardEl(blk, bmap, false);
     card.style.left = pos.x + "px";
     card.style.top = pos.y + "px";
     card.style.width = pos.w + "px";
@@ -1540,40 +1487,37 @@ function applyFocusOnly() {
   renderGraph();
 }
 
-function buildCardEl(blk, bmap, cover, isKanban) {
+function buildCardEl(blk, bmap, isKanban) {
   const vs = viewState(blk, bmap);
   const el = document.createElement("div");
-  el.className = `card st-${vs}` + (isKanban ? " kcard" : "") + (cover[blk.id] ? " yolo-ring" : "");
+  el.className = `card st-${vs}` + (isKanban ? " kcard" : "");
   el.dataset.id = blk.id;
 
   const stLabels = {
-    proposed: "Proposed", blocked: "Blocked", todo: "Ready", doing: "Doing",
-    waiting: "Waiting for you", review: "Review", done: "Done",
+    blocked: "Info Required", locked: "Locked", pending: "Pending",
+    processing: "Processing", solved: "Solved",
   };
-  let yoloBadge = "";
-  if (cover[blk.id] === "target") yoloBadge = `<span class="yolo-chip">⚡ YOLO</span>`;
-  else if (cover[blk.id] === "auto") yoloBadge = `<span class="yolo-chip">⚡</span>`;
-  else if (cover[blk.id] === "stop") yoloBadge = `<span class="yolo-chip" style="background:var(--st-review);color:#fff">STOP</span>`;
 
-  const q = vs === "waiting" ? openQuestion(blk) : null;
+  const q = vs === "blocked" ? openQuestion(blk) : null;
   const snippet = q
-    ? `❓ ${q.text}`
+    ? `⚠ ${q.missing ? q.missing + ": " : ""}${q.text}`
     : (blk.proposal ? blk.proposal.replace(/[#*`>$]/g, "").slice(0, 95) : blk.objective);
 
   const unmet = unmetDeps(blk, bmap);
   const heurs = (blk.heuristics || []).slice(0, 3);
-  const footLeft = vs === "blocked" && unmet.length
+  const footLeft = vs === "locked" && unmet.length
     ? `<span>🔒 ${esc(unmet.join(", "))}</span>`
-    : heurs.length
-      ? `<div class="card-heurs">${heurs.map(h => `<span class="mini-h">${esc(h.id)}</span>`).join("")}</div>`
-      : `<span>${blk.started ? `⚙ ${esc(blk.started.by)}` : (blk.parameters?.length ? `${blk.parameters.length} params` : "")}</span>`;
+    : vs === "blocked"
+      ? `<span style="color:var(--st-blocked);font-weight:700">🔴 Missing Info</span>`
+      : heurs.length
+        ? `<div class="card-heurs">${heurs.map(h => `<span class="mini-h">${esc(h.id)}</span>`).join("")}</div>`
+        : `<span>${blk.started ? `⚙ ${esc(blk.started.by)}` : (blk.parameters?.length ? `${blk.parameters.length} params` : "")}</span>`;
 
   const noteCnt = (blk.notes || []).length;
   el.innerHTML = `
     <div class="card-top">
       <span class="card-id">${esc(blk.id)}</span>
       <div class="card-badges">
-        ${yoloBadge}
         <span class="st-pill ${vs}">${stLabels[vs] || vs}</span>
       </div>
     </div>
@@ -1606,26 +1550,19 @@ function flashCards(ids) {
 function renderKanban() {
   const b = state.board;
   const bmap = blockMap(b);
-  const cover = yoloCover(b);
   const root = $("board-view");
   root.innerHTML = "";
 
   const cols = [
-    { key: "proposed", title: "Proposed", dot: "var(--st-proposed)" },
-    { key: "blocked", title: "Blocked", dot: "var(--st-blocked)" },
-    { key: "todo", title: "Ready (To do)", dot: "var(--st-todo)" },
-    { key: "doing", title: "Doing / Waiting", dot: "var(--st-doing)" },
-    { key: "review", title: "Review", dot: "var(--st-review)" },
-    { key: "done", title: "Done", dot: "var(--st-done)" },
+    { key: "blocked", title: "Blocked — Info Required", dot: "var(--st-blocked)" },
+    { key: "pending", title: "Pending (Ready)", dot: "var(--st-pending)" },
+    { key: "locked", title: "Locked (Upstream)", dot: "var(--st-locked)" },
+    { key: "processing", title: "Processing", dot: "var(--st-processing)" },
+    { key: "solved", title: "Solved", dot: "var(--st-solved)" },
   ];
 
   for (const c of cols) {
-    const items = b.blocks.filter(blk => {
-      if (!matchesFilter(blk, bmap)) return false;
-      const vs = viewState(blk, bmap);
-      if (c.key === "doing") return vs === "doing" || vs === "waiting";
-      return vs === c.key;
-    });
+    const items = b.blocks.filter(blk => matchesFilter(blk, bmap) && viewState(blk, bmap) === c.key);
     const colEl = document.createElement("div");
     colEl.className = "kcol";
     colEl.innerHTML = `
@@ -1633,13 +1570,12 @@ function renderKanban() {
         <span class="dot" style="width:9px;height:9px;border-radius:50%;background:${c.dot}"></span>
         <span>${c.title}</span>
         <span style="color:var(--text-3);font-weight:600">${items.length}</span>
-        ${c.key === "proposed" && items.length && state.mode !== "snapshot" ? `<button class="btn" style="margin-left:auto;padding:2px 7px;font-size:11px" id="btn-approve-all">✓ Approve all</button>` : ""}
       </div>
       <div class="kcol-list"></div>
     `;
     const list = colEl.querySelector(".kcol-list");
     for (const blk of items) {
-      const card = buildCardEl(blk, bmap, cover, true);
+      const card = buildCardEl(blk, bmap, true);
       if (state.selectedId === blk.id) card.classList.add("selected");
       if (state.mode !== "snapshot") {
         card.draggable = true;
@@ -1647,7 +1583,7 @@ function renderKanban() {
       }
       list.appendChild(card);
     }
-    if (c.key !== "blocked" && state.mode !== "snapshot") {
+    if (["pending", "processing", "solved"].includes(c.key) && state.mode !== "snapshot") {
       colEl.addEventListener("dragover", e => { e.preventDefault(); colEl.classList.add("dragover"); });
       colEl.addEventListener("dragleave", () => colEl.classList.remove("dragover"));
       colEl.addEventListener("drop", e => {
@@ -1658,12 +1594,6 @@ function renderKanban() {
         state.draggingCardId = null;
         moveBlockState(id, c.key);
       });
-    }
-    const appAll = colEl.querySelector("#btn-approve-all");
-    if (appAll) {
-      appAll.onclick = () => commit(d => {
-        for (const x of d.blocks) if (x.state === "proposed") x.state = "todo";
-      }, "Approved all proposals");
     }
     root.appendChild(colEl);
   }
@@ -1869,7 +1799,6 @@ function renderInspector() {
   panel.classList.add("open");
 
   const vs = viewState(blk, bmap);
-  const cover = yoloCover(state.board);
   const stage = state.board.stages.find(s => s.id === blk.stage);
   const ro = state.mode === "snapshot";
 
@@ -1883,8 +1812,7 @@ function renderInspector() {
       ${esc(stage ? stage.name : blk.stage)}
     </span>
     <div class="spacer"></div>
-    ${!ro ? `<button class="icon-btn" id="btn-insp-edit" title="Edit proposal & rationale">✎</button>` : ""}
-    ${!ro ? `<button class="icon-btn" id="btn-insp-yolo" title="Toggle YOLO up to this block">${blk.yolo ? "⚡ On" : "⚡"}</button>` : ""}
+    ${!ro ? `<button class="icon-btn" id="btn-insp-edit" title="Edit findings & rationale">✎</button>` : ""}
     <button class="icon-btn" id="btn-insp-close" title="Close panel (Esc)">✕</button>
   `;
 
@@ -1892,72 +1820,52 @@ function renderInspector() {
   if ($("insp-state")) {
     $("insp-state").onchange = e => moveBlockState(blk.id, e.target.value);
   }
-  if ($("btn-insp-yolo")) {
-    $("btn-insp-yolo").onclick = () => toggleYolo(blk.id, false);
-  }
   if ($("btn-insp-edit")) {
     $("btn-insp-edit").onclick = () => openEditBlockModal(blk);
   }
 
   // Action banner
   let actionHtml = "";
-  const q = vs === "waiting" ? openQuestion(blk) : null;
+  const q = vs === "blocked" ? openQuestion(blk) : null;
   if (q) {
     actionHtml = `
-      <div class="action-card waiting">
-        <h4><span>❓ INFORMATION REQUIRED</span><span style="font-weight:500;font-size:11px">${esc(q.by)} · ${ago(q.at)}</span></h4>
+      <div class="action-card blocked">
+        <h4><span style="color:var(--st-blocked)">🔴 INFORMATION REQUIRED — BLOCKED</span><span style="font-weight:500;font-size:11px">${esc(q.by)} · ${ago(q.at)}</span></h4>
         ${q.missing ? `<div style="font-size:12px;margin-bottom:4px"><strong>Missing Parameter:</strong> ${esc(q.missing)}</div>` : ""}
         ${q.why ? `<div style="font-size:12px;margin-bottom:4px"><strong>Why needed:</strong> ${esc(q.why)}</div>` : ""}
-        ${q.baseline ? `<div style="font-size:12px;margin-bottom:6px"><strong>Recommended Baseline:</strong> ${esc(q.baseline)}</div>` : ""}
+        ${q.baseline ? `<div style="font-size:12px;margin-bottom:6px"><strong>Literature Reference Range:</strong> ${esc(q.baseline)}</div>` : ""}
         <div class="md">${renderMarkdown(q.text)}</div>
         ${!ro ? `
           <div class="composer">
-            <input id="ans-input" placeholder="Answer the agent to resume...">
-            <button class="btn ok" id="btn-send-ans">Reply</button>
+            <input id="ans-input" placeholder="Provide missing process data to unblock this stage...">
+            <button class="btn ok" id="btn-send-ans">Provide Info</button>
           </div>
         ` : ""}
       </div>
     `;
-  } else if (blk.state === "review") {
-    const lastRev = [...(blk.notes || [])].reverse().find(n => n.kind === "review") || (blk.notes || []).slice(-1)[0];
+  } else if (blk.state === "solved") {
     actionHtml = `
-      <div class="action-card review">
-        <h4><span>✓ Ready for your review</span><span style="font-weight:500;font-size:11px">${lastRev ? `${esc(lastRev.by)} · ${ago(lastRev.at)}` : ""}</span></h4>
-        ${lastRev ? `<div class="md">${renderMarkdown(lastRev.text)}</div>` : ""}
+      <div class="action-card solved">
+        <h4><span style="color:var(--st-solved)">🟢 Solved — Grounded in Bibliography & Heuristics</span></h4>
         ${!ro ? `
           <div class="action-btns">
-            <button class="btn ok" id="btn-accept">✓ Mark done</button>
-            <button class="btn" id="btn-sendback">↩ Send back</button>
+            <button class="btn" id="btn-reopen">↺ Reopen for re-evaluation</button>
           </div>
-          <div id="sendback-box" style="display:none;margin-top:8px">
+          <div id="reopen-box" style="display:none;margin-top:8px">
             <div class="composer">
-              <textarea id="sb-text" rows="2" placeholder="Explain what to revise or check..."></textarea>
-              <button class="btn warn" id="btn-sb-go">Send</button>
+              <textarea id="reopen-text" rows="2" placeholder="Add updated data or engineering note..."></textarea>
+              <button class="btn warn" id="btn-reopen-go">Reopen</button>
             </div>
           </div>
         ` : ""}
       </div>
     `;
-  } else if (blk.state === "proposed") {
+  } else if (blk.state === "processing") {
     actionHtml = `
-      <div class="action-card proposed">
-        <h4><span>Proposed block</span><span style="font-weight:500;font-size:11px">${blk.by ? `by ${esc(blk.by)}` : ""}</span></h4>
-        <div class="md">${renderMarkdown(blk.objective || "Approve this block to unlock it in the workflow.")}</div>
-        ${!ro ? `
-          <div class="action-btns">
-            <button class="btn ok" id="btn-approve">✓ Approve</button>
-            <button class="btn danger" id="btn-reject">Delete</button>
-          </div>
-        ` : ""}
+      <div class="action-card processing">
+        <h4><span style="color:var(--st-processing)">🔵 Actively Processing</span><span style="font-weight:500;font-size:11px">${blk.started ? esc(blk.started.by) : ""}</span></h4>
       </div>
     `;
-  } else if (cover[blk.id]) {
-    const txt = cover[blk.id] === "target"
-      ? "YOLO target — upstream blocks complete automatically; this block stops for your review."
-      : cover[blk.id] === "stop"
-        ? "YOLO stops before this block."
-        : "Covered by active YOLO chain — completes automatically without per-block review.";
-    actionHtml = `<div class="action-card" style="background:var(--yolo-bg);border-color:var(--yolo);color:var(--yolo-text);font-size:12px">⚡ <strong>${txt}</strong></div>`;
   }
 
   // Upstream / Downstream dependencies
@@ -2012,8 +1920,8 @@ function renderInspector() {
     ${blk.objective ? `<div style="font-size:12.5px;color:var(--text-2);margin-bottom:10px"><strong>Objective:</strong> ${esc(blk.objective)}</div>` : ""}
 
     <div class="sec">
-      <div class="sec-head"><span>1. Conceptual Design Proposal</span></div>
-      ${blk.proposal ? `<div class="md">${renderMarkdown(blk.proposal)}</div>` : `<div style="color:var(--text-3);font-size:12.5px;font-style:italic">Pending agent or engineer conceptual proposal.</div>`}
+      <div class="sec-head"><span>1. Conceptual Findings & Basis</span></div>
+      ${blk.proposal ? `<div class="md">${renderMarkdown(blk.proposal)}</div>` : `<div style="color:var(--text-3);font-size:12.5px;font-style:italic">Pending analysis from user input, bibliography, and verified heuristics.</div>`}
     </div>
 
     ${paramsHtml}
@@ -2073,40 +1981,25 @@ function renderInspector() {
         const t = d.blocks.find(x => x.id === blk.id);
         t.notes = t.notes || [];
         t.notes.push({ at: nowIso(), by: "human", kind: "answer", text: txt });
-      }, `Answered ${blk.id}`);
+      }, `Provided info & unblocked ${blk.id}`);
     };
   }
-  if ($("btn-accept")) {
-    $("btn-accept").onclick = () => {
-      const nextRev = state.board.blocks.find(x => x.id !== blk.id && x.state === "review");
+  if ($("btn-reopen")) {
+    $("btn-reopen").onclick = () => { $("reopen-box").style.display = "block"; $("reopen-text").focus(); };
+  }
+  if ($("btn-reopen-go")) {
+    $("btn-reopen-go").onclick = () => {
+      const fb = $("reopen-text").value.trim();
       commit(d => {
         const t = d.blocks.find(x => x.id === blk.id);
-        t.state = "done";
+        t.state = "pending";
         delete t.started;
-      }, `Marked ${blk.id} done`).then(() => { if (nextRev) selectBlock(nextRev.id); });
+        if (fb) {
+          t.notes = t.notes || [];
+          t.notes.push({ at: nowIso(), by: "human", kind: "feedback", text: `Reopened: ${fb}` });
+        }
+      }, `Reopened ${blk.id} (Red / Pending)`);
     };
-  }
-  if ($("btn-sendback")) {
-    $("btn-sendback").onclick = () => { $("sendback-box").style.display = "block"; $("sb-text").focus(); };
-  }
-  if ($("btn-sb-go")) {
-    $("btn-sb-go").onclick = () => {
-      const fb = $("sb-text").value.trim();
-      if (!fb) return;
-      commit(d => {
-        const t = d.blocks.find(x => x.id === blk.id);
-        t.state = "todo";
-        delete t.started;
-        t.notes = t.notes || [];
-        t.notes.push({ at: nowIso(), by: "human", kind: "feedback", text: `Sent back: ${fb}` });
-      }, `Sent ${blk.id} back with feedback`);
-    };
-  }
-  if ($("btn-approve")) {
-    $("btn-approve").onclick = () => moveBlockState(blk.id, "todo");
-  }
-  if ($("btn-reject")) {
-    $("btn-reject").onclick = () => deleteBlock(blk.id);
   }
   if ($("btn-add-note")) {
     $("btn-add-note").onclick = () => {
@@ -2122,42 +2015,20 @@ function renderInspector() {
 }
 
 /* ============================================================================
- * Block Actions, YOLO, Dependencies, Modals & Menus
+ * Block Actions, Dependencies, Modals & Menus
  * ========================================================================== */
 function moveBlockState(id, targetState) {
   commit(d => {
     const bmap = blockMap(d);
     const t = bmap.get(id);
     if (!t) return false;
-    if (targetState === "doing" && unmetDeps(t, bmap).length) {
-      throw new Error(`${id} is blocked by ${unmetDeps(t, bmap).join(", ")}`);
+    if (targetState === "processing" && unmetDeps(t, bmap).length) {
+      throw new Error(`${id} is locked by unsolved ${unmetDeps(t, bmap).join(", ")}`);
     }
     t.state = targetState;
-    if (targetState === "doing") t.started = { at: nowIso(), by: "human" };
+    if (targetState === "processing") t.started = { at: nowIso(), by: "human" };
     else delete t.started;
   }, `Moved ${id} → ${targetState}`);
-}
-
-function toggleYolo(id, before = false) {
-  commit(d => {
-    const bmap = blockMap(d);
-    const t = bmap.get(id);
-    if (!t) return false;
-    if ((!before && t.yolo) || (before && t.yolo_before)) {
-      delete t.yolo; delete t.yolo_before;
-      return;
-    }
-    delete t.yolo; delete t.yolo_before;
-    if (before) t.yolo_before = true;
-    else t.yolo = true;
-    const up = upstreamIds(bmap, id);
-    if (!before) up.add(id);
-    for (const uid of up) {
-      const ub = bmap.get(uid);
-      if (ub.state === "proposed") ub.state = "todo";
-      else if (ub.state === "review" && uid !== id) ub.state = "done";
-    }
-  }, `Updated YOLO on ${id}`);
 }
 
 function deleteBlock(id) {
@@ -2189,14 +2060,11 @@ function openCardMenu(x, y, id) {
   m.innerHTML = `
     <div class="menu-hdr">${esc(blk.id)} · ${esc(blk.title)}</div>
     <button class="menu-item" data-act="open">Inspect block</button>
-    ${!ro && blk.state === "proposed" ? `<button class="menu-item" data-act="approve">✓ Approve (To do)</button>` : ""}
-    ${!ro && blk.state !== "done" ? `<button class="menu-item" data-act="done">✓ Mark done</button>` : ""}
-    ${!ro && blk.state === "todo" ? `<button class="menu-item" data-act="start">▶ Start (Doing)</button>` : ""}
+    ${!ro && blk.state !== "solved" ? `<button class="menu-item" data-act="solved">🟢 Mark solved</button>` : ""}
+    ${!ro && blk.state === "pending" ? `<button class="menu-item" data-act="start">🔵 Mark processing</button>` : ""}
+    ${!ro && blk.state !== "pending" ? `<button class="menu-item" data-act="reopen">🔴 Reset to pending</button>` : ""}
     ${!ro ? `<div class="menu-sep"></div>` : ""}
-    ${!ro ? `<button class="menu-item" data-act="yolo">⚡ ${blk.yolo ? "Turn off YOLO" : "YOLO up to here"}</button>` : ""}
-    ${!ro ? `<button class="menu-item" data-act="yolo_before">✋ ${blk.yolo_before ? "Turn off YOLO stop" : "YOLO stop before this"}</button>` : ""}
-    ${!ro ? `<div class="menu-sep"></div>` : ""}
-    ${!ro ? `<button class="menu-item" data-act="add_dep">＋ New block depending on ${esc(blk.id)}</button>` : ""}
+    ${!ro ? `<button class="menu-item" data-act="add_dep">＋ Add block depending on ${esc(blk.id)}</button>` : ""}
     <button class="menu-item" data-act="copy">Copy ID</button>
     ${!ro ? `<div class="menu-sep"></div><button class="menu-item danger" data-act="del">Delete block</button>` : ""}
   `;
@@ -2205,11 +2073,9 @@ function openCardMenu(x, y, id) {
       closeMenus();
       const a = btn.dataset.act;
       if (a === "open") selectBlock(id);
-      else if (a === "approve") moveBlockState(id, "todo");
-      else if (a === "done") moveBlockState(id, "done");
-      else if (a === "start") moveBlockState(id, "doing");
-      else if (a === "yolo") toggleYolo(id, false);
-      else if (a === "yolo_before") toggleYolo(id, true);
+      else if (a === "solved") moveBlockState(id, "solved");
+      else if (a === "start") moveBlockState(id, "processing");
+      else if (a === "reopen") moveBlockState(id, "pending");
       else if (a === "add_dep") openNewBlockModal(blk.stage, id);
       else if (a === "copy") { navigator.clipboard?.writeText(id); toast(`Copied ${id}`); }
       else if (a === "del") deleteBlock(id);
@@ -2249,7 +2115,7 @@ function openProcMenu(btn) {
   if (state.mode === "server") {
     for (const b of state.boardsList) {
       const act = b.slug === state.slug ? "● " : "";
-      html += `<button class="menu-item" data-slug="${esc(b.slug)}"><span>${act}${esc(b.title)}</span><span style="color:var(--text-3);font-family:var(--mono);font-size:11px">${b.done}/${b.total}</span></button>`;
+      html += `<button class="menu-item" data-slug="${esc(b.slug)}"><span>${act}${esc(b.title)}</span><span style="color:var(--text-3);font-family:var(--mono);font-size:11px">${b.solved ?? b.done}/${b.total}</span></button>`;
     }
     html += `<div class="menu-sep"></div>`;
     html += `<button class="menu-item" data-act="new_proc">＋ New Chemical Process...</button>`;
@@ -2288,23 +2154,16 @@ function openBellMenu(btn) {
   const r = btn.getBoundingClientRect();
   const m = $("bell-menu");
   const bmap = blockMap(state.board);
-  const waits = state.board.blocks.filter(b => viewState(b, bmap) === "waiting");
-  const revs = state.board.blocks.filter(b => b.state === "review");
+  const blocked = state.board.blocks.filter(b => viewState(b, bmap) === "blocked");
   let html = "";
-  if (waits.length) {
-    html += `<div class="menu-hdr">❓ Waiting for your answer (${waits.length})</div>`;
-    for (const b of waits) {
+  if (blocked.length) {
+    html += `<div class="menu-hdr" style="color:var(--st-blocked)">🔴 Blocked — Information Required (${blocked.length})</div>`;
+    for (const b of blocked) {
       const q = openQuestion(b);
-      html += `<button class="menu-item" data-jump="${esc(b.id)}"><div><strong>${esc(b.id)} ${esc(b.title)}</strong><div style="font-size:11.5px;color:var(--text-2)">${esc(q?.text || "")}</div></div></button>`;
+      html += `<button class="menu-item" data-jump="${esc(b.id)}"><div><strong>${esc(b.id)} ${esc(b.title)}</strong><div style="font-size:11.5px;color:var(--text-2)">${esc(q?.missing ? q.missing + ": " : "")}${esc(q?.text || "")}</div></div></button>`;
     }
   }
-  if (revs.length) {
-    html += `<div class="menu-hdr">🔍 Ready for review (${revs.length})</div>`;
-    for (const b of revs) {
-      html += `<button class="menu-item" data-jump="${esc(b.id)}"><span><strong>${esc(b.id)}</strong> ${esc(b.title)}</span><span class="st-pill review">Review</span></button>`;
-    }
-  }
-  if (!html) html = `<div style="padding:14px;color:var(--text-3);text-align:center">All clear — no waiting questions or pending reviews.</div>`;
+  if (!html) html = `<div style="padding:14px;color:var(--text-3);text-align:center">All clear — no blocks waiting on missing information.</div>`;
   m.innerHTML = html;
   m.querySelectorAll("[data-jump]").forEach(el => {
     el.onclick = () => { closeMenus(); selectBlock(el.dataset.jump); };
@@ -2330,7 +2189,7 @@ function openNewBlockModal(defaultStage = "RX", defaultDep = "") {
       <select id="nb-stage">${stages.map(s => `<option value="${esc(s.id)}" ${s.id === defaultStage ? "selected" : ""}>${esc(s.name)} (${esc(s.id)})</option>`).join("")}</select>
     </div>
     <div class="field"><label>Title</label><input id="nb-title" placeholder="e.g. Purge & Recycle Screening"></div>
-    <div class="field"><label>Engineering Objective</label><textarea id="nb-obj" rows="2" placeholder="What conceptual decision should this block settle?"></textarea></div>
+    <div class="field"><label>Engineering Objective</label><textarea id="nb-obj" rows="2" placeholder="What conceptual aspect should this block document?"></textarea></div>
     <div class="field"><label>Depends on (comma-separated IDs)</label><input id="nb-deps" value="${esc(defaultDep)}" placeholder="e.g. SP-01"></div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
       <button class="btn" id="m-cancel">Cancel</button>
@@ -2348,7 +2207,7 @@ function openNewBlockModal(defaultStage = "RX", defaultDep = "") {
       closeModal();
       commit(d => {
         const id = nextIdForStage(d, stage);
-        d.blocks.push(canonicalBlock({ id, stage, title, state: "todo", deps, objective: obj, at: nowIso(), by: "human" }));
+        d.blocks.push(canonicalBlock({ id, stage, title, state: "pending", deps, objective: obj, at: nowIso(), by: "human" }));
         state.selectedId = id;
       }, `Created block "${title}"`);
     };
@@ -2361,7 +2220,7 @@ function openEditBlockModal(blk) {
     <h3>Edit ${esc(blk.id)} — ${esc(blk.title)}</h3>
     <div class="field"><label>Title</label><input id="eb-title" value="${esc(blk.title)}"></div>
     <div class="field"><label>Objective</label><textarea id="eb-obj" rows="2">${esc(blk.objective || "")}</textarea></div>
-    <div class="field"><label>1. Conceptual Design Proposal (Markdown)</label><textarea id="eb-prop" rows="5">${esc(blk.proposal || "")}</textarea></div>
+    <div class="field"><label>1. Conceptual Findings & Basis (Markdown)</label><textarea id="eb-prop" rows="5">${esc(blk.proposal || "")}</textarea></div>
     <div class="field"><label>Key Parameters (one per line: Name | Value | Unit | Note)</label><textarea id="eb-params" rows="4" style="font-family:var(--mono);font-size:12px">${esc(paramsTxt)}</textarea></div>
     <div class="field"><label>2. First-Principles Rationale (Markdown)</label><textarea id="eb-rat" rows="5">${esc(blk.rationale || "")}</textarea></div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
@@ -2398,7 +2257,6 @@ function openNewProcessModal() {
     <div class="field"><label>Process Title</label><input id="np-title" placeholder="e.g. Biodiesel Transesterification"></div>
     <div class="field"><label>Folder Name</label><input id="np-folder" placeholder="e.g. Process_Biodiesel"></div>
     <div class="field"><label>Process Description (Chemistry, feedstocks, capacity, specs)</label><textarea id="np-desc" rows="4" placeholder="Describe target reaction, feedstocks, capacity (t/yr), purity specs, and constraints..."></textarea></div>
-    <label style="display:flex;align-items:center;gap:7px;font-size:12.5px"><input type="checkbox" id="np-yolo"> Enable YOLO up to SM-01 (agent solves end-to-end, reviews at Conceptual Brief)</label>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
       <button class="btn" id="m-cancel">Cancel</button>
       <button class="primary-btn" id="m-ok">Create Workspace</button>
@@ -2410,13 +2268,12 @@ function openNewProcessModal() {
       const title = $("np-title").value.trim();
       const folder = $("np-folder").value.trim() || title;
       const description = $("np-desc").value.trim();
-      const yolo = $("np-yolo").checked;
       if (!folder) return;
       try {
         const r = await fetch("/api/boards", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, folder, description, yolo }),
+          body: JSON.stringify({ title, folder, description }),
         });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || "Failed");
@@ -2505,7 +2362,7 @@ function renderHeuristicsList() {
         <div style="font-weight:700;margin:5px 0;font-size:13px">${esc(r.rule)}</div>
         ${r.explanation_and_derivation ? `<div style="font-size:12.5px;color:var(--text-2);margin:6px 0;line-height:1.45"><strong>Derivation:</strong> ${esc(r.explanation_and_derivation)}</div>` : ""}
         ${quant ? `<ul style="font-size:12px;margin:6px 0;padding-left:18px;color:var(--text)">${quant}</ul>` : ""}
-        ${r.conditions_and_limitations ? `<div style="font-size:12px;color:var(--st-doing);margin-top:5px"><strong>Limitations:</strong> ${esc(r.conditions_and_limitations)}</div>` : ""}
+        ${r.conditions_and_limitations ? `<div style="font-size:12px;color:var(--warn-text);background:var(--warn-bg);padding:5px 8px;border-radius:6px;margin-top:6px"><strong>Limitations:</strong> ${esc(r.conditions_and_limitations)}</div>` : ""}
         ${refs ? `<div style="font-size:11px;color:var(--text-3);margin-top:6px">📚 ${esc(refs)}</div>` : ""}
       </div>
     `;

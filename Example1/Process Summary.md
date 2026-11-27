@@ -1,6 +1,6 @@
 # Conceptual Process Brief: Green MTBE Production
 
-> **Status**: 10/10 blocks completed  
+> **Status**: 10/10 blocks solved  
 > **Capacity**: 10,000 t/yr naphtha (1,250 kg/h) (8000 h/yr, Continuous)  
 > **Product Spec**: MTBE >= 99.9 wt%; Raffinate-II MeOH < 20 ppm  
 > **Thermodynamic Model**: NRTL-RK / UNIQUAC-RK  
@@ -18,7 +18,7 @@
 
 ## Basis & Properties
 
-### BP-01: Basis & Operating Mode (`done`)
+### BP-01: Basis & Operating Mode (`solved`)
 
 Continuous Green MTBE production processing **10,000 t/yr** isobutylene-rich naphtha (1,250 kg/h at 8,000 h/yr; 50% minimum turndown) with green methanol to deliver **≥ 99.9 wt% MTBE**.
 
@@ -38,7 +38,7 @@ Capacity exceeds the 5,000 t/yr continuous threshold (`PROC-002`). Standard 8,00
 | `PROC-002` | Select continuous processing for annual capacities exceeding 5,000 metric tons/year; select batch processing for capacities bel... | 10,000 t/yr > 5,000 t/yr threshold -> Continuous mode, 8,000 h/yr. | Turton (2012), Section 2.2 & Table 2.1, p. 93 |
 | `PROC-001` | Never use a heuristic rule unless you understand where it came from and how it was derived. | Conceptual screening precedes Aspen Plus / HYSYS simulation. | Turton (2012), Section 11.1 & Epigraph, p. 368 |
 
-### BP-02: Chemical Substances & Thermo Model (`done`)
+### BP-02: Chemical Substances & Thermo Model (`solved`)
 
 Retrieved verified pure-component properties for Isobutylene, Methanol, MTBE, and Water; selected **NRTL-RK** (or UNIQUAC-RK) as the thermodynamic model.
 
@@ -57,7 +57,7 @@ Strong polar non-ideality of methanol in C4 hydrocarbons produces a minimum-boil
 
 ## 1. Reactor
 
-### RX-01: Reactor Thermodynamics (`done`)
+### RX-01: Reactor Thermodynamics (`solved`)
 
 The synthesis of Methyl *tert*-butyl ether (MTBE) is conducted as a liquid-phase, heterogeneously catalyzed equilibrium-limited addition reaction:
 
@@ -109,7 +109,7 @@ With inlet $50^\circ\text{C}$, unmitigated adiabatic exit would reach $\approx 9
 | `PROC-007` | Byproducts produced in small quantities by reversible reactions should not be separated for sale or purged; recycle them to ext... | Trace TBA/DIB need not be isolated if fuel-spec compatible. | Seider et al. (2010), Table 6.2, Heuristic 6, p. 155 |
 | `PROC-004` | Use an excess of an inexpensive, non-toxic, or readily available reactant to drive complete consumption of a valuable, toxic, o... | $5\%$ MeOH excess drives conversion and suppresses dimerization. | Seider et al. (2010), Table 6.2, Heuristic 2, p. 155 |
 
-### RX-02: Reactor Type & Catalyst (`done`)
+### RX-02: Reactor Type & Catalyst (`solved`)
 
 A **Two-Stage Fixed-Bed Catalytic Reactor Train with Intermediate Cooling** is selected for MTBE synthesis:
 
@@ -148,7 +148,7 @@ At $1,250\text{ kg/h}$ naphtha ($\approx 2.2\text{ m}^3\text{/h}$ liquid), two s
 | `REACT-007` | Select catalyst particle sizes based on reactor contact regime: ~0.10 mm (100 microns) for fluidized beds; ~1 mm for slurry bub... | $d_p = 0.5\text{–}1.5\text{ mm}$ balances diffusion vs. $\Delta P$. | Turton (2012), Table 11.17, Rule 2, p. 390 |
 | `PROC-008` | For reversible equilibrium-limited reactions, evaluate reactive separation (e.g. reactive distillation) to remove products cont... | CD screened; 2-stage fixed bed selected for this capacity. | Seider et al. (2010), Table 6.2, Heuristic 8, p. 155 |
 
-### RX-03: Reaction Conditions (`done`)
+### RX-03: Reaction Conditions (`solved`)
 
 | Parameter | Primary Reactor (R-101) | Secondary Reactor (R-102) | Unit / Specification |
 | :--- | :--- | :--- | :--- |
@@ -199,7 +199,7 @@ For $d_p = 0.75\text{ mm}$, $\varepsilon = 0.38$, Ergun estimate gives bed $\Del
 
 ## 2. Separation
 
-### SP-01: Separation Steps & Sequence (`done`)
+### SP-01: Separation Steps & Sequence (`solved`)
 
 A **Three-Unit Hybrid Distillation–Extraction Train** is synthesized from relative volatility hierarchy and azeotropic phase behavior:
 
@@ -249,7 +249,7 @@ Fresh green MeOH makeup equals stoichiometric consumption only; excess MeOH is r
 | `PROC-004` | Use an excess of an inexpensive, non-toxic, or readily available reactant to drive complete consumption of a valuable, toxic, o... | MeOH + water closed loops. | Seider et al. (2010), Table 6.2, Heuristic 2, p. 155 |
 | `PROC-007` | Byproducts produced in small quantities by reversible reactions should not be separated for sale or purged; recycle them to ext... | MeOH + water closed loops. | Seider et al. (2010), Table 6.2, Heuristic 6, p. 155 |
 
-### SP-02: Separation Conditions (`done`)
+### SP-02: Separation Conditions (`solved`)
 
 | Equipment ID | Service / Type | Operating Pressure | Top / Bottom Temp. | Stages | Reflux Ratio ($R$) | $D_i$ | Internals |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -292,7 +292,7 @@ Fresh green MeOH makeup equals stoichiometric consumption only; excess MeOH is r
 
 ## 3. Heat Exchangers
 
-### HX-01: Heat Exchanger Types (`done`)
+### HX-01: Heat Exchanger Types (`solved`)
 
 Eight conceptual heat-transfer services across reaction, debutizer, extraction, and MeOH recovery:
 
@@ -338,7 +338,7 @@ $3/4''$ OD tubes, $1''$ triangular pitch, $16\text{ ft}$ lengths for primary S&T
 | `HEX-007` | In reboilers and vaporizers, maintain the maximum overall temperature driving force Delta T_driving <= 45 F (25 C) to ensure nu... | Keep $\Delta T \le 25^\circ\text{C}$ for nucleate boiling. | Seider et al. (2010), Table 6.2, Heuristic 28, p. 157 |
 | `HEX-010` | Specify double-pipe or multi-pipe hairpin heat exchangers when required heat transfer area is small (< 100 to 200 ft2 / 10 to 2... | E-203 / E-204 when $A < 20\text{ m}^2$. | Turton (2012), Table 11.11, Rule 9, p. 385 |
 
-### HX-02: Utilities & Pinch (`done`)
+### HX-02: Utilities & Pinch (`solved`)
 
 ```mermaid
 flowchart TD
@@ -396,7 +396,7 @@ Process design guarantees auxiliary services at BL—standard CW and LP steam he
 
 ## 4. Conceptual Brief
 
-### SM-01: Conceptual Process Brief (`done`)
+### SM-01: Conceptual Process Brief (`solved`)
 
 # Process Summary: Conceptual Process Brief for Green MTBE Plant
 

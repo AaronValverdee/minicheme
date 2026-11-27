@@ -50,7 +50,7 @@
       "id": "BP-01",
       "stage": "BP",
       "title": "Basis & Operating Mode",
-      "state": "todo",
+      "state": "pending",
       "deps": [],
       "objective": "Parse process inputs & ./references/, classify Continuous vs Batch (PROC-002), and capture capacity, specs, battery limits, and constraints.",
       "recommended_heuristics": [
@@ -63,7 +63,7 @@
       "id": "BP-02",
       "stage": "BP",
       "title": "Chemical Substances & Thermo Model",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "BP-01"
       ],
@@ -78,7 +78,7 @@
       "id": "RX-01",
       "stage": "RX",
       "title": "Reactor Thermodynamics",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "BP-02"
       ],
@@ -94,7 +94,7 @@
       "id": "RX-02",
       "stage": "RX",
       "title": "Reactor Type & Catalyst",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "RX-01"
       ],
@@ -110,7 +110,7 @@
       "id": "RX-03",
       "stage": "RX",
       "title": "Reaction Conditions",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "RX-02"
       ],
@@ -126,7 +126,7 @@
       "id": "SP-01",
       "stage": "SP",
       "title": "Separation Steps & Sequence",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "RX-03"
       ],
@@ -144,7 +144,7 @@
       "id": "SP-02",
       "stage": "SP",
       "title": "Separation Conditions",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "SP-01"
       ],
@@ -162,7 +162,7 @@
       "id": "HX-01",
       "stage": "HX",
       "title": "Heat Exchanger Types",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "SP-02"
       ],
@@ -178,7 +178,7 @@
       "id": "HX-02",
       "stage": "HX",
       "title": "Utilities & Pinch",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "HX-01"
       ],
@@ -194,7 +194,7 @@
       "id": "SM-01",
       "stage": "SM",
       "title": "Conceptual Process Brief",
-      "state": "todo",
+      "state": "pending",
       "deps": [
         "HX-02"
       ],

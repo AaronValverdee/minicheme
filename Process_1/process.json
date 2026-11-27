@@ -123,7 +123,7 @@
       "id": "BP-01",
       "stage": "BP",
       "title": "Basis & Operating Mode",
-      "state": "done",
+      "state": "solved",
       "deps": [],
       "objective": "Parse process inputs & ./references/, classify Continuous vs Batch (PROC-002), and capture capacity, specs, battery limits, and constraints.",
       "recommended_heuristics": [
@@ -136,7 +136,7 @@
       "id": "BP-02",
       "stage": "BP",
       "title": "Chemical Substances & Thermo Model",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "BP-01"
       ],
@@ -151,7 +151,7 @@
       "id": "RX-01",
       "stage": "RX",
       "title": "Reactor Thermodynamics",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "BP-02"
       ],
@@ -202,7 +202,7 @@
       "id": "RX-02",
       "stage": "RX",
       "title": "Reactor Type & Catalyst",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "RX-01"
       ],
@@ -253,7 +253,7 @@
       "id": "RX-03",
       "stage": "RX",
       "title": "Reaction Conditions",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "RX-02"
       ],
@@ -304,7 +304,7 @@
       "id": "SP-01",
       "stage": "SP",
       "title": "Separation Steps & Sequence",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "RX-03"
       ],
@@ -369,7 +369,7 @@
       "id": "SP-02",
       "stage": "SP",
       "title": "Separation Conditions",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "SP-01"
       ],
@@ -434,7 +434,7 @@
       "id": "HX-01",
       "stage": "HX",
       "title": "Heat Exchanger Types",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "SP-02"
       ],
@@ -503,7 +503,7 @@
       "id": "HX-02",
       "stage": "HX",
       "title": "Utilities & Pinch",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "HX-01"
       ],
@@ -554,7 +554,7 @@
       "id": "SM-01",
       "stage": "SM",
       "title": "Conceptual Process Brief",
-      "state": "done",
+      "state": "solved",
       "deps": [
         "HX-02"
       ],

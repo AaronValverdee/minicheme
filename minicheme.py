@@ -50,7 +50,14 @@ HEURISTICS_PATH = REPO_ROOT / "resources" / "heuristics" / "heuristics.json"
 PUBCHEM_FETCHER_PATH = REPO_ROOT / "resources" / "heuristics" / "pubchem_fetcher.py"
 HTML_PATH = REPO_ROOT / "minicheme.html"
 
-VALID_STATES = ("proposed", "todo", "doing", "review", "done")
+VALID_STATES = ("pending", "processing", "solved")
+_LEGACY_STATE_MAP = {
+    "done": "solved",
+    "doing": "processing",
+    "todo": "pending",
+    "proposed": "pending",
+    "review": "pending",
+}
 ENGINEERING_STAGES = {"RX", "SP", "HX"}
 
 DEFAULT_STAGES = [
@@ -338,14 +345,14 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def new_process(title: str = "New Chemical Process", description: str = "", yolo_all: bool = False) -> dict[str, Any]:
+def new_process(title: str = "New Chemical Process", description: str = "") -> dict[str, Any]:
     blocks = []
     for bp in DEFAULT_BLOCKS_BLUEPRINT:
         blk: dict[str, Any] = {
             "id": bp["id"],
             "stage": bp["stage"],
             "title": bp["title"],
-            "state": "todo",
+            "state": "pending",
             "deps": list(bp["deps"]),
             "objective": bp["objective"],
             "recommended_heuristics": list(bp["recommended_heuristics"]),
@@ -355,8 +362,6 @@ def new_process(title: str = "New Chemical Process", description: str = "", yolo
             "heuristics": [],
             "notes": [],
         }
-        if yolo_all and bp["id"] == "SM-01":
-            blk["yolo"] = True
         blocks.append(blk)
 
     return canonical(
@@ -415,9 +420,10 @@ def canonical_note(n: dict[str, Any]) -> dict[str, Any]:
 
 
 def canonical_block(b: dict[str, Any]) -> dict[str, Any]:
-    state = str(b.get("state") or "todo").strip().lower()
+    raw_state = str(b.get("state") or "pending").strip().lower()
+    state = _LEGACY_STATE_MAP.get(raw_state, raw_state)
     if state not in VALID_STATES:
-        state = "todo"
+        state = "pending"
     deps = []
     for d in b.get("deps") or []:
         ds = str(d).strip()
@@ -474,10 +480,6 @@ def canonical_block(b: dict[str, Any]) -> dict[str, Any]:
         out["heuristics"] = heurs
     if str(b.get("mermaid", "")).strip():
         out["mermaid"] = str(b.get("mermaid", "")).strip()
-    if b.get("yolo"):
-        out["yolo"] = True
-    if b.get("yolo_before"):
-        out["yolo_before"] = True
     if isinstance(b.get("started"), dict) and b["started"].get("by"):
         out["started"] = {"at": str(b["started"].get("at") or now_iso()), "by": str(b["started"]["by"])}
     if b.get("at"):
@@ -510,8 +512,6 @@ def canonical_block(b: dict[str, Any]) -> dict[str, Any]:
             "title",
             "state",
             "deps",
-            "yolo",
-            "yolo_before",
             "at",
             "by",
             "started",
@@ -663,7 +663,7 @@ def load_process(path: Path) -> dict[str, Any]:
 
 @contextlib.contextmanager
 def file_lock(path: Path, timeout: float = 5.0):
-    lock_path = path.parent / f".{path.name}.lock"
+    lock_path = path.parent / f"_minicheme_{path.name}.lock"
     deadline = time.monotonic() + timeout
     fd = None
     while True:
@@ -698,7 +698,7 @@ def file_lock(path: Path, timeout: float = 5.0):
 
 def write_atomic(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp_name = tempfile.mkstemp(prefix=".minicheme-", suffix=".tmp", dir=str(path.parent))
+    fd, tmp_name = tempfile.mkstemp(prefix="_minicheme_", suffix=".tmp", dir=str(path.parent))
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             f.write(text)
@@ -723,7 +723,7 @@ def mutate_process(path: Path, fn) -> tuple[dict[str, Any], Any]:
 
 
 # ---------------------------------------------------------------------------
-# Graph, Dependencies, Waiting, YOLO & Validation Logic
+# Graph, Dependencies, Waiting & Validation Logic
 # ---------------------------------------------------------------------------
 
 def block_map(board: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -747,39 +747,33 @@ def find_stage(board: dict[str, Any], ref: str) -> dict[str, Any]:
 
 
 def unmet_deps(block: dict[str, Any], bmap: dict[str, dict[str, Any]]) -> list[str]:
-    return [d for d in block.get("deps", []) if d in bmap and bmap[d]["state"] != "done"]
+    return [d for d in block.get("deps", []) if d in bmap and bmap[d]["state"] != "solved"]
 
 
 def open_question(block: dict[str, Any]) -> dict[str, Any] | None:
-    """Return the latest unresolved `ask` note if no later note answered it."""
+    """Return the latest unresolved [INFORMATION REQUIRED] (`ask`) note if not yet answered."""
     notes = block.get("notes") or []
     for n in reversed(notes):
         kind = n.get("kind", "note")
         if kind == "ask":
             return n
-        if kind in ("answer", "note", "review", "feedback", "plan"):
-            return None
-    return None
-
-
-def change_request(block: dict[str, Any]) -> dict[str, Any] | None:
-    if block.get("state") != "proposed":
-        return None
-    for n in reversed(block.get("notes") or []):
-        if n.get("kind") == "changes":
-            return n
-        if n.get("by") != "human":
+        if kind in ("answer", "note", "solved", "review", "feedback", "plan"):
             return None
     return None
 
 
 def view_state(block: dict[str, Any], bmap: dict[str, dict[str, Any]]) -> str:
+    """Traffic-light dashboard state: blocked (Red, info required), locked (Red, upstream), pending (Red, ready), processing (Blue), solved (Green)."""
     st = block["state"]
-    if st == "todo" and unmet_deps(block, bmap):
+    if st == "solved":
+        return "solved"
+    if open_question(block):
         return "blocked"
-    if st == "doing" and open_question(block):
-        return "waiting"
-    return st
+    if st == "processing":
+        return "processing"
+    if unmet_deps(block, bmap):
+        return "locked"
+    return "pending"
 
 
 def _upstream_ids(bmap: dict[str, dict[str, Any]], start_id: str) -> set[str]:
@@ -792,40 +786,6 @@ def _upstream_ids(bmap: dict[str, dict[str, Any]], start_id: str) -> set[str]:
         seen.add(cur)
         stack.extend(bmap[cur].get("deps", []))
     return seen
-
-
-def yolo_cover(board: dict[str, Any]) -> dict[str, str]:
-    """
-    Map block_id -> 'auto' (finish straight to done) or 'target' (finish goes to review)
-    or 'stop' (yolo_before stop marker; upstream is 'auto').
-    Mirrors Kanvas YOLO semantics.
-    """
-    bmap = block_map(board)
-    cover: dict[str, str] = {}
-    active_targets = [
-        b for b in board.get("blocks", []) if b.get("yolo") and b["state"] not in ("review", "done")
-    ]
-    active_stops = [
-        b for b in board.get("blocks", []) if b.get("yolo_before") and b["state"] not in ("review", "done")
-    ]
-    # Mark targets and their upstreams
-    target_set = {b["id"] for b in active_targets}
-    for b in active_targets:
-        cover.setdefault(b["id"], "target")
-        for up in _upstream_ids(bmap, b["id"]):
-            cover[up] = "auto"
-    for b in active_stops:
-        if b["id"] not in cover:
-            cover[b["id"]] = "stop"
-        for up in _upstream_ids(bmap, b["id"]):
-            if cover.get(up) != "auto":
-                cover[up] = "auto"
-    # If a target is upstream of another target, outer target takes over
-    for tid in list(target_set):
-        for other in target_set:
-            if other != tid and tid in _upstream_ids(bmap, other):
-                cover[tid] = "auto"
-    return cover
 
 
 def reaches(board: dict[str, Any], start: str, goal: str) -> bool:
@@ -1084,14 +1044,12 @@ def cmd_init(args: argparse.Namespace) -> None:
     refs_dir.mkdir(exist_ok=True)
     refs = [f"references/{f.name}" for f in sorted(refs_dir.iterdir()) if f.is_file() and f.name.lower() != "readme.md"]
 
-    board = new_process(title=title, description=desc, yolo_all=args.yolo)
+    board = new_process(title=title, description=desc)
     board["basis"]["references"] = refs
     write_atomic(pfile, dumps(board))
     print(f"Initialized Minicheme workspace: {pfile}")
     print(f"  Title : {board['title']}")
     print(f"  Blocks: {len(board['blocks'])} (Douglas hierarchy BP -> RX -> SP -> HX -> SM)")
-    if args.yolo:
-        print("  YOLO  : enabled up to SM-01 (autonomous chain ending at Conceptual Brief review)")
     print(f"Next: python minicheme.py serve \"{target}\"  |  python minicheme.py next -p \"{target}\"")
 
 
@@ -1099,12 +1057,11 @@ def cmd_status(args: argparse.Namespace) -> None:
     path = resolve_process_path(args.process)
     board = load_process(path)
     bmap = block_map(board)
-    cover = yolo_cover(board)
     blocks = board["blocks"]
-    done_n = sum(1 for b in blocks if b["state"] == "done")
-    pct = int(round(100 * done_n / len(blocks))) if blocks else 0
+    solved_n = sum(1 for b in blocks if b["state"] == "solved")
+    pct = int(round(100 * solved_n / len(blocks))) if blocks else 0
 
-    print(f"{board['title']}  [{done_n}/{len(blocks)} done, {pct}%]  ({path})")
+    print(f"{board['title']}  [{solved_n}/{len(blocks)} solved, {pct}%]  ({path})")
     basis = board.get("basis", {})
     summary_bits = [x for x in (basis.get("capacity"), basis.get("operating_mode"), basis.get("thermo_model")) if x]
     if summary_bits:
@@ -1113,29 +1070,21 @@ def cmd_status(args: argparse.Namespace) -> None:
         print("Substances: " + ", ".join(f"{c['common_name']} (Tb={c['bp_c']}°C)" if c.get("bp_c") is not None else c["common_name"] for c in board["substances"]))
 
     buckets: dict[str, list[dict[str, Any]]] = {
-        "waiting": [],
-        "doing": [],
-        "review": [],
-        "ready": [],
         "blocked": [],
-        "proposed": [],
-        "done": [],
+        "processing": [],
+        "pending": [],
+        "locked": [],
+        "solved": [],
     }
     for b in blocks:
-        vs = view_state(b, bmap)
-        if vs == "todo":
-            buckets["ready"].append(b)
-        else:
-            buckets[vs].append(b)
+        buckets[view_state(b, bmap)].append(b)
 
     for label, key in [
-        ("WAITING FOR HUMAN", "waiting"),
-        ("DOING", "doing"),
-        ("REVIEW", "review"),
-        ("READY", "ready"),
-        ("PROPOSED", "proposed"),
-        ("BLOCKED", "blocked"),
-        ("DONE", "done"),
+        ("BLOCKED — INFORMATION REQUIRED (RED)", "blocked"),
+        ("PROCESSING (BLUE)", "processing"),
+        ("READY / PENDING (RED)", "pending"),
+        ("LOCKED BY UPSTREAM (RED)", "locked"),
+        ("SOLVED (GREEN)", "solved"),
     ]:
         items = buckets[key]
         if not items:
@@ -1143,22 +1092,12 @@ def cmd_status(args: argparse.Namespace) -> None:
         print(f"\n{label} ({len(items)}):")
         for b in items:
             tags = []
-            if cover.get(b["id"]) == "auto":
-                tags.append("YOLO")
-            elif cover.get(b["id"]) == "target":
-                tags.append("YOLO-REVIEW")
-            elif cover.get(b["id"]) == "stop":
-                tags.append("YOLO-STOP")
-            if key == "blocked":
+            if key == "locked":
                 tags.append("waits:" + ",".join(unmet_deps(b, bmap)))
-            if key == "waiting":
+            if key == "blocked":
                 q = open_question(b)
                 if q:
-                    tags.append(f"Q: {_gist(q['text'], 70)}")
-            if key == "proposed":
-                cr = change_request(b)
-                if cr:
-                    tags.append(f"changes: {_gist(cr['text'], 60)}")
+                    tags.append(f"INFO REQUIRED: {_gist(q['text'], 75)}")
             tag_str = f"  [{' | '.join(tags)}]" if tags else ""
             print(f"  {b['id']:6s} {b['title']}{tag_str}")
 
@@ -1177,40 +1116,28 @@ def cmd_next(args: argparse.Namespace) -> None:
     path = resolve_process_path(args.process)
     board = load_process(path)
     bmap = block_map(board)
-    cover = yolo_cover(board)
     blocks = board["blocks"]
-    done_n = sum(1 for b in blocks if b["state"] == "done")
-    print(f"PROCESS: {board['title']} ({done_n}/{len(blocks)} done)")
+    solved_n = sum(1 for b in blocks if b["state"] == "solved")
+    print(f"PROCESS: {board['title']} ({solved_n}/{len(blocks)} solved)")
 
-    # Check waiting questions first
-    waiting = [b for b in blocks if view_state(b, bmap) == "waiting"]
-    if waiting:
-        print("\nACTION: STOP — Waiting for human answer:")
-        for b in waiting:
+    # Stop immediately if any block is Red & Blocked due to missing information
+    blocked = [b for b in blocks if view_state(b, bmap) == "blocked"]
+    if blocked:
+        print("\nACTION: STOP — BLOCKED (RED) due to missing information:")
+        for b in blocked:
             q = open_question(b)
             print(f"  {b['id']} ({b['title']}): {q['text'] if q else ''}")
-        print("Ask the human in chat or wait for their reply in the browser.")
+            if q and q.get("missing"):
+                print(f"    Missing: {q['missing']}")
+        print("Do NOT invent or propose process decisions. Wait for the engineering team to provide this information.")
         return
 
-    # Check review items if not in YOLO auto mode
-    review = [b for b in blocks if b["state"] == "review"]
-    doing = [b for b in blocks if view_state(b, bmap) == "doing"]
-    ready = [b for b in blocks if view_state(b, bmap) == "todo"]
+    processing = [b for b in blocks if view_state(b, bmap) == "processing"]
+    ready = [b for b in blocks if view_state(b, bmap) == "pending"]
 
-    target = doing[0] if doing else (ready[0] if ready else None)
+    target = processing[0] if processing else (ready[0] if ready else None)
     if target is None:
-        if review:
-            print("\nACTION: STOP — Waiting for human review:")
-            for b in review:
-                print(f"  {b['id']} ({b['title']})")
-            return
-        proposed = [b for b in blocks if b["state"] == "proposed"]
-        if proposed:
-            print("\nACTION: STOP — Waiting for human approval of proposals:")
-            for b in proposed:
-                print(f"  {b['id']} ({b['title']})")
-            return
-        print("\nALL BLOCKS DONE! Conceptual planning complete — ready for process simulator.")
+        print("\nALL BLOCKS SOLVED (GREEN)! Conceptual dashboard complete — ready for the process simulator.")
         return
 
     # Basis summary (compact)
@@ -1233,20 +1160,18 @@ def cmd_next(args: argparse.Namespace) -> None:
             print("  azeotropes: " + _gist(board["azeotrope_notes"], 200))
 
     # Active or Next block
-    ymode = cover.get(target["id"])
-    y_str = f"  [{ymode.upper()}]" if ymode else ""
-    print(f"\nNEXT BLOCK: {target['id']} — {target['title']} (state={target['state']}{y_str})")
+    print(f"\nNEXT BLOCK: {target['id']} — {target['title']} (state={target['state']})")
     print(f"OBJECTIVE: {target.get('objective', '')}")
 
-    # Check if sent back
+    # Check if reopened with feedback
     for n in reversed(target.get("notes") or []):
-        if n.get("kind") == "feedback" or n.get("text", "").startswith("Sent back:"):
-            print(f"REVIEW FEEDBACK TO ADDRESS: {n['text']}")
+        if n.get("kind") == "feedback" or n.get("text", "").startswith("Reopened:"):
+            print(f"TEAM NOTE TO ADDRESS: {n['text']}")
             break
 
-    # Upstream decisions (compact!)
+    # Upstream context (compact!)
     if target.get("deps"):
-        print("\nUPSTREAM DECISIONS:")
+        print("\nUPSTREAM FINDINGS:")
         for did in target["deps"]:
             up = bmap.get(did)
             if not up:
@@ -1268,15 +1193,15 @@ def cmd_next(args: argparse.Namespace) -> None:
 
     # Concrete next command hint
     rel_p = str(path.parent)
-    print("\nWORKFLOW COMMANDS:")
-    if target["state"] == "todo":
-        print(f"  1. python minicheme.py start {target['id']} -p \"{rel_p}\" -m \"Plan: ...\"")
+    print("\nWORKFLOW COMMANDS (do NOT propose ungrounded decisions; block Red if info is missing):")
+    if target["state"] == "pending":
+        print(f"  1. python minicheme.py start {target['id']} -p \"{rel_p}\" -m \"Analyzing ...\"")
     if target["id"] == "BP-01":
         print(f"  2. python minicheme.py basis -p \"{rel_p}\" --target ... --capacity ... --mode Continuous --spec ... --thermo ...")
     elif target["id"] == "BP-02":
         print(f"  2. python minicheme.py props \"Reactant1:Reactant\" \"Product:Product\" \"Solvent:Solvent\" -p \"{rel_p}\"")
-    print(f"  3. If critical data missing: python minicheme.py ask {target['id']} -p \"{rel_p}\" \"Question\" --missing \"...\" --why \"...\" --baseline \"...\"")
-    print(f"  4. When solved: python minicheme.py finish {target['id']} -p \"{rel_p}\" --stdin <<'EOF'\n     {{\"proposal\":\"...\",\"rationale\":\"...\",\"parameters\":[{{\"name\":\"...\",\"value\":\"...\",\"unit\":\"...\",\"note\":\"...\"}}],\"heuristics\":[{{\"id\":\"...\",\"applied\":\"...\"}}],\"summary\":\"...\"}}\n     EOF")
+    print(f"  3. If info missing from user input / bibliography / heuristics: python minicheme.py block {target['id']} -p \"{rel_p}\" \"What is missing?\" --missing \"...\" --why \"...\" --baseline \"...\"")
+    print(f"  4. When grounded & complete: python minicheme.py finish {target['id']} -p \"{rel_p}\" --stdin <<'EOF'\n     {{\"findings\":\"...\",\"rationale\":\"...\",\"parameters\":[{{\"name\":\"...\",\"value\":\"...\",\"unit\":\"...\",\"note\":\"...\"}}],\"heuristics\":[{{\"id\":\"...\",\"applied\":\"...\"}}],\"summary\":\"...\"}}\n     EOF")
 
 
 def cmd_show(args: argparse.Namespace) -> None:
@@ -1291,7 +1216,7 @@ def cmd_show(args: argparse.Namespace) -> None:
     if b.get("objective"):
         print(f"Objective: {b['objective']}")
     if b.get("proposal"):
-        print(f"\n--- Proposal ---\n{b['proposal']}")
+        print(f"\n--- Conceptual Findings ---\n{b['proposal']}")
     if b.get("parameters"):
         print("\n--- Parameters ---")
         for p in b["parameters"]:
@@ -1404,16 +1329,14 @@ def cmd_start(args: argparse.Namespace) -> None:
     def _update(board: dict[str, Any]):
         bmap = block_map(board)
         blk = find_block(board, args.id)
-        if blk["state"] == "done":
-            raise MinichemeError(f"{blk['id']} is already done.")
-        if blk["state"] == "proposed":
-            raise MinichemeError(f"{blk['id']} is still proposed. Ask the human to approve it in the browser first.")
-        if blk["state"] == "review":
-            raise MinichemeError(f"{blk['id']} is waiting for human review.")
+        if blk["state"] == "solved":
+            raise MinichemeError(f"{blk['id']} is already solved (Green). Use `reopen` to re-evaluate it.")
+        if open_question(blk):
+            raise MinichemeError(f"{blk['id']} is blocked (Red) waiting for missing information. Record the engineer's info with `provide` first.")
         unmet = unmet_deps(blk, bmap)
         if unmet:
-            raise MinichemeError(f"{blk['id']} is blocked by unfinished dependency: {', '.join(unmet)}")
-        blk["state"] = "doing"
+            raise MinichemeError(f"{blk['id']} is locked (Red) by unsolved dependency: {', '.join(unmet)}")
+        blk["state"] = "processing"
         blk["started"] = {"at": now_iso(), "by": who}
         msg = _read_text_arg(args.message, args.stdin, args.file).strip()
         if msg:
@@ -1421,21 +1344,24 @@ def cmd_start(args: argparse.Namespace) -> None:
         return blk["id"]
 
     _, bid = mutate_process(path, _update)
-    print(f"Started {bid} (doing, by {who}).")
+    print(f"Started {bid} -> processing (Blue, by {who}).")
 
 
-def cmd_ask(args: argparse.Namespace) -> None:
+def cmd_block(args: argparse.Namespace) -> None:
+    """Flag a block as Red & Blocked due to missing information ([INFORMATION REQUIRED])."""
     path = resolve_process_path(args.process)
     who = args.agent or os.environ.get("MINICHEME_AGENT") or "agent"
     question = _read_text_arg(args.question, args.stdin, args.file).strip()
     if not question:
-        raise MinichemeError("Question text is required.")
+        raise MinichemeError("Missing-information description/question is required.")
 
     def _update(board: dict[str, Any]):
         blk = find_block(board, args.id)
-        if blk["state"] not in ("doing", "todo"):
-            raise MinichemeError(f"Cannot ask on {blk['id']} in state '{blk['state']}'.")
-        blk["state"] = "doing"
+        if blk["state"] == "solved":
+            raise MinichemeError(f"Cannot block {blk['id']}: already solved.")
+        # Block remains Red (pending) with an unresolved [INFORMATION REQUIRED] flag
+        blk["state"] = "pending"
+        blk.pop("started", None)
         append_note(
             blk,
             question,
@@ -1448,15 +1374,16 @@ def cmd_ask(args: argparse.Namespace) -> None:
         return blk["id"]
 
     _, bid = mutate_process(path, _update)
-    print(f"Waiting for human on {bid}: {question}")
+    print(f"Blocked {bid} (Red — INFORMATION REQUIRED): {question}")
 
 
-def cmd_answer(args: argparse.Namespace) -> None:
+def cmd_provide(args: argparse.Namespace) -> None:
+    """Record information supplied by the engineering team to unblock a Red block."""
     path = resolve_process_path(args.process)
     who = args.agent or "human"
     text = _read_text_arg(args.text, args.stdin, args.file).strip()
     if not text:
-        raise MinichemeError("Answer text is required.")
+        raise MinichemeError("Information text is required.")
 
     def _update(board: dict[str, Any]):
         blk = find_block(board, args.id)
@@ -1464,7 +1391,7 @@ def cmd_answer(args: argparse.Namespace) -> None:
         return blk["id"]
 
     _, bid = mutate_process(path, _update)
-    print(f"Recorded answer on {bid}.")
+    print(f"Recorded information on {bid} (unblocked — ready to resume).")
 
 
 def cmd_note(args: argparse.Namespace) -> None:
@@ -1489,9 +1416,9 @@ def cmd_pause(args: argparse.Namespace) -> None:
 
     def _update(board: dict[str, Any]):
         blk = find_block(board, args.id)
-        if blk["state"] != "doing":
-            raise MinichemeError(f"{blk['id']} is not doing (current: {blk['state']}).")
-        blk["state"] = "todo"
+        if blk["state"] != "processing":
+            raise MinichemeError(f"{blk['id']} is not processing (current: {blk['state']}).")
+        blk["state"] = "pending"
         blk.pop("started", None)
         msg = _read_text_arg(args.message, args.stdin, args.file).strip()
         if msg:
@@ -1499,7 +1426,7 @@ def cmd_pause(args: argparse.Namespace) -> None:
         return blk["id"]
 
     _, bid = mutate_process(path, _update)
-    print(f"Paused {bid} (back to todo).")
+    print(f"Paused {bid} (back to pending / Red).")
 
 
 def _parse_param_flag(raw: str) -> dict[str, str]:
@@ -1523,7 +1450,8 @@ def cmd_finish(args: argparse.Namespace) -> None:
         if not isinstance(payload, dict):
             raise MinichemeError("finish JSON payload must be an object.")
 
-    proposal = (args.proposal if args.proposal is not None else payload.get("proposal", "")).strip()
+    findings_arg = args.findings if args.findings is not None else args.proposal
+    findings = (findings_arg if findings_arg is not None else (payload.get("findings") or payload.get("proposal") or "")).strip()
     rationale = (args.rationale if args.rationale is not None else payload.get("rationale", "")).strip()
     summary = (args.message if args.message is not None else payload.get("summary", "")).strip()
     mermaid = (args.mermaid if args.mermaid is not None else payload.get("mermaid", "")).strip()
@@ -1541,16 +1469,16 @@ def cmd_finish(args: argparse.Namespace) -> None:
     def _update(board: dict[str, Any]):
         bmap = block_map(board)
         blk = find_block(board, args.id)
-        if blk["state"] not in ("doing", "todo"):
-            raise MinichemeError(f"Cannot finish {blk['id']} from state '{blk['state']}'. Start it first.")
+        if blk["state"] not in ("processing", "pending"):
+            raise MinichemeError(f"Cannot finish {blk['id']} from state '{blk['state']}'.")
         unmet = unmet_deps(blk, bmap)
         if unmet:
-            raise MinichemeError(f"{blk['id']} is blocked by unfinished dependency: {', '.join(unmet)}")
+            raise MinichemeError(f"{blk['id']} is locked (Red) by unsolved dependency: {', '.join(unmet)}")
         if open_question(blk):
-            raise MinichemeError(f"{blk['id']} has an unanswered question. Record the human's answer before finishing.")
+            raise MinichemeError(f"{blk['id']} is blocked (Red) with missing information. Provide the missing info before finishing.")
 
-        if proposal:
-            blk["proposal"] = proposal
+        if findings:
+            blk["proposal"] = findings
         if rationale:
             blk["rationale"] = rationale
         if params_raw:
@@ -1560,9 +1488,9 @@ def cmd_finish(args: argparse.Namespace) -> None:
         if mermaid:
             blk["mermaid"] = mermaid
 
-        # Enforce concrete chemical-engineering deliverable
+        # Enforce concrete chemical-engineering deliverable grounded in heuristics
         if not str(blk.get("proposal", "")).strip():
-            raise MinichemeError(f"{blk['id']} requires a non-empty `proposal` (conceptual design decision).")
+            raise MinichemeError(f"{blk['id']} requires non-empty `findings` (conceptual findings grounded in user input, bibliography, and heuristics).")
         if blk["stage"] in ENGINEERING_STAGES:
             if not str(blk.get("rationale", "")).strip():
                 raise MinichemeError(f"{blk['id']} ({blk['stage']}) requires a non-empty first-principles `rationale`.")
@@ -1570,114 +1498,30 @@ def cmd_finish(args: argparse.Namespace) -> None:
                 raise MinichemeError(
                     f"{blk['id']} ({blk['stage']}) requires at least one verified heuristic ID from resources/heuristics/heuristics.json."
                 )
-        rev_summary = summary or _gist(blk["proposal"], 180)
-
-        cover = yolo_cover(board)
-        ymode = cover.get(blk["id"])
-        if ymode == "auto":
-            blk["state"] = "done"
-            new_state = "done (YOLO)"
-        else:
-            blk["state"] = "review"
-            new_state = "review"
-            if blk.get("yolo"):
-                blk.pop("yolo", None)
+        done_summary = summary or _gist(blk["proposal"], 180)
+        blk["state"] = "solved"
         blk.pop("started", None)
-        append_note(blk, rev_summary, by=who, kind="review")
-        return blk["id"], new_state
-
-    _, (bid, new_state) = mutate_process(path, _update)
-    print(f"Finished {bid} -> {new_state}.")
-
-
-def cmd_accept(args: argparse.Namespace) -> None:
-    """Human CLI shortcut to approve/accept a block (mark done) or send it back."""
-    path = resolve_process_path(args.process)
-
-    def _update(board: dict[str, Any]):
-        blk = find_block(board, args.id)
-        if args.send_back:
-            blk["state"] = "todo"
-            blk.pop("started", None)
-            append_note(blk, f"Sent back: {args.send_back.strip()}", by="human", kind="feedback")
-            return blk["id"], "todo (sent back)"
-        if blk["state"] == "proposed":
-            blk["state"] = "todo"
-            return blk["id"], "todo (approved)"
-        blk["state"] = "done"
-        blk.pop("started", None)
-        if args.note:
-            append_note(blk, args.note.strip(), by="human", kind="note")
-        return blk["id"], "done"
-
-    _, (bid, st) = mutate_process(path, _update)
-    print(f"{bid} -> {st}.")
-
-
-def cmd_yolo(args: argparse.Namespace) -> None:
-    """Human CLI shortcut to toggle YOLO on a block (auto-approving upstream proposals)."""
-    path = resolve_process_path(args.process)
-
-    def _update(board: dict[str, Any]):
-        bmap = block_map(board)
-        blk = find_block(board, args.id)
-        if args.off:
-            blk.pop("yolo", None)
-            blk.pop("yolo_before", None)
-            return blk["id"], "off"
-        if args.before:
-            blk.pop("yolo", None)
-            blk["yolo_before"] = True
-            mode = "yolo_before"
-        else:
-            blk.pop("yolo_before", None)
-            blk["yolo"] = True
-            mode = "yolo"
-        # Approve upstream proposals (and target if yolo)
-        up = _upstream_ids(bmap, blk["id"])
-        if mode == "yolo":
-            up.add(blk["id"])
-        for uid in up:
-            ub = bmap[uid]
-            if ub["state"] == "proposed":
-                ub["state"] = "todo"
-            elif ub["state"] == "review" and uid != blk["id"]:
-                ub["state"] = "done"
-        return blk["id"], mode
-
-    _, (bid, mode) = mutate_process(path, _update)
-    print(f"YOLO on {bid}: {mode}.")
-
-
-def cmd_propose(args: argparse.Namespace) -> None:
-    path = resolve_process_path(args.process)
-    who = args.agent or os.environ.get("MINICHEME_AGENT") or "agent"
-
-    def _update(board: dict[str, Any]):
-        stage = find_stage(board, args.stage)
-        bmap = block_map(board)
-        deps = []
-        for d in args.deps or []:
-            deps.append(find_block(board, d)["id"])
-        bid = next_block_id(board, stage["id"])
-        blk = canonical_block(
-            {
-                "id": bid,
-                "stage": stage["id"],
-                "title": args.title,
-                "state": "proposed",
-                "deps": deps,
-                "objective": args.objective or "",
-                "recommended_heuristics": args.heuristics or [],
-                "at": now_iso(),
-                "by": who,
-            }
-        )
-        board["blocks"].append(blk)
-        return bid
+        append_note(blk, done_summary, by=who, kind="solved")
+        return blk["id"]
 
     _, bid = mutate_process(path, _update)
-    print(f"Proposed {bid}: {args.title} (waiting for human approval).")
+    print(f"Solved {bid} -> solved (Green).")
+
+
+def cmd_reopen(args: argparse.Namespace) -> None:
+    """Reopen a block back to pending (Red) for re-evaluation."""
+    path = resolve_process_path(args.process)
+
+    def _update(board: dict[str, Any]):
+        blk = find_block(board, args.id)
+        blk["state"] = "pending"
+        blk.pop("started", None)
+        if args.message:
+            append_note(blk, f"Reopened: {args.message.strip()}", by="human", kind="feedback")
+        return blk["id"]
+
+    _, bid = mutate_process(path, _update)
+    print(f"Reopened {bid} -> pending (Red).")
 
 
 def cmd_depend(args: argparse.Namespace) -> None:
@@ -1720,11 +1564,11 @@ def cmd_check(args: argparse.Namespace) -> None:
 def render_markdown_brief(board: dict[str, Any]) -> str:
     bmap = block_map(board)
     basis = board.get("basis", {})
-    done_n = sum(1 for b in board["blocks"] if b["state"] == "done")
+    solved_n = sum(1 for b in board["blocks"] if b["state"] == "solved")
     lines = [
         f"# Conceptual Process Brief: {board['title']}",
         "",
-        f"> **Status**: {done_n}/{len(board['blocks'])} blocks completed  ",
+        f"> **Status**: {solved_n}/{len(board['blocks'])} blocks solved  ",
     ]
     if basis.get("capacity"):
         lines.append(f"> **Capacity**: {basis['capacity']} ({basis.get('operating_hours', 8000)} h/yr, {basis.get('operating_mode', 'TBD')})  ")
@@ -1877,7 +1721,7 @@ def migrate_obsidian_workspace(old_dir: Path) -> dict[str, Any]:
                 fn = node.get("file")
                 if fn in file_to_id:
                     col = str(node.get("color", "1"))
-                    canvas_states[file_to_id[fn]] = "done" if col == "4" else ("doing" if col == "5" else "todo")
+                    canvas_states[file_to_id[fn]] = "solved" if col == "4" else ("processing" if col == "5" else "pending")
         except Exception:
             pass
 
@@ -1898,7 +1742,7 @@ def migrate_obsidian_workspace(old_dir: Path) -> dict[str, Any]:
             bmap[bid]["proposal"] = prop
             bmap[bid]["rationale"] = rat
             bmap[bid]["heuristics"] = heurs
-            bmap[bid]["state"] = canvas_states.get(bid, "done")
+            bmap[bid]["state"] = canvas_states.get(bid, "solved")
             append_note(bmap[bid], "Migrated from legacy Minicheme Obsidian note.", by="migration", kind="note")
 
     # Summary
@@ -1909,11 +1753,11 @@ def migrate_obsidian_workspace(old_dir: Path) -> dict[str, Any]:
         if m_title:
             board["title"] = m_title.group(1).strip()
         bmap["SM-01"]["proposal"] = smd
-        bmap["SM-01"]["state"] = "done" if all(bmap[x]["state"] == "done" for x in file_to_id.values()) else "todo"
+        bmap["SM-01"]["state"] = "solved" if all(bmap[x]["state"] == "solved" for x in file_to_id.values()) else "pending"
 
     if solved_any:
-        bmap["BP-01"]["state"] = "done"
-        bmap["BP-02"]["state"] = "done"
+        bmap["BP-01"]["state"] = "solved"
+        bmap["BP-02"]["state"] = "solved"
 
     return canonical(board)
 
@@ -1925,8 +1769,8 @@ def cmd_migrate(args: argparse.Namespace) -> None:
     board = migrate_obsidian_workspace(src)
     out = Path(args.out).expanduser().resolve() if args.out else src / PROCESS_FILENAME
     write_atomic(out, dumps(board))
-    done_n = sum(1 for b in board["blocks"] if b["state"] == "done")
-    print(f"Migrated '{src.name}' -> {out} ({done_n}/{len(board['blocks'])} blocks done).")
+    solved_n = sum(1 for b in board["blocks"] if b["state"] == "solved")
+    print(f"Migrated '{src.name}' -> {out} ({solved_n}/{len(board['blocks'])} blocks solved).")
 
 
 # ---------------------------------------------------------------------------
@@ -1987,24 +1831,23 @@ class MinichemeServer(ThreadingHTTPServer):
         for slug, path in snap:
             try:
                 b = load_process(path)
-                done = sum(1 for x in b["blocks"] if x["state"] == "done")
+                solved = sum(1 for x in b["blocks"] if x["state"] == "solved")
                 total = len(b["blocks"])
                 bmap = block_map(b)
-                waiting = sum(1 for x in b["blocks"] if view_state(x, bmap) == "waiting")
-                review = sum(1 for x in b["blocks"] if x["state"] == "review")
+                blocked = sum(1 for x in b["blocks"] if view_state(x, bmap) == "blocked")
                 items.append(
                     {
                         "slug": slug,
                         "title": b["title"],
                         "path": str(path),
-                        "done": done,
+                        "solved": solved,
+                        "done": solved,
                         "total": total,
-                        "waiting": waiting,
-                        "review": review,
+                        "blocked": blocked,
                     }
                 )
             except Exception:
-                items.append({"slug": slug, "title": slug, "path": str(path), "done": 0, "total": 0, "waiting": 0, "review": 0})
+                items.append({"slug": slug, "title": slug, "path": str(path), "solved": 0, "done": 0, "total": 0, "blocked": 0})
         return items
 
 
@@ -2182,7 +2025,6 @@ class MinichemeHandler(BaseHTTPRequestHandler):
                 board = new_process(
                     title=str(body.get("title") or folder.replace("_", " ")),
                     description=str(body.get("description") or ""),
-                    yolo_all=bool(body.get("yolo")),
                 )
                 (target_dir / "references").mkdir(parents=True, exist_ok=True)
                 write_atomic(pfile, dumps(board))
@@ -2282,7 +2124,6 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--title", help="Process title")
     sp.add_argument("--desc", help="Process description")
     sp.add_argument("--from-md", help="Read initial description from a Markdown file")
-    sp.add_argument("--yolo", action="store_true", help="Enable YOLO up to SM-01 for autonomous end-to-end conceptual planning")
     sp.add_argument("--force", action="store_true", help="Overwrite existing process.json")
     sp.set_defaults(func=cmd_init)
 
@@ -2342,37 +2183,37 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(func=cmd_basis)
 
     # start
-    sp = sub.add_parser("start", help="Start a ready block (todo -> doing)")
+    sp = sub.add_parser("start", help="Start a ready block (pending/Red -> processing/Blue)")
     sp.add_argument("id", help="Block ID")
-    sp.add_argument("-m", "--message", help="Brief execution plan note")
+    sp.add_argument("-m", "--message", help="Brief execution note")
     sp.add_argument("--stdin", action="store_true")
     sp.add_argument("--file")
     sp.add_argument("--as", dest="agent", help="Agent name")
     sp.add_argument("-p", "--process")
     sp.set_defaults(func=cmd_start)
 
-    # ask
-    sp = sub.add_parser("ask", help="Flag [INFORMATION REQUIRED] and pause for human reply")
+    # block (with `ask` alias)
+    sp = sub.add_parser("block", aliases=["ask"], help="Leave block Red & Blocked due to missing information ([INFORMATION REQUIRED])")
     sp.add_argument("id", help="Block ID")
-    sp.add_argument("question", nargs="?", default="", help="Question for the human engineer")
+    sp.add_argument("question", nargs="?", default="", help="What information is missing from user input / bibliography")
     sp.add_argument("--missing", help="Missing engineering parameter")
     sp.add_argument("--why", help="Why this parameter is needed")
-    sp.add_argument("--baseline", help="Recommended literature baseline")
+    sp.add_argument("--baseline", help="Typical literature reference range (informational only)")
     sp.add_argument("--stdin", action="store_true")
     sp.add_argument("--file")
     sp.add_argument("--as", dest="agent")
     sp.add_argument("-p", "--process")
-    sp.set_defaults(func=cmd_ask)
+    sp.set_defaults(func=cmd_block)
 
-    # answer
-    sp = sub.add_parser("answer", help="Record human answer to an open question")
+    # provide (with `answer` alias)
+    sp = sub.add_parser("provide", aliases=["answer"], help="Record engineer-supplied information to unblock a Red block")
     sp.add_argument("id", help="Block ID")
     sp.add_argument("text", nargs="?", default="")
     sp.add_argument("--stdin", action="store_true")
     sp.add_argument("--file")
     sp.add_argument("--as", dest="agent")
     sp.add_argument("-p", "--process")
-    sp.set_defaults(func=cmd_answer)
+    sp.set_defaults(func=cmd_provide)
 
     # note
     sp = sub.add_parser("note", help="Append a note to a block")
@@ -2385,7 +2226,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(func=cmd_note)
 
     # pause
-    sp = sub.add_parser("pause", help="Move a doing block back to todo")
+    sp = sub.add_parser("pause", help="Move a processing block back to pending (Red)")
     sp.add_argument("id", help="Block ID")
     sp.add_argument("-m", "--message")
     sp.add_argument("--stdin", action="store_true")
@@ -2395,10 +2236,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(func=cmd_pause)
 
     # finish
-    sp = sub.add_parser("finish", help="Submit validated conceptual result (doing -> review, or done under YOLO)")
+    sp = sub.add_parser("finish", help="Mark block solved (Green) with validated findings & verified heuristics")
     sp.add_argument("id", help="Block ID")
-    sp.add_argument("-m", "--message", help="Short review summary")
-    sp.add_argument("--proposal", help="Conceptual design proposal (Markdown)")
+    sp.add_argument("-m", "--message", help="Short completion summary")
+    sp.add_argument("--findings", help="Conceptual findings grounded in user input, bibliography, and heuristics (Markdown)")
+    sp.add_argument("--proposal", help="Alias for --findings")
     sp.add_argument("--rationale", help="First-principles shortcut rationale (Markdown)")
     sp.add_argument("--param", action="append", help="Key parameter 'Name|Value|Unit|Note' (repeatable)")
     sp.add_argument("--heuristic", action="append", help="Verified heuristic 'ID:how applied' (repeatable)")
@@ -2409,32 +2251,12 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("-p", "--process")
     sp.set_defaults(func=cmd_finish)
 
-    # accept (human helper)
-    sp = sub.add_parser("accept", help="Human action: approve proposal, mark block done, or send back")
+    # reopen (engineer helper)
+    sp = sub.add_parser("reopen", help="Reopen a block back to pending (Red) for re-evaluation")
     sp.add_argument("id", help="Block ID")
-    sp.add_argument("--send-back", help="Send block back to todo with feedback")
-    sp.add_argument("--note", help="Optional acceptance note")
+    sp.add_argument("-m", "--message", help="Reason / updated guidance for re-evaluation")
     sp.add_argument("-p", "--process")
-    sp.set_defaults(func=cmd_accept)
-
-    # yolo (human helper)
-    sp = sub.add_parser("yolo", help="Human action: enable/disable YOLO autonomous chain up to a block")
-    sp.add_argument("id", help="Target block ID")
-    sp.add_argument("--before", action="store_true", help="Stop before this block instead of including it")
-    sp.add_argument("--off", action="store_true", help="Turn YOLO off on this block")
-    sp.add_argument("-p", "--process")
-    sp.set_defaults(func=cmd_yolo)
-
-    # propose
-    sp = sub.add_parser("propose", help="Propose an additional custom block in a stage")
-    sp.add_argument("stage", help="Stage ID (BP, RX, SP, HX, SM)")
-    sp.add_argument("title", help="Block title")
-    sp.add_argument("objective", nargs="?", default="", help="Engineering objective")
-    sp.add_argument("--deps", nargs="*", help="Upstream dependency block IDs")
-    sp.add_argument("--heuristics", nargs="*", help="Recommended heuristic IDs")
-    sp.add_argument("--as", dest="agent")
-    sp.add_argument("-p", "--process")
-    sp.set_defaults(func=cmd_propose)
+    sp.set_defaults(func=cmd_reopen)
 
     # depend
     sp = sub.add_parser("depend", help="Add dependency edges (rejects cycles)")
