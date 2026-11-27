@@ -1,0 +1,2746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minicheme — Conceptual Process Planner</title>
+<script id="minicheme-snapshot" type="application/json"></script>
+<style>
+:root {
+  --bg: #f6f7fb;
+  --dot: #d9deea;
+  --surface: #ffffff;
+  --surface-2: #f1f3f9;
+  --lane: rgba(255,255,255,0.68);
+  --lane-border: #e1e6f0;
+  --border: #dce1ec;
+  --border-strong: #c2cadb;
+  --text: #161b26;
+  --text-2: #4b5568;
+  --text-3: #7d879b;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --accent-text: #3730a3;
+  --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,0.14);
+
+  --st-proposed: #8b5cf6; --st-proposed-bg: #f5f3ff; --st-proposed-bd: #c4b5fd;
+  --st-blocked: #64748b;  --st-blocked-bg: #f1f5f9;  --st-blocked-bd: #cbd5e1;
+  --st-todo: #2563eb;     --st-todo-bg: #eff6ff;     --st-todo-bd: #93c5fd;
+  --st-doing: #ea580c;    --st-doing-bg: #fff7ed;    --st-doing-bd: #fdba74;
+  --st-waiting: #6d28d9;  --st-waiting-bg: #ede9fe;  --st-waiting-bd: #a78bfa;
+  --st-review: #db2777;   --st-review-bg: #fdf2f8;   --st-review-bd: #f472b6;
+  --st-done: #16a34a;     --st-done-bg: #f0fdf4;     --st-done-bd: #86efac;
+  --yolo: #f59e0b;        --yolo-bg: #fef3c7;        --yolo-text: #92400e;
+
+  --stage-teal: #0d9488;
+  --stage-blue: #2563eb;
+  --stage-violet: #7c3aed;
+  --stage-amber: #d97706;
+  --stage-emerald: #059669;
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #0f1219;
+  --dot: #1e2534;
+  --surface: #161b26;
+  --surface-2: #1d2433;
+  --lane: rgba(22,27,38,0.72);
+  --lane-border: #252e42;
+  --border: #283145;
+  --border-strong: #3b4763;
+  --text: #eef2fa;
+  --text-2: #a9b4c9;
+  --text-3: #6e7a92;
+  --accent: #6366f1;
+  --accent-soft: #1e1f45;
+  --accent-text: #c7d2fe;
+  --shadow: 0 2px 6px rgba(0,0,0,0.35);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,0.55);
+
+  --st-proposed: #a78bfa; --st-proposed-bg: #221a3b; --st-proposed-bd: #5b4399;
+  --st-blocked: #94a3b8;  --st-blocked-bg: #1a202e;  --st-blocked-bd: #334155;
+  --st-todo: #60a5fa;     --st-todo-bg: #14223b;     --st-todo-bd: #2a4c82;
+  --st-doing: #fb923c;    --st-doing-bg: #2e1d12;    --st-doing-bd: #9a4412;
+  --st-waiting: #c4b5fd;  --st-waiting-bg: #261b47;  --st-waiting-bd: #7c3aed;
+  --st-review: #f472b6;   --st-review-bg: #33162a;   --st-review-bd: #9d2960;
+  --st-done: #4ade80;     --st-done-bg: #11291c;     --st-done-bd: #21663e;
+  --yolo: #fbbf24;        --yolo-bg: #3b2a08;        --yolo-text: #fde68a;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--font); font-size: 13.5px; color: var(--text); background: var(--bg); }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+code { font-family: var(--mono); font-size: 0.9em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+/* Header */
+header {
+  height: 52px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+  background: var(--surface); border-bottom: 1px solid var(--border); z-index: 30; position: relative;
+}
+.brand { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 14.5px; letter-spacing: -0.01em; }
+.brand-logo {
+  width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #4f46e5, #0d9488);
+  color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
+}
+.proc-btn {
+  display: flex; align-items: center; gap: 6px; border: 1px solid transparent; background: transparent;
+  padding: 5px 8px; border-radius: 8px; font-weight: 600; max-width: 240px;
+}
+.proc-btn:hover { background: var(--surface-2); border-color: var(--border); }
+.proc-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.pct-pill {
+  display: flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 99px;
+  background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--text-2);
+}
+.pct-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-done); }
+
+.filter-pills { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.fpill {
+  display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent;
+  background: transparent; padding: 3px 7px; border-radius: 99px; font-size: 11.5px; color: var(--text-2);
+  white-space: nowrap; transition: background 0.12s, border-color 0.12s;
+}
+.fpill:hover { background: var(--surface-2); }
+.fpill.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+.fpill .dot { width: 8px; height: 8px; border-radius: 50%; }
+.fpill b { font-weight: 700; color: var(--text); }
+.fpill.active b { color: var(--accent-text); }
+
+.yolo-pill {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 99px;
+  background: var(--yolo-bg); color: var(--yolo-text); font-weight: 700; font-size: 12px; border: 1px solid var(--yolo);
+}
+
+.spacer { flex: 1; }
+
+.search-wrap { position: relative; display: flex; align-items: center; }
+.search-wrap input {
+  width: 140px; padding: 5px 22px 5px 24px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface-2); font-size: 12px; outline: none; transition: width 0.15s, border-color 0.15s;
+}
+.search-wrap input:focus { width: 190px; border-color: var(--accent); background: var(--surface); }
+.search-wrap .s-ic { position: absolute; left: 8px; color: var(--text-3); pointer-events: none; font-size: 12px; }
+.search-wrap .s-kbd {
+  position: absolute; right: 6px; font-size: 10.5px; color: var(--text-3); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0 4px; pointer-events: none;
+}
+
+.seg {
+  display: inline-flex; background: var(--surface-2); padding: 2px; border-radius: 8px; border: 1px solid var(--border);
+}
+.seg button {
+  border: 0; background: transparent; padding: 4px 9px; border-radius: 6px; font-size: 12px;
+  color: var(--text-2); font-weight: 500; display: inline-flex; align-items: center; gap: 4px;
+}
+.seg button.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+.icon-btn {
+  height: 30px; min-width: 30px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-2); display: inline-flex; align-items: center; justify-content: center;
+  gap: 5px; font-size: 12.5px; position: relative;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn:disabled { opacity: 0.4; cursor: default; }
+.badge-cnt {
+  background: var(--accent); color: #fff; font-size: 10.5px; font-weight: 700; min-width: 17px;
+  height: 17px; border-radius: 99px; display: inline-grid; place-items: center; padding: 0 4px;
+}
+.primary-btn {
+  height: 30px; padding: 0 11px; border-radius: 8px; border: 0; background: var(--accent); color: #fff;
+  font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.primary-btn:hover { filter: brightness(1.08); }
+.sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-done); flex-shrink: 0; }
+.sync-dot.offline { background: var(--st-doing); }
+.sync-dot.readonly { background: var(--st-blocked); }
+
+/* Banners */
+.banner {
+  background: var(--yolo-bg); color: var(--yolo-text); padding: 6px 14px; font-size: 12.5px;
+  display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--yolo);
+}
+
+/* Main Workspace */
+#app { display: flex; flex-direction: column; height: 100%; }
+#workspace { flex: 1; display: flex; position: relative; overflow: hidden; }
+
+/* Side Inspector Panel */
+#inspector {
+  width: 450px; max-width: 92vw; background: var(--surface); border-right: 1px solid var(--border);
+  display: none; flex-direction: column; z-index: 20; box-shadow: var(--shadow-lg); flex-shrink: 0;
+}
+#inspector.open { display: flex; }
+.insp-top {
+  padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.id-chip {
+  font-family: var(--mono); font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 6px;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+}
+.state-select {
+  border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; font-size: 12px; font-weight: 600;
+  background: var(--surface-2); cursor: pointer;
+}
+.stage-chip {
+  font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 99px;
+  background: var(--surface-2); color: var(--text-2); display: inline-flex; align-items: center; gap: 5px;
+}
+.insp-body { flex: 1; overflow-y: auto; padding: 14px 16px 24px; }
+.insp-title { margin: 0 0 10px; font-size: 18px; font-weight: 700; line-height: 1.25; }
+
+.action-card {
+  border-radius: 10px; padding: 12px; margin-bottom: 14px; border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.action-card.review { background: var(--st-review-bg); border-color: var(--st-review-bd); }
+.action-card.waiting { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); }
+.action-card.proposed { background: var(--st-proposed-bg); border-color: var(--st-proposed-bd); }
+.action-card h4 { margin: 0 0 6px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; }
+.action-btns { display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  padding: 6px 11px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface);
+  font-size: 12.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn:hover { background: var(--surface-2); }
+.btn.ok { background: var(--st-done); border-color: var(--st-done); color: #fff; }
+.btn.ok:hover { filter: brightness(1.06); }
+.btn.warn { background: var(--yolo); border-color: var(--yolo); color: #111; }
+.btn.danger { color: #dc2626; border-color: #fca5a5; }
+
+.sec { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.sec-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3);
+}
+.md { line-height: 1.55; color: var(--text); font-size: 13px; }
+.md p { margin: 0 0 8px; }
+.md h1, .md h2, .md h3, .md h4 { margin: 10px 0 5px; font-size: 13.5px; font-weight: 700; }
+.md ul, .md ol { margin: 4px 0 8px; padding-left: 18px; }
+.md li { margin: 2px 0; }
+.md table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 12px; }
+.md th, .md td { border: 1px solid var(--border); padding: 5px 7px; text-align: left; }
+.md th { background: var(--surface-2); font-weight: 600; }
+.md blockquote { margin: 6px 0; padding: 6px 10px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 6px 6px 0; }
+.md pre { background: var(--surface-2); padding: 8px 10px; border-radius: 7px; overflow-x: auto; font-size: 11.5px; border: 1px solid var(--border); }
+
+.param-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.param-table th, .param-table td { border-bottom: 1px solid var(--border); padding: 6px 6px; text-align: left; vertical-align: top; }
+.param-table th { font-size: 11px; color: var(--text-3); font-weight: 700; text-transform: uppercase; }
+.param-val { font-family: var(--mono); font-weight: 600; color: var(--accent-text); }
+
+.heur-item {
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 7px;
+  background: var(--surface-2); cursor: pointer; transition: border-color 0.12s;
+}
+.heur-item:hover { border-color: var(--accent); }
+.heur-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 3px; }
+.heur-id {
+  font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: var(--accent-text);
+  background: var(--accent-soft); padding: 1px 6px; border-radius: 5px;
+}
+.heur-src { font-size: 11px; color: var(--text-3); }
+.heur-applied { font-size: 12.5px; color: var(--text); margin-top: 3px; }
+.heur-sum { font-size: 11.5px; color: var(--text-2); }
+
+.dep-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 5px 8px; border-radius: 7px; cursor: pointer; margin-bottom: 4px; background: var(--surface-2);
+}
+.dep-row:hover { background: var(--accent-soft); }
+.dep-row .dep-l { display: flex; align-items: center; gap: 7px; overflow: hidden; }
+.dep-row .dep-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; }
+
+.note-item {
+  padding: 8px 10px; border-radius: 8px; background: var(--surface-2); margin-bottom: 7px;
+  border: 1px solid var(--border); font-size: 12.5px;
+}
+.note-item.ask { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); }
+.note-item.feedback { background: var(--st-doing-bg); border-color: var(--st-doing-bd); }
+.note-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+.note-by { font-weight: 700; color: var(--text-2); }
+
+.composer { display: flex; gap: 6px; margin-top: 8px; }
+.composer textarea, .composer input {
+  flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; background: var(--surface);
+  resize: vertical; min-height: 36px; outline: none; font-size: 12.5px;
+}
+.composer textarea:focus, .composer input:focus { border-color: var(--accent); }
+
+/* Graph View */
+#main-area { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+#graph-view {
+  flex: 1; position: relative; overflow: hidden; cursor: grab;
+  background-image: radial-gradient(var(--dot) 1.25px, transparent 1.25px);
+  background-size: 20px 20px;
+}
+#graph-view.panning { cursor: grabbing; }
+#canvas-world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+#edges-svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 2; }
+#edges-svg path.edge-hit { pointer-events: stroke; stroke: transparent; stroke-width: 14; fill: none; cursor: pointer; }
+#edges-svg path.edge-line { fill: none; stroke-width: 2; transition: opacity 0.15s, stroke 0.15s; }
+
+.lane {
+  position: absolute; border-radius: 14px; background: var(--lane); border: 1px solid var(--lane-border);
+  z-index: 1; transition: opacity 0.15s;
+}
+.lane-head {
+  padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;
+}
+.lane-dot { width: 10px; height: 10px; border-radius: 3px; }
+.lane-stat { font-size: 11.5px; font-weight: 600; color: var(--text-3); font-family: var(--mono); }
+.lane-bar { width: 46px; height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.lane-bar-fill { height: 100%; background: var(--st-done); border-radius: 99px; transition: width 0.2s; }
+.lane-add {
+  border: 0; background: transparent; color: var(--text-3); width: 22px; height: 22px; border-radius: 6px;
+  display: grid; place-items: center; font-size: 15px;
+}
+.lane-add:hover { background: var(--surface-2); color: var(--text); }
+
+/* Block Card */
+.card {
+  position: absolute; width: 256px; min-height: 112px; border-radius: 11px; background: var(--surface);
+  border: 1.5px solid var(--border); padding: 10px 12px; z-index: 3; box-shadow: var(--shadow);
+  cursor: pointer; user-select: none; display: flex; flex-direction: column; gap: 6px;
+  transition: box-shadow 0.14s, transform 0.12s, opacity 0.15s, border-color 0.14s;
+}
+.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
+.card.selected { box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-lg); border-color: var(--accent) !important; z-index: 6; }
+.card.dim { opacity: 0.28; }
+.card.flash { animation: flashPulse 1.2s ease; }
+@keyframes flashPulse { 0% { box-shadow: 0 0 0 6px rgba(99,102,241,0.45); } 100% { box-shadow: var(--shadow); } }
+
+.card.st-proposed { background: var(--st-proposed-bg); border-style: dashed; border-color: var(--st-proposed-bd); }
+.card.st-blocked {
+  background: repeating-linear-gradient(-45deg, var(--surface), var(--surface) 8px, var(--st-blocked-bg) 8px, var(--st-blocked-bg) 16px);
+  border-color: var(--st-blocked-bd);
+}
+.card.st-todo { border-color: var(--st-todo-bd); }
+.card.st-doing { background: var(--st-doing-bg); border-color: var(--st-doing-bd); }
+.card.st-waiting { background: var(--st-waiting-bg); border-color: var(--st-waiting-bd); border-width: 2px; }
+.card.st-review { background: var(--st-review-bg); border-color: var(--st-review-bd); border-width: 2px; }
+.card.st-done { background: var(--st-done-bg); border-color: var(--st-done-bd); }
+.card.yolo-ring { box-shadow: 0 0 0 2px var(--yolo), var(--shadow); }
+
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.card-id { font-family: var(--mono); font-size: 11px; font-weight: 700; color: var(--text-3); }
+.card-badges { display: flex; align-items: center; gap: 4px; }
+.st-pill {
+  font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 6px; letter-spacing: 0.01em;
+}
+.st-pill.proposed { background: var(--st-proposed); color: #fff; }
+.st-pill.blocked { background: var(--surface-2); color: var(--st-blocked); border: 1px solid var(--border); }
+.st-pill.todo { background: var(--st-todo-bg); color: var(--st-todo); border: 1px solid var(--st-todo-bd); }
+.st-pill.doing { background: var(--st-doing); color: #fff; }
+.st-pill.waiting { background: var(--st-waiting); color: #fff; }
+.st-pill.review { background: var(--st-review); color: #fff; }
+.st-pill.done { background: var(--st-done-bg); color: var(--st-done); border: 1px solid var(--st-done-bd); }
+.yolo-chip {
+  font-size: 10px; font-weight: 800; padding: 1.5px 5px; border-radius: 5px;
+  background: var(--yolo); color: #111;
+}
+.card-title { font-weight: 700; font-size: 13.5px; line-height: 1.3; color: var(--text); }
+.card-snippet {
+  font-size: 11.5px; color: var(--text-2); line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-foot {
+  margin-top: auto; display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--text-3); padding-top: 4px; gap: 6px;
+}
+.card-heurs { display: flex; gap: 3px; flex-wrap: wrap; overflow: hidden; max-height: 18px; }
+.mini-h {
+  font-family: var(--mono); font-size: 9.5px; padding: 0 4px; border-radius: 4px;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2);
+}
+
+/* Connection Ports */
+.port {
+  position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--surface);
+  border: 2px solid var(--accent); opacity: 0; transition: opacity 0.12s, transform 0.12s; z-index: 8; cursor: crosshair;
+}
+.card:hover .port, .connecting .port { opacity: 1; }
+.port:hover { transform: scale(1.3); background: var(--accent); }
+.port.in { left: -6px; top: 50%; margin-top: -6px; }
+.port.out { right: -6px; top: 50%; margin-top: -6px; }
+.vertical .port.in { left: 50%; top: -6px; margin-left: -6px; margin-top: 0; }
+.vertical .port.out { left: 50%; bottom: -6px; top: auto; margin-left: -6px; margin-top: 0; }
+
+/* Zoom HUD */
+#zoom-hud {
+  position: absolute; right: 16px; bottom: 16px; z-index: 15;
+  display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 99px; box-shadow: var(--shadow);
+}
+#zoom-hud input[type="range"] { width: 78px; accent-color: var(--accent); }
+#zoom-hud button { border: 0; background: transparent; padding: 2px 5px; border-radius: 6px; color: var(--text-2); font-weight: 700; }
+#zoom-hud button:hover { background: var(--surface-2); color: var(--text); }
+#zoom-pct { font-size: 11.5px; font-family: var(--mono); min-width: 36px; text-align: center; color: var(--text-2); }
+
+/* Board (Kanban) View */
+#board-view {
+  flex: 1; display: none; gap: 12px; padding: 14px; overflow-x: auto; align-items: flex-start;
+}
+#board-view.active { display: flex; }
+.kcol {
+  width: 278px; min-width: 260px; max-height: 100%; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+}
+.kcol.dragover { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.kcol-head {
+  padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 13px;
+}
+.kcol-list { padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; min-height: 80px; }
+.kcard {
+  position: relative !important; width: auto !important; left: auto !important; top: auto !important;
+}
+
+/* Substances & Basis View */
+#substances-view {
+  flex: 1; display: none; overflow-y: auto; padding: 18px 24px 40px;
+}
+#substances-view.active { display: block; }
+.sub-grid { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.panel-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 16px 18px; box-shadow: var(--shadow);
+}
+.panel-box h2 { margin: 0 0 12px; font-size: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.basis-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); margin-bottom: 4px; }
+.field input, .field textarea, .field select {
+  width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 6px 9px; background: var(--surface-2);
+  font-size: 12.5px; outline: none;
+}
+.field input:focus, .field textarea:focus { border-color: var(--accent); background: var(--surface); }
+
+.prop-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.prop-table th, .prop-table td { border-bottom: 1px solid var(--border); padding: 8px 9px; text-align: left; }
+.prop-table th { font-size: 11px; text-transform: uppercase; color: var(--text-3); background: var(--surface-2); }
+.prop-table tr:hover td { background: var(--surface-2); }
+
+.bp-ladder { width: 100%; height: 148px; display: block; }
+
+/* Popovers, Menus, Modals & Drawers */
+.menu {
+  position: fixed; z-index: 60; min-width: 210px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: var(--shadow-lg); padding: 5px; display: none;
+}
+.menu.open { display: block; }
+.menu-item {
+  width: 100%; border: 0; background: transparent; padding: 7px 10px; border-radius: 7px; text-align: left;
+  font-size: 12.5px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text);
+}
+.menu-item:hover { background: var(--surface-2); }
+.menu-item.danger { color: #dc2626; }
+.menu-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.menu-hdr { padding: 5px 10px; font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
+
+.drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 70; display: none; justify-content: flex-end;
+}
+.drawer-backdrop.open { display: flex; }
+.drawer {
+  width: 560px; max-width: 96vw; background: var(--surface); height: 100%; display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg); border-left: 1px solid var(--border);
+}
+.drawer-head { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.45); z-index: 80; display: none; place-items: center;
+}
+.modal-backdrop.open { display: grid; }
+.modal {
+  width: 500px; max-width: 94vw; background: var(--surface); border-radius: 13px; border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg); padding: 18px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto;
+}
+.modal h3 { margin: 0; font-size: 16px; }
+
+#toasts { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 90; display: flex; flex-direction: column; gap: 7px; }
+.toast {
+  background: #161b26; color: #fff; padding: 9px 14px; border-radius: 10px; font-size: 12.5px;
+  box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px;
+}
+[data-theme="dark"] .toast { background: #eef2fa; color: #161b26; }
+.toast.error { background: #b91c1c; color: #fff; }
+.toast button { border: 1px solid currentColor; background: transparent; color: inherit; border-radius: 6px; padding: 2px 7px; font-size: 11.5px; font-weight: 600; }
+
+.empty-state {
+  margin: auto; text-align: center; max-width: 460px; padding: 30px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="brand-logo">Mc</div>
+      <button class="proc-btn" id="btn-proc-menu" title="Switch or create process">
+        <span class="proc-title" id="proc-title">Minicheme</span>
+        <span style="opacity:.55">▾</span>
+      </button>
+    </div>
+    <span class="sync-dot" id="sync-dot" title="Connected"></span>
+    <div class="pct-pill" id="pct-pill"><span class="pct-dot"></span><span id="pct-txt">0%</span></div>
+
+    <div class="filter-pills" id="filter-pills"></div>
+    <button class="yolo-pill" id="yolo-pill" style="display:none" title="Blocks covered by active YOLO chain">⚡ <span id="yolo-cnt">0</span></button>
+
+    <div class="spacer"></div>
+
+    <div class="search-wrap">
+      <span class="s-ic">⌕</span>
+      <input id="search-input" placeholder="Filter blocks..." autocomplete="off">
+      <span class="s-kbd">/</span>
+    </div>
+
+    <div class="seg" role="tablist">
+      <button id="tab-graph" class="active" title="Dependency Graph (1)">Graph</button>
+      <button id="tab-board" title="Kanban Board (2)">Board</button>
+      <button id="tab-substances" title="Basis & Chemical Properties (3)">Substances</button>
+    </div>
+
+    <button class="icon-btn" id="btn-orient" title="Toggle Left→Right / Top→Bottom layout (L)">⇄</button>
+    <button class="icon-btn" id="btn-heuristics" title="Browse 90 Verified Heuristics (H)">📖 <span style="font-size:11.5px">Rules</span></button>
+    <button class="icon-btn" id="btn-bell" title="Waiting questions & Review queue">🔔 <span class="badge-cnt" id="bell-cnt" style="display:none">0</span></button>
+    <button class="icon-btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>↶</button>
+    <button class="icon-btn" id="btn-redo" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
+    <button class="icon-btn" id="btn-theme" title="Toggle light / dark theme">◐</button>
+    <button class="primary-btn" id="btn-new-block">+ Block</button>
+    <button class="icon-btn" id="btn-help" title="Keyboard shortcuts (?)">?</button>
+  </header>
+
+  <div class="banner" id="readonly-banner" style="display:none">
+    <span><strong>Read-only snapshot</strong> — exported from Minicheme. Run <code>python minicheme.py serve</code> for live editing with your AI agent.</span>
+  </div>
+
+  <div id="workspace">
+    <aside id="inspector">
+      <div class="insp-top" id="insp-top"></div>
+      <div class="insp-body" id="insp-body"></div>
+    </aside>
+
+    <main id="main-area">
+      <div id="graph-view">
+        <div id="canvas-world">
+          <svg id="edges-svg"></svg>
+          <div id="lanes-layer"></div>
+          <div id="cards-layer"></div>
+        </div>
+        <div id="zoom-hud">
+          <input type="range" id="zoom-slider" min="35" max="150" value="95">
+          <button id="btn-fit" title="Fit graph to view (F)">⛶</button>
+          <button id="btn-zout" title="Zoom out">−</button>
+          <span id="zoom-pct">95%</span>
+          <button id="btn-zin" title="Zoom in">+</button>
+        </div>
+      </div>
+
+      <div id="board-view"></div>
+
+      <div id="substances-view"></div>
+    </main>
+  </div>
+</div>
+
+<div class="menu" id="ctx-menu"></div>
+<div class="menu" id="proc-menu"></div>
+<div class="menu" id="bell-menu" style="width:340px;max-height:70vh;overflow-y:auto"></div>
+
+<div class="drawer-backdrop" id="heur-drawer">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <strong style="font-size:15px">📖 Verified Heuristics Knowledge Base</strong>
+        <div style="font-size:11.5px;color:var(--text-3)">Golden Heuristic: Never use a rule without understanding its derivation.</div>
+      </div>
+      <button class="icon-btn" id="btn-close-heur">✕</button>
+    </div>
+    <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px">
+      <input id="heur-search" placeholder="Search ID, rule, equipment, tag (e.g. DIST-003, reflux, pinch)..." style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2)">
+      <select id="heur-family" style="max-width:190px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2)">
+        <option value="">All families</option>
+      </select>
+    </div>
+    <div class="drawer-body" id="heur-list"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-bg">
+  <div class="modal" id="modal-box"></div>
+</div>
+
+<div id="toasts"></div>
+
+<input type="file" id="file-picker" accept=".json" style="display:none">
+
+<script>
+(() => {
+"use strict";
+
+/* ============================================================================
+ * Canonical Serializer & Pure Domain Logic (kept identical to minicheme.py)
+ * ========================================================================== */
+const VALID_STATES = ["proposed", "todo", "doing", "review", "done"];
+const STAGE_COLORS = {
+  teal: "var(--stage-teal)",
+  blue: "var(--stage-blue)",
+  violet: "var(--stage-violet)",
+  amber: "var(--stage-amber)",
+  emerald: "var(--stage-emerald)",
+};
+
+function orderedObj(obj, keys) {
+  const out = {};
+  for (const k of keys) if (Object.prototype.hasOwnProperty.call(obj, k)) out[k] = obj[k];
+  for (const k of Object.keys(obj)) if (!Object.prototype.hasOwnProperty.call(out, k)) out[k] = obj[k];
+  return out;
+}
+
+function nowIso() {
+  return new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+}
+
+function canonicalNote(n) {
+  const out = {
+    at: String(n.at || nowIso()),
+    by: String(n.by || "human"),
+    text: String(n.text || "").trim(),
+  };
+  if (n.kind && n.kind !== "note") out.kind = String(n.kind);
+  if (n.missing) out.missing = String(n.missing).trim();
+  if (n.why) out.why = String(n.why).trim();
+  if (n.baseline) out.baseline = String(n.baseline).trim();
+  if (n.edited) out.edited = String(n.edited);
+  return orderedObj(out, ["at", "by", "kind", "text", "missing", "why", "baseline", "edited"]);
+}
+
+function canonicalBlock(b) {
+  const st = VALID_STATES.includes(String(b.state || "").toLowerCase()) ? String(b.state).toLowerCase() : "todo";
+  const deps = [];
+  for (const d of (b.deps || [])) {
+    const s = String(d).trim();
+    if (s && !deps.includes(s) && s !== b.id) deps.push(s);
+  }
+  const params = (b.parameters || [])
+    .filter(p => p && String(p.name || "").trim())
+    .map(p => orderedObj({
+      name: String(p.name || "").trim(),
+      value: String(p.value || "").trim(),
+      unit: String(p.unit || "").trim(),
+      note: String(p.note || "").trim(),
+    }, ["name", "value", "unit", "note"]));
+  const heurs = (b.heuristics || [])
+    .filter(h => h && String(h.id || "").trim())
+    .map(h => orderedObj({
+      id: String(h.id || "").trim().toUpperCase(),
+      summary: String(h.summary || "").trim(),
+      applied: String(h.applied || "").trim(),
+      source: String(h.source || "").trim(),
+    }, ["id", "summary", "applied", "source"]));
+  const notes = (b.notes || [])
+    .filter(n => n && String(n.text || "").trim())
+    .map(canonicalNote);
+
+  const out = {
+    id: String(b.id || "").trim(),
+    stage: String(b.stage || "").trim(),
+    title: String(b.title || "").trim(),
+    state: st,
+    deps,
+    objective: String(b.objective || "").trim(),
+  };
+  const rec = (b.recommended_heuristics || []).map(r => String(r).trim().toUpperCase()).filter(Boolean);
+  if (rec.length) out.recommended_heuristics = rec;
+  if (String(b.proposal || "").trim()) out.proposal = String(b.proposal).trim();
+  if (String(b.rationale || "").trim()) out.rationale = String(b.rationale).trim();
+  if (params.length) out.parameters = params;
+  if (heurs.length) out.heuristics = heurs;
+  if (String(b.mermaid || "").trim()) out.mermaid = String(b.mermaid).trim();
+  if (b.yolo) out.yolo = true;
+  if (b.yolo_before) out.yolo_before = true;
+  if (b.started && b.started.by) out.started = { at: String(b.started.at || nowIso()), by: String(b.started.by) };
+  if (b.at) out.at = String(b.at);
+  if (b.by) out.by = String(b.by);
+  if (notes.length) out.notes = notes;
+  return orderedObj(out, [
+    "id", "stage", "title", "state", "deps", "yolo", "yolo_before", "at", "by", "started",
+    "objective", "recommended_heuristics", "proposal", "rationale", "parameters", "heuristics", "mermaid", "notes"
+  ]);
+}
+
+function canonicalBoard(board) {
+  const bi = board.basis || {};
+  const basis = orderedObj({
+    description: String(bi.description || "").trim(),
+    target_product: String(bi.target_product || "").trim(),
+    feedstocks: String(bi.feedstocks || "").trim(),
+    capacity: String(bi.capacity || "").trim(),
+    operating_hours: bi.operating_hours ?? 8000,
+    operating_mode: String(bi.operating_mode || "").trim(),
+    product_spec: String(bi.product_spec || "").trim(),
+    thermo_model: String(bi.thermo_model || "").trim(),
+    battery_limits: String(bi.battery_limits || "").trim(),
+    constraints: String(bi.constraints || "").trim(),
+    references: (bi.references || []).map(r => String(r).trim()).filter(Boolean),
+  }, ["description", "target_product", "feedstocks", "capacity", "operating_hours", "operating_mode", "product_spec", "thermo_model", "battery_limits", "constraints", "references"]);
+
+  const stages = (board.stages || []).map(s => orderedObj({
+    id: String(s.id).trim(),
+    name: String(s.name || s.id).trim(),
+    color: String(s.color || "blue").trim(),
+  }, ["id", "name", "color"]));
+
+  const substances = (board.substances || []).map(c => orderedObj({
+    name: String(c.name || c.common_name || "").trim(),
+    common_name: String(c.common_name || c.name || "").trim(),
+    role: String(c.role || "").trim(),
+    formula: String(c.formula || "N/A").trim(),
+    cas: String(c.cas || "N/A").trim(),
+    mw: String(c.mw || "N/A").trim(),
+    bp_c: c.bp_c ?? null,
+    bp_k: c.bp_k ?? null,
+    mp_c: c.mp_c ?? null,
+    tc_c: c.tc_c ?? null,
+    pc_bar: c.pc_bar ?? null,
+    omega: String(c.omega || "N/A").trim(),
+    density: String(c.density || "N/A").trim(),
+    viscosity: String(c.viscosity || "N/A").trim(),
+    vp: String(c.vp || "N/A").trim(),
+    cid: String(c.cid || "N/A").trim(),
+  }, ["name", "common_name", "role", "formula", "cas", "mw", "bp_c", "bp_k", "mp_c", "tc_c", "pc_bar", "omega", "density", "viscosity", "vp", "cid"]));
+
+  const blocks = (board.blocks || []).filter(b => b && b.id).map(canonicalBlock);
+  return orderedObj({
+    minicheme: Number(board.minicheme || 2),
+    title: String(board.title || "Untitled Process").trim(),
+    basis,
+    substances,
+    azeotrope_notes: String(board.azeotrope_notes || "").trim(),
+    stages,
+    blocks,
+  }, ["minicheme", "title", "basis", "substances", "azeotrope_notes", "stages", "blocks"]);
+}
+
+function serializeBoard(board) {
+  return JSON.stringify(canonicalBoard(board), null, 2) + "\n";
+}
+
+function blockMap(board) {
+  const m = new Map();
+  for (const b of (board.blocks || [])) m.set(b.id, b);
+  return m;
+}
+
+function unmetDeps(block, bmap) {
+  return (block.deps || []).filter(d => bmap.has(d) && bmap.get(d).state !== "done");
+}
+
+function openQuestion(block) {
+  const notes = block.notes || [];
+  for (let i = notes.length - 1; i >= 0; i--) {
+    const k = notes[i].kind || "note";
+    if (k === "ask") return notes[i];
+    if (["answer", "note", "review", "feedback", "plan"].includes(k)) return null;
+  }
+  return null;
+}
+
+function viewState(block, bmap) {
+  if (block.state === "todo" && unmetDeps(block, bmap).length) return "blocked";
+  if (block.state === "doing" && openQuestion(block)) return "waiting";
+  return block.state;
+}
+
+function upstreamIds(bmap, startId) {
+  const seen = new Set();
+  const stack = [...(bmap.get(startId)?.deps || [])];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (seen.has(cur) || !bmap.has(cur)) continue;
+    seen.add(cur);
+    for (const d of (bmap.get(cur).deps || [])) stack.push(d);
+  }
+  return seen;
+}
+
+function downstreamIds(board, startId) {
+  const adj = new Map();
+  for (const b of board.blocks) {
+    for (const d of (b.deps || [])) {
+      if (!adj.has(d)) adj.set(d, []);
+      adj.get(d).push(b.id);
+    }
+  }
+  const seen = new Set();
+  const stack = [...(adj.get(startId) || [])];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (seen.has(cur)) continue;
+    seen.add(cur);
+    for (const nxt of (adj.get(cur) || [])) stack.push(nxt);
+  }
+  return seen;
+}
+
+function reaches(board, start, goal) {
+  const bmap = blockMap(board);
+  const seen = new Set();
+  const stack = [start];
+  while (stack.length) {
+    const cur = stack.pop();
+    if (cur === goal) return true;
+    if (seen.has(cur) || !bmap.has(cur)) continue;
+    seen.add(cur);
+    for (const d of (bmap.get(cur).deps || [])) stack.push(d);
+  }
+  return false;
+}
+
+function yoloCover(board) {
+  const bmap = blockMap(board);
+  const cover = {};
+  const targets = board.blocks.filter(b => b.yolo && !["review", "done"].includes(b.state));
+  const stops = board.blocks.filter(b => b.yolo_before && !["review", "done"].includes(b.state));
+  const tSet = new Set(targets.map(b => b.id));
+  for (const b of targets) {
+    cover[b.id] = "target";
+    for (const u of upstreamIds(bmap, b.id)) cover[u] = "auto";
+  }
+  for (const b of stops) {
+    if (!cover[b.id]) cover[b.id] = "stop";
+    for (const u of upstreamIds(bmap, b.id)) if (cover[u] !== "auto") cover[u] = "auto";
+  }
+  for (const tid of tSet) {
+    for (const other of tSet) {
+      if (other !== tid && upstreamIds(bmap, other).has(tid)) cover[tid] = "auto";
+    }
+  }
+  return cover;
+}
+
+function nextIdForStage(board, stageId) {
+  const re = new RegExp(`^${stageId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}-(\\d+)$`, "i");
+  let mx = 0;
+  for (const b of board.blocks) {
+    const m = b.id.match(re);
+    if (m) mx = Math.max(mx, parseInt(m[1], 10));
+  }
+  return `${stageId.toUpperCase()}-${String(mx + 1).padStart(2, "0")}`;
+}
+
+/* ============================================================================
+ * Minimal Safe Markdown & Chemical Formula / Math Pretty-Formatter
+ * ========================================================================== */
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function prettyMath(s) {
+  return s
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => `<div style="font-family:var(--mono);background:var(--surface-2);padding:6px 9px;border-radius:6px;margin:6px 0;font-size:12px">${cleanLatex(m)}</div>`)
+    .replace(/\$([^$\n]+)\$/g, (_, m) => `<span style="font-family:var(--mono);font-size:0.94em">${cleanLatex(m)}</span>`);
+}
+
+function cleanLatex(m) {
+  return m
+    .replace(/\\text\{([^}]*)\}/g, "$1")
+    .replace(/\\xrightleftharpoons\[[^\]]*\]\{([^}]*)\}/g, " ⇌ ($1) ")
+    .replace(/\\xrightleftharpoons\{([^}]*)\}/g, " ⇌ ($1) ")
+    .replace(/\^\{\\circ\}|\^\\circ/g, "°")
+    .replace(/\\Delta/g, "Δ").replace(/\\alpha/g, "α").replace(/\\gamma/g, "γ").replace(/\\mu/g, "μ")
+    .replace(/\\rho/g, "ρ").replace(/\\omega/g, "ω").replace(/\\varepsilon/g, "ε").replace(/\\eta/g, "η")
+    .replace(/\\approx/g, "≈").replace(/\\le/g, "≤").replace(/\\ge/g, "≥").replace(/\\ll/g, "≪")
+    .replace(/\\to|\\rightarrow/g, "→").replace(/\\times|\\cdot/g, "·").replace(/\\circ/g, "°")
+    .replace(/\\dot\{([^}]*)\}/g, "$1̇").replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, "($1) / ($2)")
+    .replace(/_\{([^}]*)\}/g, "<sub>$1</sub>").replace(/\^\{([^}]*)\}/g, "<sup>$1</sup>")
+    .replace(/_([A-Za-z0-9])/g, "<sub>$1</sub>")
+    .replace(/\\%/g, "%").replace(/\\,/g, " ").replace(/\\;/g, " ");
+}
+
+function renderMarkdown(raw) {
+  if (!raw) return "";
+  const lines = String(raw).replace(/\r\n/g, "\n").split("\n");
+  let out = [];
+  let inList = false;
+  let inCode = false;
+  let codeBuf = [];
+  let tableBuf = [];
+
+  const flushList = () => { if (inList) { out.push("</ul>"); inList = false; } };
+  const flushTable = () => {
+    if (!tableBuf.length) return;
+    const rows = tableBuf.map(r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
+    if (rows.length >= 2 && rows[1].every(c => /^:?-+:?$/.test(c))) {
+      const head = rows[0].map(c => `<th>${inlineMd(c)}</th>`).join("");
+      const body = rows.slice(2).map(r => `<tr>${r.map(c => `<td>${inlineMd(c)}</td>`).join("")}</tr>`).join("");
+      out.push(`<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`);
+    } else {
+      out.push(...tableBuf.map(r => `<p>${inlineMd(r)}</p>`));
+    }
+    tableBuf = [];
+  };
+
+  function inlineMd(text) {
+    let t = esc(text);
+    t = prettyMath(t);
+    t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
+    t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    t = t.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    return t;
+  }
+
+  for (const line of lines) {
+    if (line.trim().startsWith("```")) {
+      flushList(); flushTable();
+      if (!inCode) { inCode = true; codeBuf = []; }
+      else { out.push(`<pre><code>${esc(codeBuf.join("\n"))}</code></pre>`); inCode = false; }
+      continue;
+    }
+    if (inCode) { codeBuf.push(line); continue; }
+    if (line.trim().startsWith("|") && line.includes("|")) {
+      flushList(); tableBuf.push(line); continue;
+    } else {
+      flushTable();
+    }
+    if (!line.trim()) { flushList(); continue; }
+    if (/^-{3,}$/.test(line.trim())) { flushList(); out.push('<hr style="border:0;border-top:1px solid var(--border);margin:8px 0">'); continue; }
+    const hm = line.match(/^(#{1,4})\s+(.*)$/);
+    if (hm) { flushList(); out.push(`<h${hm[1].length}>${inlineMd(hm[2])}</h${hm[1].length}>`); continue; }
+    if (line.trim().startsWith(">")) {
+      flushList(); out.push(`<blockquote>${inlineMd(line.replace(/^>\s*/, ""))}</blockquote>`); continue;
+    }
+    const lm = line.match(/^\s*[-*]\s+(.*)$/) || line.match(/^\s*\d+\.\s+(.*)$/);
+    if (lm) {
+      if (!inList) { out.push("<ul>"); inList = true; }
+      out.push(`<li>${inlineMd(lm[1])}</li>`);
+      continue;
+    }
+    flushList();
+    out.push(`<p>${inlineMd(line)}</p>`);
+  }
+  flushList(); flushTable();
+  if (inCode) out.push(`<pre><code>${esc(codeBuf.join("\n"))}</code></pre>`);
+  return out.join("");
+}
+
+function ago(iso) {
+  if (!iso) return "";
+  const s = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 1000));
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+
+/* ============================================================================
+ * App State & Persistence Stores (Live Server / Snapshot / Local File)
+ * ========================================================================== */
+const state = {
+  mode: "server", // "server" | "snapshot" | "file"
+  slug: "",
+  boardsList: [],
+  board: null,
+  etag: "",
+  fileHandle: null,
+  heuristics: { metadata: {}, families: {}, byId: {} },
+  view: "graph", // "graph" | "board" | "substances"
+  vertical: false,
+  selectedId: null,
+  hoverId: null,
+  filterState: "",
+  search: "",
+  zoom: 0.95,
+  panX: 36,
+  panY: 28,
+  undoStack: [],
+  redoStack: [],
+  connectingFrom: null,
+  layout: null,
+  pollTimer: null,
+  draggingCardId: null,
+};
+
+const $ = id => document.getElementById(id);
+
+function toast(msg, kind = "", actionLabel = "", actionFn = null) {
+  const el = document.createElement("div");
+  el.className = "toast" + (kind ? " " + kind : "");
+  el.innerHTML = `<span>${esc(msg)}</span>`;
+  if (actionLabel && actionFn) {
+    const b = document.createElement("button");
+    b.textContent = actionLabel;
+    b.onclick = () => { actionFn(); el.remove(); };
+    el.appendChild(b);
+  }
+  $("toasts").appendChild(el);
+  setTimeout(() => el.remove(), kind === "error" ? 4500 : 2800);
+}
+
+function setTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("minicheme-theme", theme);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("minicheme-theme");
+  if (saved) setTheme(saved);
+  else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) setTheme("dark");
+}
+
+function setSyncStatus(cls, title) {
+  const dot = $("sync-dot");
+  dot.className = "sync-dot" + (cls ? " " + cls : "");
+  dot.title = title;
+}
+
+function indexHeuristics(data) {
+  const byId = {};
+  if (data.families) {
+    for (const [fk, fv] of Object.entries(data.families)) {
+      for (const r of (fv.rules || [])) {
+        byId[r.id.toUpperCase()] = { ...r, _family_key: fk, _family_name: fv.name || fk };
+      }
+    }
+  } else if (data.byId || data.heuristics) {
+    Object.assign(byId, data.byId || data.heuristics);
+  }
+  state.heuristics = { metadata: data.metadata || {}, families: data.families || {}, byId };
+  populateHeuristicsFamilyFilter();
+}
+
+async function initApp() {
+  initTheme();
+  const snapEl = $("minicheme-snapshot");
+  if (snapEl && snapEl.textContent.trim()) {
+    try {
+      const snap = JSON.parse(snapEl.textContent);
+      state.mode = "snapshot";
+      state.board = canonicalBoard(snap.board || snap);
+      if (snap.heuristics) indexHeuristics({ heuristics: snap.heuristics });
+      $("readonly-banner").style.display = "flex";
+      $("btn-new-block").style.display = "none";
+      setSyncStatus("readonly", "Read-only exported snapshot");
+      renderAll();
+      fitGraph(false);
+      return;
+    } catch (e) {
+      toast("Invalid embedded snapshot", "error");
+    }
+  }
+
+  if (location.protocol === "file:") {
+    state.mode = "file";
+    setSyncStatus("offline", "Local file mode");
+    showLocalFileWelcome();
+    return;
+  }
+
+  // Live server mode
+  state.mode = "server";
+  const segs = location.pathname.split("/").filter(Boolean);
+  state.slug = segs[0] || "";
+  await loadBoardsList();
+  await loadServerHeuristics();
+  if (!state.slug && state.boardsList.length) {
+    state.slug = state.boardsList[0].slug;
+    history.replaceState(null, "", `/${state.slug}/`);
+  }
+  if (state.slug) {
+    await fetchBoard(true);
+    startPolling();
+  } else {
+    showEmptyServerState();
+  }
+}
+
+async function loadBoardsList() {
+  try {
+    const r = await fetch("/api/boards");
+    if (r.ok) {
+      const d = await r.json();
+      state.boardsList = d.boards || [];
+    }
+  } catch {}
+}
+
+async function loadServerHeuristics() {
+  try {
+    const r = await fetch("/api/heuristics");
+    if (r.ok) indexHeuristics(await r.json());
+  } catch {}
+}
+
+async function fetchBoard(initial = false) {
+  if (!state.slug) return;
+  try {
+    const headers = (!initial && state.etag) ? { "If-None-Match": state.etag } : {};
+    const r = await fetch(`/${state.slug}/api/board`, { headers });
+    if (r.status === 304) {
+      setSyncStatus("", "Live sync active");
+      return;
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const prevBlocks = state.board ? blockMap(state.board) : null;
+    const fresh = canonicalBoard(await r.json());
+    state.etag = r.headers.get("ETag") || "";
+    state.board = fresh;
+    setSyncStatus("", "Live sync active");
+    if (initial) {
+      renderAll();
+      fitGraph(false);
+      if (location.hash && location.hash.length > 1) {
+        const id = location.hash.slice(1).toUpperCase();
+        if (blockMap(fresh).has(id)) selectBlock(id);
+      }
+    } else {
+      // Highlight blocks changed externally by an agent
+      const changed = [];
+      if (prevBlocks) {
+        for (const b of fresh.blocks) {
+          const old = prevBlocks.get(b.id);
+          if (!old || JSON.stringify(old) !== JSON.stringify(b)) changed.push(b.id);
+        }
+      }
+      renderAll();
+      if (changed.length) {
+        flashCards(changed);
+        loadBoardsList();
+      }
+    }
+  } catch (e) {
+    setSyncStatus("offline", "Server unreachable");
+  }
+}
+
+function startPolling() {
+  if (state.pollTimer) clearInterval(state.pollTimer);
+  state.pollTimer = setInterval(() => {
+    if (!document.hidden && state.mode === "server" && state.slug) fetchBoard(false);
+  }, 1100);
+}
+
+async function commit(mutator, label = "", recordUndo = true) {
+  if (state.mode === "snapshot") { toast("Read-only snapshot", "error"); return false; }
+  const before = JSON.parse(JSON.stringify(state.board));
+  const draft = JSON.parse(JSON.stringify(state.board));
+  try {
+    const res = mutator(draft);
+    if (res === false) return false;
+  } catch (err) {
+    toast(err.message || String(err), "error");
+    return false;
+  }
+  const next = canonicalBoard(draft);
+  const ok = await saveBoard(next, before, mutator);
+  if (!ok) return false;
+  if (recordUndo) {
+    state.undoStack.push({ before, after: JSON.parse(JSON.stringify(state.board)), label });
+    if (state.undoStack.length > 40) state.undoStack.shift();
+    state.redoStack = [];
+  }
+  renderAll();
+  if (label && recordUndo) toast(label, "", "Undo", undo);
+  return true;
+}
+
+async function saveBoard(next, before, mutator) {
+  if (state.mode === "server") {
+    const body = serializeBoard(next);
+    const headers = { "Content-Type": "application/json" };
+    if (state.etag) headers["If-Match"] = state.etag;
+    const r = await fetch(`/${state.slug}/api/board`, { method: "PUT", headers, body });
+    if (r.status === 409) {
+      // Replay mutation on latest server state
+      const latest = canonicalBoard(await r.json());
+      state.etag = r.headers.get("ETag") || "";
+      const replayed = JSON.parse(JSON.stringify(latest));
+      try { mutator(replayed); } catch { state.board = latest; renderAll(); toast("Updated by agent; refreshed board", "error"); return false; }
+      const r2 = await fetch(`/${state.slug}/api/board`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "If-Match": state.etag },
+        body: serializeBoard(replayed),
+      });
+      if (!r2.ok) { toast("Save conflict — please retry", "error"); return false; }
+      state.etag = r2.headers.get("ETag") || "";
+      state.board = canonicalBoard(await r2.json());
+      return true;
+    }
+    if (!r.ok) { toast("Failed to save board", "error"); return false; }
+    state.etag = r.headers.get("ETag") || "";
+    state.board = canonicalBoard(await r.json());
+    loadBoardsList();
+    return true;
+  }
+  if (state.mode === "file") {
+    state.board = next;
+    if (state.fileHandle && state.fileHandle.createWritable) {
+      try {
+        const w = await state.fileHandle.createWritable();
+        await w.write(serializeBoard(next));
+        await w.close();
+      } catch {
+        toast("Could not write file in place — use Export JSON", "error");
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+async function undo() {
+  if (!state.undoStack.length) return;
+  const entry = state.undoStack.pop();
+  state.redoStack.push(entry);
+  await saveBoard(canonicalBoard(entry.before), state.board, d => Object.assign(d, entry.before));
+  renderAll();
+  toast(`Undid: ${entry.label || "change"}`);
+}
+
+async function redo() {
+  if (!state.redoStack.length) return;
+  const entry = state.redoStack.pop();
+  state.undoStack.push(entry);
+  await saveBoard(canonicalBoard(entry.after), state.board, d => Object.assign(d, entry.after));
+  renderAll();
+  toast(`Redid: ${entry.label || "change"}`);
+}
+
+/* ============================================================================
+ * Graph Layout Engine (Swimlanes x Dependency Depth Columns)
+ * ========================================================================== */
+function computeLayout(board, vertical = false) {
+  const bmap = blockMap(board);
+
+  // Compute local dependency depth within each Douglas stage so swimlanes stay compact & readable (~90-100% zoom)
+  const localDepth = new Map();
+  function getLocalDepth(id, stageId, seen = new Set()) {
+    if (localDepth.has(id)) return localDepth.get(id);
+    if (seen.has(id)) return 0;
+    seen.add(id);
+    const b = bmap.get(id);
+    let d = 0;
+    for (const dep of (b?.deps || [])) {
+      const db = bmap.get(dep);
+      if (db && db.stage === stageId) d = Math.max(d, getLocalDepth(dep, stageId, seen) + 1);
+    }
+    localDepth.set(id, d);
+    return d;
+  }
+  for (const b of board.blocks) getLocalDepth(b.id, b.stage);
+
+  const CARD_W = 264, CARD_H = 122, COL_GAP = 58, ROW_GAP = 20, LANE_PAD = 18, LANE_HEAD = 40, LANE_GAP = 20;
+  const maxLocalCol = Math.max(0, ...board.blocks.map(b => localDepth.get(b.id) || 0));
+  const lanes = [];
+  const positions = new Map();
+  let cursor = 0;
+
+  for (const stage of board.stages) {
+    const sBlocks = board.blocks.filter(b => b.stage === stage.id);
+    const byCol = new Map();
+    for (const b of sBlocks) {
+      const c = localDepth.get(b.id) || 0;
+      if (!byCol.has(c)) byCol.set(c, []);
+      byCol.get(c).push(b);
+    }
+    const maxStack = Math.max(1, ...[...byCol.values()].map(arr => arr.length));
+
+    if (!vertical) {
+      const laneW = LANE_PAD * 2 + (maxLocalCol + 1) * CARD_W + maxLocalCol * COL_GAP;
+      const laneH = LANE_HEAD + LANE_PAD + maxStack * CARD_H + (maxStack - 1) * ROW_GAP + LANE_PAD;
+      lanes.push({ stage, x: 0, y: cursor, w: laneW, h: laneH, blocks: sBlocks });
+      for (const [col, arr] of byCol.entries()) {
+        arr.forEach((b, idx) => {
+          positions.set(b.id, {
+            x: LANE_PAD + col * (CARD_W + COL_GAP),
+            y: cursor + LANE_HEAD + idx * (CARD_H + ROW_GAP),
+            w: CARD_W,
+            h: CARD_H,
+          });
+        });
+      }
+      cursor += laneH + LANE_GAP;
+    } else {
+      const laneW = LANE_PAD * 2 + maxStack * CARD_W + (maxStack - 1) * ROW_GAP;
+      const laneH = LANE_HEAD + LANE_PAD + (maxLocalCol + 1) * CARD_H + maxLocalCol * COL_GAP + LANE_PAD;
+      lanes.push({ stage, x: cursor, y: 0, w: laneW, h: laneH, blocks: sBlocks });
+      for (const [col, arr] of byCol.entries()) {
+        arr.forEach((b, idx) => {
+          positions.set(b.id, {
+            x: cursor + LANE_PAD + idx * (CARD_W + ROW_GAP),
+            y: LANE_HEAD + col * (CARD_H + COL_GAP),
+            w: CARD_W,
+            h: CARD_H,
+          });
+        });
+      }
+      cursor += laneW + LANE_GAP;
+    }
+  }
+
+  let maxX = 400, maxY = 300;
+  for (const l of lanes) { maxX = Math.max(maxX, l.x + l.w); maxY = Math.max(maxY, l.y + l.h); }
+  return { lanes, positions, width: maxX, height: maxY };
+}
+
+/* ============================================================================
+ * Rendering: Header, Graph, Board, Substances, Inspector
+ * ========================================================================== */
+function renderAll() {
+  if (!state.board) return;
+  renderHeader();
+  renderGraph();
+  renderKanban();
+  renderSubstances();
+  renderInspector();
+  updateTitleBadge();
+}
+
+function updateTitleBadge() {
+  if (!state.board) return;
+  const bmap = blockMap(state.board);
+  const waits = state.board.blocks.filter(b => viewState(b, bmap) === "waiting").length;
+  const revs = state.board.blocks.filter(b => b.state === "review").length;
+  const n = waits + revs;
+  document.title = (n ? `(${n}) ` : "") + `${state.board.title} · Minicheme`;
+  const bc = $("bell-cnt");
+  if (n) { bc.style.display = "inline-grid"; bc.textContent = String(n); }
+  else bc.style.display = "none";
+}
+
+function renderHeader() {
+  const b = state.board;
+  const bmap = blockMap(b);
+  const cover = yoloCover(b);
+  $("proc-title").textContent = b.title;
+
+  const total = b.blocks.length;
+  const done = b.blocks.filter(x => x.state === "done").length;
+  $("pct-txt").textContent = `${total ? Math.round(100 * done / total) : 0}%`;
+
+  const counts = { proposed: 0, blocked: 0, todo: 0, doing: 0, waiting: 0, review: 0, done: 0 };
+  for (const x of b.blocks) counts[viewState(x, bmap)]++;
+
+  const defs = [
+    ["proposed", "Proposed", "var(--st-proposed)"],
+    ["blocked", "Blocked", "var(--st-blocked)"],
+    ["todo", "Ready", "var(--st-todo)"],
+    ["doing", "Doing", "var(--st-doing)"],
+    ["waiting", "Waiting", "var(--st-waiting)"],
+    ["review", "Review", "var(--st-review)"],
+    ["done", "Done", "var(--st-done)"],
+  ];
+  const fp = $("filter-pills");
+  fp.innerHTML = "";
+  for (const [k, label, col] of defs) {
+    if (k === "proposed" && !counts[k]) continue;
+    if (k === "waiting" && !counts[k]) continue;
+    const btn = document.createElement("button");
+    btn.className = "fpill" + (state.filterState === k ? " active" : "");
+    btn.innerHTML = `<span class="dot" style="background:${col}"></span>${label} <b>${counts[k]}</b>`;
+    btn.onclick = () => { state.filterState = state.filterState === k ? "" : k; renderAll(); };
+    fp.appendChild(btn);
+  }
+
+  const yoloCnt = Object.keys(cover).length;
+  const yp = $("yolo-pill");
+  if (yoloCnt) { yp.style.display = "inline-flex"; $("yolo-cnt").textContent = `YOLO ${yoloCnt}`; }
+  else yp.style.display = "none";
+
+  $("btn-undo").disabled = !state.undoStack.length;
+  $("btn-redo").disabled = !state.redoStack.length;
+}
+
+function matchesFilter(blk, bmap) {
+  if (state.filterState && viewState(blk, bmap) !== state.filterState) return false;
+  if (state.search.trim()) {
+    const q = state.search.trim().toLowerCase();
+    const hay = [
+      blk.id, blk.title, blk.objective, blk.proposal, blk.rationale,
+      ...(blk.heuristics || []).map(h => h.id + " " + h.applied),
+    ].join(" ").toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  return true;
+}
+
+function renderGraph() {
+  const b = state.board;
+  const bmap = blockMap(b);
+  const cover = yoloCover(b);
+  const L = computeLayout(b, state.vertical);
+  state.layout = L;
+
+  const gv = $("graph-view");
+  gv.classList.toggle("vertical", state.vertical);
+
+  const lanesEl = $("lanes-layer");
+  const cardsEl = $("cards-layer");
+  const svg = $("edges-svg");
+  lanesEl.innerHTML = "";
+  cardsEl.innerHTML = "";
+  svg.setAttribute("width", L.width + 120);
+  svg.setAttribute("height", L.height + 120);
+
+  // Focus lineage set
+  const focusId = state.hoverId || state.selectedId;
+  let lineage = null;
+  if (focusId && bmap.has(focusId)) {
+    lineage = new Set([focusId, ...upstreamIds(bmap, focusId), ...downstreamIds(b, focusId)]);
+  }
+
+  // Render swimlanes
+  for (const lane of L.lanes) {
+    const el = document.createElement("div");
+    el.className = "lane";
+    el.style.left = lane.x + "px";
+    el.style.top = lane.y + "px";
+    el.style.width = lane.w + "px";
+    el.style.height = lane.h + "px";
+    const done = lane.blocks.filter(x => x.state === "done").length;
+    const tot = lane.blocks.length;
+    const col = STAGE_COLORS[lane.stage.color] || "var(--accent)";
+    el.innerHTML = `
+      <div class="lane-head">
+        <span class="lane-dot" style="background:${col}"></span>
+        <span>${esc(lane.stage.name)}</span>
+        <span class="lane-stat">${lane.stage.id} ${done}/${tot}</span>
+        <div class="lane-bar"><div class="lane-bar-fill" style="width:${tot ? (100 * done / tot) : 0}%"></div></div>
+        ${state.mode !== "snapshot" ? `<button class="lane-add" title="Add block to ${esc(lane.stage.name)}">+</button>` : ""}
+      </div>
+    `;
+    const addBtn = el.querySelector(".lane-add");
+    if (addBtn) addBtn.onclick = e => { e.stopPropagation(); openNewBlockModal(lane.stage.id); };
+    lanesEl.appendChild(el);
+  }
+
+  // Render SVG edges
+  svg.innerHTML = `
+    <defs>
+      <marker id="arr-def" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#8b95aa"/>
+      </marker>
+      <marker id="arr-hi" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#4f46e5"/>
+      </marker>
+      <marker id="arr-yolo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+      </marker>
+      <marker id="arr-done" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a"/>
+      </marker>
+    </defs>
+  `;
+
+  for (const blk of b.blocks) {
+    const to = L.positions.get(blk.id);
+    if (!to) continue;
+    for (const depId of (blk.deps || [])) {
+      const from = L.positions.get(depId);
+      if (!from) continue;
+      const fromBlk = bmap.get(depId);
+      const sameStage = fromBlk && fromBlk.stage === blk.stage;
+      let d;
+      if (!state.vertical && !sameStage) {
+        // Cross-stage in horizontal swimlanes: clean bottom-to-top S-curve between stages
+        const x1 = from.x + from.w / 2, y1 = from.y + from.h;
+        const x2 = to.x + to.w / 2, y2 = to.y;
+        const midY = (y1 + y2) / 2;
+        d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+      } else if (state.vertical && !sameStage) {
+        // Cross-stage in vertical columns: clean right-to-left S-curve
+        const x1 = from.x + from.w, y1 = from.y + from.h / 2;
+        const x2 = to.x, y2 = to.y + to.h / 2;
+        const midX = (x1 + x2) / 2;
+        d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+      } else {
+        const x1 = state.vertical ? from.x + from.w / 2 : from.x + from.w;
+        const y1 = state.vertical ? from.y + from.h : from.y + from.h / 2;
+        const x2 = state.vertical ? to.x + to.w / 2 : to.x;
+        const y2 = state.vertical ? to.y : to.y + to.h / 2;
+        const dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
+        d = state.vertical
+          ? `M ${x1} ${y1} C ${x1} ${y1 + Math.max(36, dy * 0.45)}, ${x2} ${y2 - Math.max(36, dy * 0.45)}, ${x2} ${y2}`
+          : `M ${x1} ${y1} C ${x1 + Math.max(38, dx * 0.45)} ${y1}, ${x2 - Math.max(38, dx * 0.45)} ${y2}, ${x2} ${y2}`;
+      }
+
+      const inFocus = lineage && lineage.has(depId) && lineage.has(blk.id);
+      const isYolo = cover[depId] && cover[blk.id];
+      const isDone = bmap.get(depId)?.state === "done" && blk.state === "done";
+      let stroke = "#8b95aa", marker = "url(#arr-def)", sw = 2, op = lineage ? (inFocus ? 1 : 0.16) : 0.85;
+      if (inFocus) { stroke = "#4f46e5"; marker = "url(#arr-hi)"; sw = 2.6; }
+      else if (isYolo) { stroke = "#f59e0b"; marker = "url(#arr-yolo)"; sw = 2.3; }
+      else if (isDone) { stroke = "#16a34a"; marker = "url(#arr-done)"; op = lineage ? 0.18 : 0.55; }
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      path.setAttribute("class", "edge-line");
+      path.setAttribute("stroke", stroke);
+      path.setAttribute("stroke-width", sw);
+      path.setAttribute("opacity", op);
+      path.setAttribute("marker-end", marker);
+      if (bmap.get(depId)?.state !== "done" && !isYolo) path.setAttribute("stroke-dasharray", "5 4");
+      svg.appendChild(path);
+
+      const hit = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      hit.setAttribute("d", d);
+      hit.setAttribute("class", "edge-hit");
+      hit.addEventListener("click", e => { e.stopPropagation(); openEdgeMenu(e.clientX, e.clientY, depId, blk.id); });
+      svg.appendChild(hit);
+    }
+  }
+
+  // Render block cards
+  for (const blk of b.blocks) {
+    const pos = L.positions.get(blk.id);
+    if (!pos) continue;
+    const card = buildCardEl(blk, bmap, cover, false);
+    card.style.left = pos.x + "px";
+    card.style.top = pos.y + "px";
+    card.style.width = pos.w + "px";
+    card.style.height = pos.h + "px";
+    const match = matchesFilter(blk, bmap);
+    if (!match || (lineage && !lineage.has(blk.id))) card.classList.add("dim");
+    if (state.selectedId === blk.id) card.classList.add("selected");
+
+    // Hover lineage
+    card.addEventListener("mouseenter", () => {
+      if (state.hoverId !== blk.id) { state.hoverId = blk.id; applyFocusOnly(); }
+    });
+    card.addEventListener("mouseleave", () => {
+      if (state.hoverId === blk.id) { state.hoverId = null; applyFocusOnly(); }
+    });
+
+    // Connection ports
+    if (state.mode !== "snapshot") {
+      const pOut = document.createElement("div");
+      pOut.className = "port out";
+      pOut.title = "Drag to another block to add dependency";
+      pOut.addEventListener("mousedown", e => startConnect(e, blk.id));
+      const pIn = document.createElement("div");
+      pIn.className = "port in";
+      pIn.addEventListener("mouseup", e => finishConnect(e, blk.id));
+      card.addEventListener("mouseup", e => { if (state.connectingFrom) finishConnect(e, blk.id); });
+      card.append(pIn, pOut);
+    }
+    cardsEl.appendChild(card);
+  }
+  applyTransform();
+}
+
+function applyFocusOnly() {
+  // Lightweight re-render on hover without flashing layout
+  renderGraph();
+}
+
+function buildCardEl(blk, bmap, cover, isKanban) {
+  const vs = viewState(blk, bmap);
+  const el = document.createElement("div");
+  el.className = `card st-${vs}` + (isKanban ? " kcard" : "") + (cover[blk.id] ? " yolo-ring" : "");
+  el.dataset.id = blk.id;
+
+  const stLabels = {
+    proposed: "Proposed", blocked: "Blocked", todo: "Ready", doing: "Doing",
+    waiting: "Waiting for you", review: "Review", done: "Done",
+  };
+  let yoloBadge = "";
+  if (cover[blk.id] === "target") yoloBadge = `<span class="yolo-chip">⚡ YOLO</span>`;
+  else if (cover[blk.id] === "auto") yoloBadge = `<span class="yolo-chip">⚡</span>`;
+  else if (cover[blk.id] === "stop") yoloBadge = `<span class="yolo-chip" style="background:var(--st-review);color:#fff">STOP</span>`;
+
+  const q = vs === "waiting" ? openQuestion(blk) : null;
+  const snippet = q
+    ? `❓ ${q.text}`
+    : (blk.proposal ? blk.proposal.replace(/[#*`>$]/g, "").slice(0, 95) : blk.objective);
+
+  const unmet = unmetDeps(blk, bmap);
+  const heurs = (blk.heuristics || []).slice(0, 3);
+  const footLeft = vs === "blocked" && unmet.length
+    ? `<span>🔒 ${esc(unmet.join(", "))}</span>`
+    : heurs.length
+      ? `<div class="card-heurs">${heurs.map(h => `<span class="mini-h">${esc(h.id)}</span>`).join("")}</div>`
+      : `<span>${blk.started ? `⚙ ${esc(blk.started.by)}` : (blk.parameters?.length ? `${blk.parameters.length} params` : "")}</span>`;
+
+  const noteCnt = (blk.notes || []).length;
+  el.innerHTML = `
+    <div class="card-top">
+      <span class="card-id">${esc(blk.id)}</span>
+      <div class="card-badges">
+        ${yoloBadge}
+        <span class="st-pill ${vs}">${stLabels[vs] || vs}</span>
+      </div>
+    </div>
+    <div class="card-title">${esc(blk.title)}</div>
+    <div class="card-snippet">${esc(snippet || "")}</div>
+    <div class="card-foot">
+      ${footLeft}
+      <span>${noteCnt ? `💬 ${noteCnt}` : ""}</span>
+    </div>
+  `;
+
+  el.addEventListener("click", e => { e.stopPropagation(); selectBlock(blk.id); });
+  el.addEventListener("contextmenu", e => { e.preventDefault(); e.stopPropagation(); openCardMenu(e.clientX, e.clientY, blk.id); });
+  return el;
+}
+
+function flashCards(ids) {
+  for (const id of ids) {
+    document.querySelectorAll(`.card[data-id="${CSS.escape(id)}"]`).forEach(el => {
+      el.classList.remove("flash");
+      void el.offsetWidth;
+      el.classList.add("flash");
+    });
+  }
+}
+
+/* ============================================================================
+ * Board (Kanban) View
+ * ========================================================================== */
+function renderKanban() {
+  const b = state.board;
+  const bmap = blockMap(b);
+  const cover = yoloCover(b);
+  const root = $("board-view");
+  root.innerHTML = "";
+
+  const cols = [
+    { key: "proposed", title: "Proposed", dot: "var(--st-proposed)" },
+    { key: "blocked", title: "Blocked", dot: "var(--st-blocked)" },
+    { key: "todo", title: "Ready (To do)", dot: "var(--st-todo)" },
+    { key: "doing", title: "Doing / Waiting", dot: "var(--st-doing)" },
+    { key: "review", title: "Review", dot: "var(--st-review)" },
+    { key: "done", title: "Done", dot: "var(--st-done)" },
+  ];
+
+  for (const c of cols) {
+    const items = b.blocks.filter(blk => {
+      if (!matchesFilter(blk, bmap)) return false;
+      const vs = viewState(blk, bmap);
+      if (c.key === "doing") return vs === "doing" || vs === "waiting";
+      return vs === c.key;
+    });
+    const colEl = document.createElement("div");
+    colEl.className = "kcol";
+    colEl.innerHTML = `
+      <div class="kcol-head">
+        <span class="dot" style="width:9px;height:9px;border-radius:50%;background:${c.dot}"></span>
+        <span>${c.title}</span>
+        <span style="color:var(--text-3);font-weight:600">${items.length}</span>
+        ${c.key === "proposed" && items.length && state.mode !== "snapshot" ? `<button class="btn" style="margin-left:auto;padding:2px 7px;font-size:11px" id="btn-approve-all">✓ Approve all</button>` : ""}
+      </div>
+      <div class="kcol-list"></div>
+    `;
+    const list = colEl.querySelector(".kcol-list");
+    for (const blk of items) {
+      const card = buildCardEl(blk, bmap, cover, true);
+      if (state.selectedId === blk.id) card.classList.add("selected");
+      if (state.mode !== "snapshot") {
+        card.draggable = true;
+        card.addEventListener("dragstart", () => { state.draggingCardId = blk.id; });
+      }
+      list.appendChild(card);
+    }
+    if (c.key !== "blocked" && state.mode !== "snapshot") {
+      colEl.addEventListener("dragover", e => { e.preventDefault(); colEl.classList.add("dragover"); });
+      colEl.addEventListener("dragleave", () => colEl.classList.remove("dragover"));
+      colEl.addEventListener("drop", e => {
+        e.preventDefault();
+        colEl.classList.remove("dragover");
+        if (!state.draggingCardId) return;
+        const id = state.draggingCardId;
+        state.draggingCardId = null;
+        moveBlockState(id, c.key);
+      });
+    }
+    const appAll = colEl.querySelector("#btn-approve-all");
+    if (appAll) {
+      appAll.onclick = () => commit(d => {
+        for (const x of d.blocks) if (x.state === "proposed") x.state = "todo";
+      }, "Approved all proposals");
+    }
+    root.appendChild(colEl);
+  }
+}
+
+/* ============================================================================
+ * Substances & Basis of Design View (+ Boiling Point Volatility Ladder!)
+ * ========================================================================== */
+function renderSubstances() {
+  const b = state.board;
+  const basis = b.basis || {};
+  const subs = b.substances || [];
+  const ro = state.mode === "snapshot";
+  const root = $("substances-view");
+
+  const validBp = subs.filter(c => typeof c.bp_c === "number").sort((a, z) => a.bp_c - z.bp_c);
+  let ladderSvg = `<div style="color:var(--text-3);font-size:12.5px;padding:18px 0">Fetch chemical substances to visualize the normal boiling point / relative volatility ladder.</div>`;
+  if (validBp.length >= 2) {
+    const minT = validBp[0].bp_c - 15;
+    const maxT = validBp[validBp.length - 1].bp_c + 15;
+    const span = Math.max(20, maxT - minT);
+    const W = 960, pad = 65;
+    const xOf = t => pad + ((t - minT) / span) * (W - pad * 2);
+    const nodes = validBp.map((c, i) => {
+      const x = xOf(c.bp_c);
+      const yOff = i % 2 === 0 ? 48 : 106;
+      return `
+        <line x1="${x}" y1="78" x2="${x}" y2="${yOff > 78 ? yOff - 14 : yOff + 10}" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <circle cx="${x}" cy="78" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>
+        <text x="${x}" y="${yOff > 78 ? yOff + 2 : yOff - 6}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--text)">${esc(c.common_name)}</text>
+        <text x="${x}" y="${yOff > 78 ? yOff + 16 : yOff + 8}" text-anchor="middle" font-size="11" font-family="monospace" fill="var(--text-2)">${c.bp_c} °C</text>
+      `;
+    }).join("");
+    const gaps = validBp.slice(0, -1).map((c, i) => {
+      const nxt = validBp[i + 1];
+      const mx = (xOf(c.bp_c) + xOf(nxt.bp_c)) / 2;
+      const dt = (nxt.bp_c - c.bp_c).toFixed(1);
+      return `<text x="${mx}" y="72" text-anchor="middle" font-size="10" font-family="monospace" fill="var(--text-3)">Δ${dt}°</text>`;
+    }).join("");
+    ladderSvg = `
+      <svg class="bp-ladder" viewBox="0 0 ${W} 138" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="tempGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#38bdf8"/>
+            <stop offset="50%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#f97316"/>
+          </linearGradient>
+        </defs>
+        <text x="${pad}" y="18" font-size="11" font-weight="700" fill="var(--text-3)">← LIGHTEST (OVERHEAD)</text>
+        <text x="${W - pad}" y="18" text-anchor="end" font-size="11" font-weight="700" fill="var(--text-3)">HEAVIEST (BOTTOMS) →</text>
+        <line x1="${pad}" y1="78" x2="${W - pad}" y2="78" stroke="url(#tempGrad)" stroke-width="4" stroke-linecap="round"/>
+        ${gaps}
+        ${nodes}
+      </svg>
+    `;
+  }
+
+  root.innerHTML = `
+    <div class="sub-grid">
+      <div class="panel-box">
+        <h2>
+          <span>🧪 Basis of Design</span>
+          ${!ro ? `<button class="btn ok" id="btn-save-basis">Save Basis</button>` : ""}
+        </h2>
+        <div class="basis-grid">
+          <div class="field"><label>Target Product</label><input id="b-target" value="${esc(basis.target_product)}" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Feedstocks</label><input id="b-feeds" value="${esc(basis.feedstocks)}" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Capacity</label><input id="b-cap" value="${esc(basis.capacity)}" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Operating Hours / yr</label><input id="b-hrs" type="number" value="${esc(basis.operating_hours ?? 8000)}" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Operating Mode (PROC-002)</label><input id="b-mode" value="${esc(basis.operating_mode)}" placeholder="Continuous / Batch" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Product Spec</label><input id="b-spec" value="${esc(basis.product_spec)}" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Thermodynamic Model</label><input id="b-thermo" value="${esc(basis.thermo_model)}" placeholder="NRTL-RK / UNIQUAC / Peng-Robinson" ${ro ? "disabled" : ""}></div>
+          <div class="field"><label>Battery Limits</label><input id="b-bl" value="${esc(basis.battery_limits)}" ${ro ? "disabled" : ""}></div>
+          <div class="field" style="grid-column:1/-1"><label>Constraints</label><input id="b-cons" value="${esc(basis.constraints)}" ${ro ? "disabled" : ""}></div>
+          <div class="field" style="grid-column:1/-1"><label>Process Description / Input</label><textarea id="b-desc" rows="3" ${ro ? "disabled" : ""}>${esc(basis.description)}</textarea></div>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <h2>
+          <span>🌡️ Relative Volatility & Normal Boiling Point Ladder</span>
+          <span style="font-size:12px;font-weight:500;color:var(--text-3)">Guides separation sequence (DIST-002)</span>
+        </h2>
+        ${ladderSvg}
+        <div class="field" style="margin-top:8px">
+          <label>Azeotrope & Phase Behavior Notes</label>
+          <textarea id="b-azeo" rows="2" ${ro ? "disabled" : ""} placeholder="Note minimum/maximum boiling azeotropes, LLE miscibility gaps, or supercritical components...">${esc(b.azeotrope_notes)}</textarea>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <h2>
+          <span>⚗️ Primary Chemical Substances (${subs.length})</span>
+          ${state.mode === "server" ? `
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="fetch-comp-in" placeholder="e.g. Isobutylene, Methanol, MTBE, Water" style="width:270px;padding:5px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface-2);font-size:12px">
+              <button class="primary-btn" id="btn-fetch-props">Fetch Props</button>
+            </div>
+          ` : ""}
+        </h2>
+        ${subs.length ? `
+          <div style="overflow-x:auto">
+            <table class="prop-table">
+              <thead>
+                <tr>
+                  <th>Substance</th><th>Role</th><th>Formula</th><th>CAS</th><th>MW</th>
+                  <th>Normal B.P.</th><th>M.P.</th><th>Tc / Pc / ω</th><th>Density</th><th>Viscosity</th><th>Psat (25°C)</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${subs.map(c => `
+                  <tr>
+                    <td><strong>${esc(c.common_name)}</strong>${c.cid && c.cid !== "N/A" ? ` <a href="https://pubchem.ncbi.nlm.nih.gov/compound/${esc(c.cid)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--accent)">↗</a>` : ""}</td>
+                    <td style="color:var(--text-2)">${esc(c.role || "—")}</td>
+                    <td><code>${esc(c.formula)}</code></td>
+                    <td style="font-family:var(--mono);font-size:11.5px">${esc(c.cas)}</td>
+                    <td style="font-family:var(--mono)">${esc(c.mw)}</td>
+                    <td style="font-family:var(--mono);font-weight:700">${c.bp_c != null ? `${c.bp_c} °C` : "N/A"}</td>
+                    <td style="font-family:var(--mono)">${c.mp_c != null ? `${c.mp_c} °C` : "N/A"}</td>
+                    <td style="font-family:var(--mono);font-size:11.5px">${c.tc_c != null ? `${c.tc_c}°C` : "—"} / ${c.pc_bar != null ? `${c.pc_bar}b` : "—"} / ${esc(c.omega)}</td>
+                    <td>${esc(c.density)}</td>
+                    <td>${esc(c.viscosity)}</td>
+                    <td>${esc(c.vp)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : `<div style="color:var(--text-3);padding:12px 0">No substances fetched yet. Use the search bar above or run <code>python minicheme.py props ...</code>.</div>`}
+      </div>
+    </div>
+  `;
+
+  const saveBtn = $("btn-save-basis");
+  if (saveBtn) {
+    saveBtn.onclick = () => commit(d => {
+      d.basis.target_product = $("b-target").value.trim();
+      d.basis.feedstocks = $("b-feeds").value.trim();
+      d.basis.capacity = $("b-cap").value.trim();
+      d.basis.operating_hours = Number($("b-hrs").value) || 8000;
+      d.basis.operating_mode = $("b-mode").value.trim();
+      d.basis.product_spec = $("b-spec").value.trim();
+      d.basis.thermo_model = $("b-thermo").value.trim();
+      d.basis.battery_limits = $("b-bl").value.trim();
+      d.basis.constraints = $("b-cons").value.trim();
+      d.basis.description = $("b-desc").value.trim();
+      d.azeotrope_notes = $("b-azeo").value.trim();
+    }, "Saved Basis of Design");
+  }
+
+  const fetchBtn = $("btn-fetch-props");
+  if (fetchBtn) {
+    fetchBtn.onclick = async () => {
+      const raw = $("fetch-comp-in").value.trim();
+      if (!raw) return;
+      const compounds = raw.split(",").map(s => s.trim()).filter(Boolean);
+      fetchBtn.disabled = true;
+      fetchBtn.textContent = "Fetching...";
+      try {
+        const r = await fetch(`/${state.slug}/api/props`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ compounds, append: true }),
+        });
+        if (!r.ok) throw new Error((await r.json()).error || "Fetch failed");
+        state.etag = r.headers.get("ETag") || "";
+        state.board = canonicalBoard(await r.json());
+        renderAll();
+        toast(`Fetched properties for ${compounds.length} compound(s)`);
+      } catch (e) {
+        toast(e.message, "error");
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = "Fetch Props";
+      }
+    };
+  }
+}
+
+/* ============================================================================
+ * Block Inspector Side Panel (Kanvas Review + Chemical Engineering Sections)
+ * ========================================================================== */
+function selectBlock(id) {
+  state.selectedId = id;
+  if (id) history.replaceState(null, "", `#${id}`);
+  else history.replaceState(null, "", location.pathname);
+  renderAll();
+}
+
+function renderInspector() {
+  const panel = $("inspector");
+  if (!state.selectedId || !state.board) {
+    panel.classList.remove("open");
+    return;
+  }
+  const bmap = blockMap(state.board);
+  const blk = bmap.get(state.selectedId);
+  if (!blk) {
+    state.selectedId = null;
+    panel.classList.remove("open");
+    return;
+  }
+  panel.classList.add("open");
+
+  const vs = viewState(blk, bmap);
+  const cover = yoloCover(state.board);
+  const stage = state.board.stages.find(s => s.id === blk.stage);
+  const ro = state.mode === "snapshot";
+
+  $("insp-top").innerHTML = `
+    <span class="id-chip">${esc(blk.id)}</span>
+    <select class="state-select" id="insp-state" ${ro ? "disabled" : ""}>
+      ${VALID_STATES.map(s => `<option value="${s}" ${blk.state === s ? "selected" : ""}>${s[0].toUpperCase() + s.slice(1)}</option>`).join("")}
+    </select>
+    <span class="stage-chip">
+      <span style="width:7px;height:7px;border-radius:2px;background:${STAGE_COLORS[stage?.color] || "var(--accent)"}"></span>
+      ${esc(stage ? stage.name : blk.stage)}
+    </span>
+    <div class="spacer"></div>
+    ${!ro ? `<button class="icon-btn" id="btn-insp-edit" title="Edit proposal & rationale">✎</button>` : ""}
+    ${!ro ? `<button class="icon-btn" id="btn-insp-yolo" title="Toggle YOLO up to this block">${blk.yolo ? "⚡ On" : "⚡"}</button>` : ""}
+    <button class="icon-btn" id="btn-insp-close" title="Close panel (Esc)">✕</button>
+  `;
+
+  $("btn-insp-close").onclick = () => selectBlock(null);
+  if ($("insp-state")) {
+    $("insp-state").onchange = e => moveBlockState(blk.id, e.target.value);
+  }
+  if ($("btn-insp-yolo")) {
+    $("btn-insp-yolo").onclick = () => toggleYolo(blk.id, false);
+  }
+  if ($("btn-insp-edit")) {
+    $("btn-insp-edit").onclick = () => openEditBlockModal(blk);
+  }
+
+  // Action banner
+  let actionHtml = "";
+  const q = vs === "waiting" ? openQuestion(blk) : null;
+  if (q) {
+    actionHtml = `
+      <div class="action-card waiting">
+        <h4><span>❓ INFORMATION REQUIRED</span><span style="font-weight:500;font-size:11px">${esc(q.by)} · ${ago(q.at)}</span></h4>
+        ${q.missing ? `<div style="font-size:12px;margin-bottom:4px"><strong>Missing Parameter:</strong> ${esc(q.missing)}</div>` : ""}
+        ${q.why ? `<div style="font-size:12px;margin-bottom:4px"><strong>Why needed:</strong> ${esc(q.why)}</div>` : ""}
+        ${q.baseline ? `<div style="font-size:12px;margin-bottom:6px"><strong>Recommended Baseline:</strong> ${esc(q.baseline)}</div>` : ""}
+        <div class="md">${renderMarkdown(q.text)}</div>
+        ${!ro ? `
+          <div class="composer">
+            <input id="ans-input" placeholder="Answer the agent to resume...">
+            <button class="btn ok" id="btn-send-ans">Reply</button>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else if (blk.state === "review") {
+    const lastRev = [...(blk.notes || [])].reverse().find(n => n.kind === "review") || (blk.notes || []).slice(-1)[0];
+    actionHtml = `
+      <div class="action-card review">
+        <h4><span>✓ Ready for your review</span><span style="font-weight:500;font-size:11px">${lastRev ? `${esc(lastRev.by)} · ${ago(lastRev.at)}` : ""}</span></h4>
+        ${lastRev ? `<div class="md">${renderMarkdown(lastRev.text)}</div>` : ""}
+        ${!ro ? `
+          <div class="action-btns">
+            <button class="btn ok" id="btn-accept">✓ Mark done</button>
+            <button class="btn" id="btn-sendback">↩ Send back</button>
+          </div>
+          <div id="sendback-box" style="display:none;margin-top:8px">
+            <div class="composer">
+              <textarea id="sb-text" rows="2" placeholder="Explain what to revise or check..."></textarea>
+              <button class="btn warn" id="btn-sb-go">Send</button>
+            </div>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else if (blk.state === "proposed") {
+    actionHtml = `
+      <div class="action-card proposed">
+        <h4><span>Proposed block</span><span style="font-weight:500;font-size:11px">${blk.by ? `by ${esc(blk.by)}` : ""}</span></h4>
+        <div class="md">${renderMarkdown(blk.objective || "Approve this block to unlock it in the workflow.")}</div>
+        ${!ro ? `
+          <div class="action-btns">
+            <button class="btn ok" id="btn-approve">✓ Approve</button>
+            <button class="btn danger" id="btn-reject">Delete</button>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else if (cover[blk.id]) {
+    const txt = cover[blk.id] === "target"
+      ? "YOLO target — upstream blocks complete automatically; this block stops for your review."
+      : cover[blk.id] === "stop"
+        ? "YOLO stops before this block."
+        : "Covered by active YOLO chain — completes automatically without per-block review.";
+    actionHtml = `<div class="action-card" style="background:var(--yolo-bg);border-color:var(--yolo);color:var(--yolo-text);font-size:12px">⚡ <strong>${txt}</strong></div>`;
+  }
+
+  // Upstream / Downstream dependencies
+  const blockers = (blk.deps || []).map(id => bmap.get(id)).filter(Boolean);
+  const blocksDown = state.board.blocks.filter(x => (x.deps || []).includes(blk.id));
+
+  const paramsHtml = (blk.parameters || []).length ? `
+    <div class="sec">
+      <div class="sec-head"><span>Key Engineering Parameters</span><span>${blk.parameters.length}</span></div>
+      <table class="param-table">
+        <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th><th>Note</th></tr></thead>
+        <tbody>
+          ${blk.parameters.map(p => `
+            <tr>
+              <td><strong>${esc(p.name)}</strong></td>
+              <td class="param-val">${esc(p.value)}</td>
+              <td style="color:var(--text-2)">${esc(p.unit)}</td>
+              <td style="color:var(--text-2);font-size:11.5px">${esc(p.note)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  ` : "";
+
+  const heursHtml = (blk.heuristics || []).length ? `
+    <div class="sec">
+      <div class="sec-head"><span>Justifying Heuristics (Click to inspect derivation)</span><span>${blk.heuristics.length}</span></div>
+      ${blk.heuristics.map(h => `
+        <div class="heur-item" data-hid="${esc(h.id)}">
+          <div class="heur-head">
+            <span class="heur-id">${esc(h.id)}</span>
+            <span class="heur-src">${esc(h.source)}</span>
+          </div>
+          <div class="heur-sum">${esc(h.summary)}</div>
+          ${h.applied ? `<div class="heur-applied"><strong>Applied:</strong> ${esc(h.applied)}</div>` : ""}
+        </div>
+      `).join("")}
+    </div>
+  ` : ((blk.recommended_heuristics || []).length ? `
+    <div class="sec">
+      <div class="sec-head"><span>Recommended Heuristics to Consult</span></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${blk.recommended_heuristics.map(rid => `<button class="heur-id" style="border:0" data-hid="${esc(rid)}">${esc(rid)}</button>`).join("")}
+      </div>
+    </div>
+  ` : "");
+
+  $("insp-body").innerHTML = `
+    <h2 class="insp-title">${esc(blk.title)}</h2>
+    ${actionHtml}
+    ${blk.objective ? `<div style="font-size:12.5px;color:var(--text-2);margin-bottom:10px"><strong>Objective:</strong> ${esc(blk.objective)}</div>` : ""}
+
+    <div class="sec">
+      <div class="sec-head"><span>1. Conceptual Design Proposal</span></div>
+      ${blk.proposal ? `<div class="md">${renderMarkdown(blk.proposal)}</div>` : `<div style="color:var(--text-3);font-size:12.5px;font-style:italic">Pending agent or engineer conceptual proposal.</div>`}
+    </div>
+
+    ${paramsHtml}
+
+    <div class="sec">
+      <div class="sec-head"><span>2. First-Principles Rationale</span></div>
+      ${blk.rationale ? `<div class="md">${renderMarkdown(blk.rationale)}</div>` : `<div style="color:var(--text-3);font-size:12.5px;font-style:italic">No rationale recorded yet.</div>`}
+    </div>
+
+    ${heursHtml}
+
+    <div class="sec">
+      <div class="sec-head"><span>Dependencies</span></div>
+      ${blockers.length ? `<div style="font-size:11px;color:var(--text-3);margin-bottom:4px">Blocked by</div>` + blockers.map(d => `
+        <div class="dep-row" data-jump="${esc(d.id)}">
+          <div class="dep-l"><span class="id-chip">${esc(d.id)}</span><span class="dep-t">${esc(d.title)}</span></div>
+          <span class="st-pill ${viewState(d, bmap)}">${viewState(d, bmap)}</span>
+        </div>
+      `).join("") : `<div style="font-size:12px;color:var(--text-3)">No upstream dependencies (entry block).</div>`}
+      ${blocksDown.length ? `<div style="font-size:11px;color:var(--text-3);margin:8px 0 4px">Blocks</div>` + blocksDown.map(d => `
+        <div class="dep-row" data-jump="${esc(d.id)}">
+          <div class="dep-l"><span class="id-chip">${esc(d.id)}</span><span class="dep-t">${esc(d.title)}</span></div>
+          <span class="st-pill ${viewState(d, bmap)}">${viewState(d, bmap)}</span>
+        </div>
+      `).join("") : ""}
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><span>Activity & Notes</span><span>${(blk.notes || []).length}</span></div>
+      ${(blk.notes || []).map(n => `
+        <div class="note-item ${esc(n.kind || "")}">
+          <div class="note-meta"><span class="note-by">${esc(n.by)}${n.kind ? ` · ${esc(n.kind)}` : ""}</span><span>${ago(n.at)}</span></div>
+          <div class="md">${renderMarkdown(n.text)}</div>
+        </div>
+      `).join("")}
+      ${!ro ? `
+        <div class="composer">
+          <textarea id="note-input" rows="2" placeholder="Add a note for your agent or yourself..."></textarea>
+          <button class="btn" id="btn-add-note">Post</button>
+        </div>
+      ` : ""}
+    </div>
+  `;
+
+  // Wire inspector interactions
+  $("insp-body").querySelectorAll("[data-jump]").forEach(el => {
+    el.onclick = () => selectBlock(el.dataset.jump);
+  });
+  $("insp-body").querySelectorAll("[data-hid]").forEach(el => {
+    el.onclick = () => openHeuristicsDrawer(el.dataset.hid);
+  });
+  if ($("btn-send-ans")) {
+    $("btn-send-ans").onclick = () => {
+      const txt = $("ans-input").value.trim();
+      if (!txt) return;
+      commit(d => {
+        const t = d.blocks.find(x => x.id === blk.id);
+        t.notes = t.notes || [];
+        t.notes.push({ at: nowIso(), by: "human", kind: "answer", text: txt });
+      }, `Answered ${blk.id}`);
+    };
+  }
+  if ($("btn-accept")) {
+    $("btn-accept").onclick = () => {
+      const nextRev = state.board.blocks.find(x => x.id !== blk.id && x.state === "review");
+      commit(d => {
+        const t = d.blocks.find(x => x.id === blk.id);
+        t.state = "done";
+        delete t.started;
+      }, `Marked ${blk.id} done`).then(() => { if (nextRev) selectBlock(nextRev.id); });
+    };
+  }
+  if ($("btn-sendback")) {
+    $("btn-sendback").onclick = () => { $("sendback-box").style.display = "block"; $("sb-text").focus(); };
+  }
+  if ($("btn-sb-go")) {
+    $("btn-sb-go").onclick = () => {
+      const fb = $("sb-text").value.trim();
+      if (!fb) return;
+      commit(d => {
+        const t = d.blocks.find(x => x.id === blk.id);
+        t.state = "todo";
+        delete t.started;
+        t.notes = t.notes || [];
+        t.notes.push({ at: nowIso(), by: "human", kind: "feedback", text: `Sent back: ${fb}` });
+      }, `Sent ${blk.id} back with feedback`);
+    };
+  }
+  if ($("btn-approve")) {
+    $("btn-approve").onclick = () => moveBlockState(blk.id, "todo");
+  }
+  if ($("btn-reject")) {
+    $("btn-reject").onclick = () => deleteBlock(blk.id);
+  }
+  if ($("btn-add-note")) {
+    $("btn-add-note").onclick = () => {
+      const txt = $("note-input").value.trim();
+      if (!txt) return;
+      commit(d => {
+        const t = d.blocks.find(x => x.id === blk.id);
+        t.notes = t.notes || [];
+        t.notes.push({ at: nowIso(), by: "human", text: txt });
+      }, `Added note to ${blk.id}`);
+    };
+  }
+}
+
+/* ============================================================================
+ * Block Actions, YOLO, Dependencies, Modals & Menus
+ * ========================================================================== */
+function moveBlockState(id, targetState) {
+  commit(d => {
+    const bmap = blockMap(d);
+    const t = bmap.get(id);
+    if (!t) return false;
+    if (targetState === "doing" && unmetDeps(t, bmap).length) {
+      throw new Error(`${id} is blocked by ${unmetDeps(t, bmap).join(", ")}`);
+    }
+    t.state = targetState;
+    if (targetState === "doing") t.started = { at: nowIso(), by: "human" };
+    else delete t.started;
+  }, `Moved ${id} → ${targetState}`);
+}
+
+function toggleYolo(id, before = false) {
+  commit(d => {
+    const bmap = blockMap(d);
+    const t = bmap.get(id);
+    if (!t) return false;
+    if ((!before && t.yolo) || (before && t.yolo_before)) {
+      delete t.yolo; delete t.yolo_before;
+      return;
+    }
+    delete t.yolo; delete t.yolo_before;
+    if (before) t.yolo_before = true;
+    else t.yolo = true;
+    const up = upstreamIds(bmap, id);
+    if (!before) up.add(id);
+    for (const uid of up) {
+      const ub = bmap.get(uid);
+      if (ub.state === "proposed") ub.state = "todo";
+      else if (ub.state === "review" && uid !== id) ub.state = "done";
+    }
+  }, `Updated YOLO on ${id}`);
+}
+
+function deleteBlock(id) {
+  commit(d => {
+    d.blocks = d.blocks.filter(x => x.id !== id);
+    for (const x of d.blocks) x.deps = (x.deps || []).filter(dep => dep !== id);
+  }, `Deleted ${id}`);
+  if (state.selectedId === id) selectBlock(null);
+}
+
+function closeMenus() {
+  document.querySelectorAll(".menu").forEach(m => m.classList.remove("open"));
+}
+
+function positionMenu(menu, x, y) {
+  closeMenus();
+  menu.classList.add("open");
+  const r = menu.getBoundingClientRect();
+  menu.style.left = Math.min(x, window.innerWidth - r.width - 10) + "px";
+  menu.style.top = Math.min(y, window.innerHeight - r.height - 10) + "px";
+}
+
+function openCardMenu(x, y, id) {
+  const bmap = blockMap(state.board);
+  const blk = bmap.get(id);
+  if (!blk) return;
+  const ro = state.mode === "snapshot";
+  const m = $("ctx-menu");
+  m.innerHTML = `
+    <div class="menu-hdr">${esc(blk.id)} · ${esc(blk.title)}</div>
+    <button class="menu-item" data-act="open">Inspect block</button>
+    ${!ro && blk.state === "proposed" ? `<button class="menu-item" data-act="approve">✓ Approve (To do)</button>` : ""}
+    ${!ro && blk.state !== "done" ? `<button class="menu-item" data-act="done">✓ Mark done</button>` : ""}
+    ${!ro && blk.state === "todo" ? `<button class="menu-item" data-act="start">▶ Start (Doing)</button>` : ""}
+    ${!ro ? `<div class="menu-sep"></div>` : ""}
+    ${!ro ? `<button class="menu-item" data-act="yolo">⚡ ${blk.yolo ? "Turn off YOLO" : "YOLO up to here"}</button>` : ""}
+    ${!ro ? `<button class="menu-item" data-act="yolo_before">✋ ${blk.yolo_before ? "Turn off YOLO stop" : "YOLO stop before this"}</button>` : ""}
+    ${!ro ? `<div class="menu-sep"></div>` : ""}
+    ${!ro ? `<button class="menu-item" data-act="add_dep">＋ New block depending on ${esc(blk.id)}</button>` : ""}
+    <button class="menu-item" data-act="copy">Copy ID</button>
+    ${!ro ? `<div class="menu-sep"></div><button class="menu-item danger" data-act="del">Delete block</button>` : ""}
+  `;
+  m.querySelectorAll(".menu-item").forEach(btn => {
+    btn.onclick = () => {
+      closeMenus();
+      const a = btn.dataset.act;
+      if (a === "open") selectBlock(id);
+      else if (a === "approve") moveBlockState(id, "todo");
+      else if (a === "done") moveBlockState(id, "done");
+      else if (a === "start") moveBlockState(id, "doing");
+      else if (a === "yolo") toggleYolo(id, false);
+      else if (a === "yolo_before") toggleYolo(id, true);
+      else if (a === "add_dep") openNewBlockModal(blk.stage, id);
+      else if (a === "copy") { navigator.clipboard?.writeText(id); toast(`Copied ${id}`); }
+      else if (a === "del") deleteBlock(id);
+    };
+  });
+  positionMenu(m, x, y);
+}
+
+function openEdgeMenu(x, y, fromId, toId) {
+  const m = $("ctx-menu");
+  m.innerHTML = `
+    <div class="menu-hdr">${esc(fromId)} → ${esc(toId)}</div>
+    <button class="menu-item" data-act="from">Open ${esc(fromId)}</button>
+    <button class="menu-item" data-act="to">Open ${esc(toId)}</button>
+    ${state.mode !== "snapshot" ? `<div class="menu-sep"></div><button class="menu-item danger" data-act="rem">Remove dependency</button>` : ""}
+  `;
+  m.querySelectorAll(".menu-item").forEach(btn => {
+    btn.onclick = () => {
+      closeMenus();
+      if (btn.dataset.act === "from") selectBlock(fromId);
+      else if (btn.dataset.act === "to") selectBlock(toId);
+      else if (btn.dataset.act === "rem") {
+        commit(d => {
+          const t = d.blocks.find(x => x.id === toId);
+          if (t) t.deps = (t.deps || []).filter(dep => dep !== fromId);
+        }, `Removed ${fromId} → ${toId}`);
+      }
+    };
+  });
+  positionMenu(m, x, y);
+}
+
+function openProcMenu(btn) {
+  const r = btn.getBoundingClientRect();
+  const m = $("proc-menu");
+  let html = `<div class="menu-hdr">Process Workspaces</div>`;
+  if (state.mode === "server") {
+    for (const b of state.boardsList) {
+      const act = b.slug === state.slug ? "● " : "";
+      html += `<button class="menu-item" data-slug="${esc(b.slug)}"><span>${act}${esc(b.title)}</span><span style="color:var(--text-3);font-family:var(--mono);font-size:11px">${b.done}/${b.total}</span></button>`;
+    }
+    html += `<div class="menu-sep"></div>`;
+    html += `<button class="menu-item" data-act="new_proc">＋ New Chemical Process...</button>`;
+    html += `<button class="menu-item" data-act="exp_html">⬇ Export HTML Snapshot</button>`;
+    html += `<button class="menu-item" data-act="exp_md">⬇ Export Markdown Brief</button>`;
+  } else {
+    html += `<button class="menu-item" data-act="open_file">📂 Open process.json...</button>`;
+    if (state.board) html += `<button class="menu-item" data-act="dl_json">⬇ Download process.json</button>`;
+  }
+  m.innerHTML = html;
+  m.querySelectorAll("[data-slug]").forEach(el => {
+    el.onclick = () => {
+      closeMenus();
+      state.slug = el.dataset.slug;
+      state.selectedId = null;
+      state.undoStack = []; state.redoStack = [];
+      history.pushState(null, "", `/${state.slug}/`);
+      fetchBoard(true);
+    };
+  });
+  m.querySelectorAll("[data-act]").forEach(el => {
+    el.onclick = () => {
+      closeMenus();
+      const a = el.dataset.act;
+      if (a === "new_proc") openNewProcessModal();
+      else if (a === "exp_html") window.open(`/${state.slug}/api/export/html`, "_blank");
+      else if (a === "exp_md") window.open(`/${state.slug}/api/export/md`, "_blank");
+      else if (a === "open_file") pickLocalFile();
+      else if (a === "dl_json") downloadJson();
+    };
+  });
+  positionMenu(m, r.left, r.bottom + 6);
+}
+
+function openBellMenu(btn) {
+  const r = btn.getBoundingClientRect();
+  const m = $("bell-menu");
+  const bmap = blockMap(state.board);
+  const waits = state.board.blocks.filter(b => viewState(b, bmap) === "waiting");
+  const revs = state.board.blocks.filter(b => b.state === "review");
+  let html = "";
+  if (waits.length) {
+    html += `<div class="menu-hdr">❓ Waiting for your answer (${waits.length})</div>`;
+    for (const b of waits) {
+      const q = openQuestion(b);
+      html += `<button class="menu-item" data-jump="${esc(b.id)}"><div><strong>${esc(b.id)} ${esc(b.title)}</strong><div style="font-size:11.5px;color:var(--text-2)">${esc(q?.text || "")}</div></div></button>`;
+    }
+  }
+  if (revs.length) {
+    html += `<div class="menu-hdr">🔍 Ready for review (${revs.length})</div>`;
+    for (const b of revs) {
+      html += `<button class="menu-item" data-jump="${esc(b.id)}"><span><strong>${esc(b.id)}</strong> ${esc(b.title)}</span><span class="st-pill review">Review</span></button>`;
+    }
+  }
+  if (!html) html = `<div style="padding:14px;color:var(--text-3);text-align:center">All clear — no waiting questions or pending reviews.</div>`;
+  m.innerHTML = html;
+  m.querySelectorAll("[data-jump]").forEach(el => {
+    el.onclick = () => { closeMenus(); selectBlock(el.dataset.jump); };
+  });
+  positionMenu(m, r.right - 340, r.bottom + 6);
+}
+
+/* ============================================================================
+ * Modals (New Block, Edit Block, New Process, Shortcuts Help)
+ * ========================================================================== */
+function openModal(html, onReady) {
+  $("modal-box").innerHTML = html;
+  $("modal-bg").classList.add("open");
+  if (onReady) onReady();
+}
+function closeModal() { $("modal-bg").classList.remove("open"); }
+
+function openNewBlockModal(defaultStage = "RX", defaultDep = "") {
+  const stages = state.board.stages;
+  openModal(`
+    <h3>New Conceptual Block</h3>
+    <div class="field"><label>Stage (Douglas Hierarchy)</label>
+      <select id="nb-stage">${stages.map(s => `<option value="${esc(s.id)}" ${s.id === defaultStage ? "selected" : ""}>${esc(s.name)} (${esc(s.id)})</option>`).join("")}</select>
+    </div>
+    <div class="field"><label>Title</label><input id="nb-title" placeholder="e.g. Purge & Recycle Screening"></div>
+    <div class="field"><label>Engineering Objective</label><textarea id="nb-obj" rows="2" placeholder="What conceptual decision should this block settle?"></textarea></div>
+    <div class="field"><label>Depends on (comma-separated IDs)</label><input id="nb-deps" value="${esc(defaultDep)}" placeholder="e.g. SP-01"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
+      <button class="btn" id="m-cancel">Cancel</button>
+      <button class="primary-btn" id="m-ok">Create Block</button>
+    </div>
+  `, () => {
+    $("nb-title").focus();
+    $("m-cancel").onclick = closeModal;
+    $("m-ok").onclick = () => {
+      const title = $("nb-title").value.trim();
+      if (!title) return;
+      const stage = $("nb-stage").value;
+      const deps = $("nb-deps").value.split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
+      const obj = $("nb-obj").value.trim();
+      closeModal();
+      commit(d => {
+        const id = nextIdForStage(d, stage);
+        d.blocks.push(canonicalBlock({ id, stage, title, state: "todo", deps, objective: obj, at: nowIso(), by: "human" }));
+        state.selectedId = id;
+      }, `Created block "${title}"`);
+    };
+  });
+}
+
+function openEditBlockModal(blk) {
+  const paramsTxt = (blk.parameters || []).map(p => `${p.name} | ${p.value} | ${p.unit} | ${p.note}`).join("\n");
+  openModal(`
+    <h3>Edit ${esc(blk.id)} — ${esc(blk.title)}</h3>
+    <div class="field"><label>Title</label><input id="eb-title" value="${esc(blk.title)}"></div>
+    <div class="field"><label>Objective</label><textarea id="eb-obj" rows="2">${esc(blk.objective || "")}</textarea></div>
+    <div class="field"><label>1. Conceptual Design Proposal (Markdown)</label><textarea id="eb-prop" rows="5">${esc(blk.proposal || "")}</textarea></div>
+    <div class="field"><label>Key Parameters (one per line: Name | Value | Unit | Note)</label><textarea id="eb-params" rows="4" style="font-family:var(--mono);font-size:12px">${esc(paramsTxt)}</textarea></div>
+    <div class="field"><label>2. First-Principles Rationale (Markdown)</label><textarea id="eb-rat" rows="5">${esc(blk.rationale || "")}</textarea></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
+      <button class="btn" id="m-cancel">Cancel</button>
+      <button class="primary-btn" id="m-ok">Save Changes</button>
+    </div>
+  `, () => {
+    $("m-cancel").onclick = closeModal;
+    $("m-ok").onclick = () => {
+      const title = $("eb-title").value.trim();
+      const obj = $("eb-obj").value.trim();
+      const prop = $("eb-prop").value.trim();
+      const rat = $("eb-rat").value.trim();
+      const params = $("eb-params").value.split("\n").map(l => l.trim()).filter(Boolean).map(l => {
+        const [name = "", value = "", unit = "", note = ""] = l.split("|").map(x => x.trim());
+        return { name, value, unit, note };
+      }).filter(p => p.name);
+      closeModal();
+      commit(d => {
+        const t = d.blocks.find(x => x.id === blk.id);
+        t.title = title || t.title;
+        t.objective = obj;
+        t.proposal = prop;
+        t.rationale = rat;
+        t.parameters = params;
+      }, `Updated ${blk.id}`);
+    };
+  });
+}
+
+function openNewProcessModal() {
+  openModal(`
+    <h3>New Chemical Process Workspace</h3>
+    <div class="field"><label>Process Title</label><input id="np-title" placeholder="e.g. Biodiesel Transesterification"></div>
+    <div class="field"><label>Folder Name</label><input id="np-folder" placeholder="e.g. Process_Biodiesel"></div>
+    <div class="field"><label>Process Description (Chemistry, feedstocks, capacity, specs)</label><textarea id="np-desc" rows="4" placeholder="Describe target reaction, feedstocks, capacity (t/yr), purity specs, and constraints..."></textarea></div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12.5px"><input type="checkbox" id="np-yolo"> Enable YOLO up to SM-01 (agent solves end-to-end, reviews at Conceptual Brief)</label>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
+      <button class="btn" id="m-cancel">Cancel</button>
+      <button class="primary-btn" id="m-ok">Create Workspace</button>
+    </div>
+  `, () => {
+    $("np-title").focus();
+    $("m-cancel").onclick = closeModal;
+    $("m-ok").onclick = async () => {
+      const title = $("np-title").value.trim();
+      const folder = $("np-folder").value.trim() || title;
+      const description = $("np-desc").value.trim();
+      const yolo = $("np-yolo").checked;
+      if (!folder) return;
+      try {
+        const r = await fetch("/api/boards", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, folder, description, yolo }),
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || "Failed");
+        closeModal();
+        await loadBoardsList();
+        state.slug = d.slug;
+        state.selectedId = null;
+        history.pushState(null, "", `/${state.slug}/`);
+        await fetchBoard(true);
+        toast(`Created process "${d.title}"`);
+      } catch (e) {
+        toast(e.message, "error");
+      }
+    };
+  });
+}
+
+function openHelpModal() {
+  openModal(`
+    <h3>Keyboard Shortcuts & Workflow</h3>
+    <div class="md">
+      <table>
+        <thead><tr><th>Key</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><code>1</code> / <code>2</code> / <code>3</code></td><td>Switch Graph / Board / Substances & Basis view</td></tr>
+          <tr><td><code>/</code></td><td>Focus search filter</td></tr>
+          <tr><td><code>L</code></td><td>Toggle Left→Right / Top→Bottom graph orientation</td></tr>
+          <tr><td><code>F</code></td><td>Fit dependency graph to screen</td></tr>
+          <tr><td><code>H</code></td><td>Open 90 Verified Heuristics explorer</td></tr>
+          <tr><td><code>Ctrl+Z</code> / <code>Ctrl+Shift+Z</code></td><td>Undo / Redo</td></tr>
+          <tr><td><code>Esc</code></td><td>Close panel, drawer, or modal</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Agent CLI quick path:</strong> Run <code>python minicheme.py next -p &lt;folder&gt;</code> — the CLI gives your AI agent the exact next ready block, upstream parameters, and relevant heuristics in ~300 tokens.</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end"><button class="primary-btn" id="m-ok">Got it</button></div>
+  `, () => { $("m-ok").onclick = closeModal; });
+}
+
+/* ============================================================================
+ * Heuristics Knowledge Base Drawer
+ * ========================================================================== */
+function populateHeuristicsFamilyFilter() {
+  const sel = $("heur-family");
+  if (!sel) return;
+  const fams = state.heuristics.families || {};
+  sel.innerHTML = `<option value="">All families (${Object.keys(state.heuristics.byId).length})</option>` +
+    Object.entries(fams).map(([k, v]) => `<option value="${esc(k)}">${esc(v.name || k)} (${(v.rules || []).length})</option>`).join("");
+}
+
+function openHeuristicsDrawer(initialQuery = "") {
+  $("heur-drawer").classList.add("open");
+  $("heur-search").value = initialQuery;
+  $("heur-family").value = "";
+  renderHeuristicsList();
+  $("heur-search").focus();
+}
+
+function renderHeuristicsList() {
+  const q = $("heur-search").value.trim().toLowerCase();
+  const fam = $("heur-family").value;
+  const all = Object.values(state.heuristics.byId || {});
+  const list = all.filter(r => {
+    if (fam && r._family_key !== fam) return false;
+    if (!q) return true;
+    const hay = [r.id, r.subfamily_or_equipment, r.rule, r.explanation_and_derivation, ...(r.tags || [])].join(" ").toLowerCase();
+    return hay.includes(q);
+  }).slice(0, 60);
+
+  const el = $("heur-list");
+  if (!list.length) {
+    el.innerHTML = `<div style="color:var(--text-3);padding:20px;text-align:center">No matching heuristics found.</div>`;
+    return;
+  }
+  el.innerHTML = list.map(r => {
+    const quant = r.quantitative_guidelines
+      ? Object.entries(r.quantitative_guidelines).map(([k, v]) => `<li><code>${esc(k)}</code>: ${esc(typeof v === "object" ? JSON.stringify(v) : v)}</li>`).join("")
+      : "";
+    const refs = (r.references || []).map(x => `${x.source || ""}${x.table_or_section ? " · " + x.table_or_section : ""}${x.page ? " p." + x.page : ""}`).join(" | ");
+    return `
+      <div class="panel-box" style="margin-bottom:10px;padding:12px 14px">
+        <div class="heur-head">
+          <span class="heur-id">${esc(r.id)}</span>
+          <span class="heur-src">${esc(r._family_name || "")}</span>
+        </div>
+        <div style="font-weight:700;margin:5px 0;font-size:13px">${esc(r.rule)}</div>
+        ${r.explanation_and_derivation ? `<div style="font-size:12.5px;color:var(--text-2);margin:6px 0;line-height:1.45"><strong>Derivation:</strong> ${esc(r.explanation_and_derivation)}</div>` : ""}
+        ${quant ? `<ul style="font-size:12px;margin:6px 0;padding-left:18px;color:var(--text)">${quant}</ul>` : ""}
+        ${r.conditions_and_limitations ? `<div style="font-size:12px;color:var(--st-doing);margin-top:5px"><strong>Limitations:</strong> ${esc(r.conditions_and_limitations)}</div>` : ""}
+        ${refs ? `<div style="font-size:11px;color:var(--text-3);margin-top:6px">📚 ${esc(refs)}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+/* ============================================================================
+ * Pan, Zoom & Drag-to-Connect Dependencies
+ * ========================================================================== */
+function applyTransform() {
+  $("canvas-world").style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  $("zoom-pct").textContent = `${Math.round(state.zoom * 100)}%`;
+  $("zoom-slider").value = Math.round(state.zoom * 100);
+}
+
+function fitGraph(animate = true) {
+  if (!state.layout) return;
+  const gv = $("graph-view");
+  const r = gv.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const pad = 40;
+  const sx = (r.width - pad * 2) / Math.max(1, state.layout.width);
+  const sy = (r.height - pad * 2) / Math.max(1, state.layout.height);
+  state.zoom = Math.max(0.35, Math.min(1.05, Math.min(sx, sy)));
+  state.panX = Math.max(20, (r.width - state.layout.width * state.zoom) / 2);
+  state.panY = Math.max(20, (r.height - state.layout.height * state.zoom) / 2);
+  applyTransform();
+}
+
+function startConnect(e, fromId) {
+  e.stopPropagation();
+  e.preventDefault();
+  state.connectingFrom = fromId;
+  $("graph-view").classList.add("connecting");
+  toast(`Connecting from ${fromId} — release on target block`);
+  const onUp = () => {
+    state.connectingFrom = null;
+    $("graph-view").classList.remove("connecting");
+    window.removeEventListener("mouseup", onUp);
+  };
+  window.addEventListener("mouseup", onUp);
+}
+
+function finishConnect(e, toId) {
+  e.stopPropagation();
+  const fromId = state.connectingFrom;
+  state.connectingFrom = null;
+  $("graph-view").classList.remove("connecting");
+  if (!fromId || fromId === toId) return;
+  commit(d => {
+    if (reaches(d, fromId, toId)) throw new Error(`Cannot link ${fromId} → ${toId}: would create a cycle`);
+    const target = d.blocks.find(x => x.id === toId);
+    if (!target) return false;
+    target.deps = target.deps || [];
+    if (target.deps.includes(fromId)) return false;
+    target.deps.push(fromId);
+  }, `Linked ${fromId} → ${toId}`);
+}
+
+function setupPanZoom() {
+  const gv = $("graph-view");
+  let panning = false, sx = 0, sy = 0, px0 = 0, py0 = 0;
+
+  gv.addEventListener("mousedown", e => {
+    if (e.target.closest(".card") || e.target.closest("#zoom-hud") || e.target.closest(".lane-add")) return;
+    panning = true; sx = e.clientX; sy = e.clientY; px0 = state.panX; py0 = state.panY;
+    gv.classList.add("panning");
+  });
+  window.addEventListener("mousemove", e => {
+    if (!panning) return;
+    state.panX = px0 + (e.clientX - sx);
+    state.panY = py0 + (e.clientY - sy);
+    applyTransform();
+  });
+  window.addEventListener("mouseup", () => { panning = false; gv.classList.remove("panning"); });
+
+  gv.addEventListener("wheel", e => {
+    e.preventDefault();
+    const r = gv.getBoundingClientRect();
+    const cx = e.clientX - r.left, cy = e.clientY - r.top;
+    const factor = e.deltaY < 0 ? 1.09 : 0.92;
+    const nextZ = Math.max(0.35, Math.min(1.6, state.zoom * factor));
+    state.panX = cx - (cx - state.panX) * (nextZ / state.zoom);
+    state.panY = cy - (cy - state.panY) * (nextZ / state.zoom);
+    state.zoom = nextZ;
+    applyTransform();
+  }, { passive: false });
+
+  $("zoom-slider").oninput = e => { state.zoom = Number(e.target.value) / 100; applyTransform(); };
+  $("btn-zin").onclick = () => { state.zoom = Math.min(1.6, state.zoom + 0.1); applyTransform(); };
+  $("btn-zout").onclick = () => { state.zoom = Math.max(0.35, state.zoom - 0.1); applyTransform(); };
+  $("btn-fit").onclick = () => fitGraph(true);
+}
+
+/* ============================================================================
+ * Local File Mode Helpers (when opened directly without server)
+ * ========================================================================== */
+function showLocalFileWelcome() {
+  $("graph-view").innerHTML = `
+    <div style="height:100%;display:grid;place-items:center">
+      <div class="empty-state">
+        <div class="brand-logo" style="margin:0 auto 12px;width:42px;height:42px;font-size:18px">Mc</div>
+        <h2 style="margin:0 0 8px">Minicheme Process Planner</h2>
+        <p style="color:var(--text-2);line-height:1.5">Open any <code>process.json</code> directly from disk, or run <code>python minicheme.py serve</code> for live two-way sync with your AI agent.</p>
+        <button class="primary-btn" id="btn-open-local" style="margin:8px auto 0;height:36px;padding:0 16px">📂 Open process.json</button>
+      </div>
+    </div>
+  `;
+  $("btn-open-local").onclick = pickLocalFile;
+}
+
+function showEmptyServerState() {
+  $("graph-view").innerHTML = `
+    <div style="height:100%;display:grid;place-items:center">
+      <div class="empty-state">
+        <h2 style="margin:0 0 8px">No process workspaces found</h2>
+        <p style="color:var(--text-2)">Create your first chemical process workspace to start conceptual planning.</p>
+        <button class="primary-btn" id="btn-empty-new" style="margin:8px auto 0;height:36px;padding:0 16px">＋ New Chemical Process</button>
+      </div>
+    </div>
+  `;
+  $("btn-empty-new").onclick = openNewProcessModal;
+}
+
+function mountGraphDom() {
+  $("graph-view").innerHTML = `<div id="canvas-world"><svg id="edges-svg"></svg><div id="lanes-layer"></div><div id="cards-layer"></div></div><div id="zoom-hud"><input type="range" id="zoom-slider" min="35" max="150" value="95"><button id="btn-fit">⛶</button><button id="btn-zout">−</button><span id="zoom-pct">95%</span><button id="btn-zin">+</button></div>`;
+  setupPanZoom();
+}
+
+async function pickLocalFile() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [h] = await window.showOpenFilePicker({ types: [{ description: "Minicheme JSON", accept: { "application/json": [".json"] } }] });
+      state.fileHandle = h;
+      const f = await h.getFile();
+      state.board = canonicalBoard(JSON.parse(await f.text()));
+      mountGraphDom();
+      renderAll();
+      fitGraph(false);
+      toast(`Opened ${f.name} (live local write enabled)`);
+      return;
+    } catch {}
+  }
+  $("file-picker").click();
+}
+
+$("file-picker").onchange = async e => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+  try {
+    state.board = canonicalBoard(JSON.parse(await f.text()));
+    mountGraphDom();
+    renderAll();
+    fitGraph(false);
+    toast(`Loaded ${f.name}`);
+  } catch (err) {
+    toast("Invalid process.json file", "error");
+  }
+};
+
+function downloadJson() {
+  if (!state.board) return;
+  const blob = new Blob([serializeBoard(state.board)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "process.json";
+  a.click();
+}
+
+/* ============================================================================
+ * View Switching, Global Events & Keyboard Shortcuts
+ * ========================================================================== */
+function setView(v) {
+  state.view = v;
+  $("graph-view").style.display = v === "graph" ? "block" : "none";
+  $("board-view").classList.toggle("active", v === "board");
+  $("substances-view").classList.toggle("active", v === "substances");
+  $("tab-graph").classList.toggle("active", v === "graph");
+  $("tab-board").classList.toggle("active", v === "board");
+  $("tab-substances").classList.toggle("active", v === "substances");
+  if (v === "graph") fitGraph(false);
+}
+
+$("tab-graph").onclick = () => setView("graph");
+$("tab-board").onclick = () => setView("board");
+$("tab-substances").onclick = () => setView("substances");
+$("btn-orient").onclick = () => { state.vertical = !state.vertical; renderGraph(); fitGraph(true); };
+$("btn-heuristics").onclick = () => openHeuristicsDrawer();
+$("btn-close-heur").onclick = () => $("heur-drawer").classList.remove("open");
+$("heur-drawer").onclick = e => { if (e.target === $("heur-drawer")) $("heur-drawer").classList.remove("open"); };
+$("heur-search").oninput = renderHeuristicsList;
+$("heur-family").onchange = renderHeuristicsList;
+$("btn-undo").onclick = undo;
+$("btn-redo").onclick = redo;
+$("btn-theme").onclick = () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+$("btn-new-block").onclick = () => openNewBlockModal();
+$("btn-help").onclick = openHelpModal;
+$("btn-proc-menu").onclick = e => { e.stopPropagation(); openProcMenu(e.currentTarget); };
+$("btn-bell").onclick = e => { e.stopPropagation(); openBellMenu(e.currentTarget); };
+$("search-input").oninput = e => { state.search = e.target.value; renderAll(); };
+$("modal-bg").onclick = e => { if (e.target === $("modal-bg")) closeModal(); };
+document.addEventListener("click", closeMenus);
+
+document.addEventListener("keydown", e => {
+  const tag = (e.target?.tagName || "").toLowerCase();
+  const typing = tag === "input" || tag === "textarea" || tag === "select";
+  if (e.key === "Escape") {
+    closeMenus();
+    closeModal();
+    $("heur-drawer").classList.remove("open");
+    if (!typing && state.selectedId) selectBlock(null);
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && !typing && e.key.toLowerCase() === "z") {
+    e.preventDefault();
+    if (e.shiftKey) redo(); else undo();
+    return;
+  }
+  if (typing) return;
+  if (e.key === "/") { e.preventDefault(); $("search-input").focus(); }
+  else if (e.key === "1") setView("graph");
+  else if (e.key === "2") setView("board");
+  else if (e.key === "3") setView("substances");
+  else if (e.key.toLowerCase() === "l") { state.vertical = !state.vertical; renderGraph(); fitGraph(true); }
+  else if (e.key.toLowerCase() === "f") fitGraph(true);
+  else if (e.key.toLowerCase() === "h") openHeuristicsDrawer();
+  else if (e.key === "?") openHelpModal();
+});
+
+// Expose serializer for automated Python <-> JS parity tests
+window.__minicheme = { canonicalBoard, serializeBoard };
+
+setupPanZoom();
+initApp();
+})();
+</script>
+</body>
+</html>

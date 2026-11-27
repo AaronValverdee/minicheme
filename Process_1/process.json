@@ -1,0 +1,570 @@
+{
+  "minicheme": 2,
+  "title": "Conceptual Process Brief for Green MTBE Plant",
+  "basis": {
+    "description": "El objeto del proyecto ofertado es el desarrollo de la Ingeniería Básica de una planta de producción de MTBE verde, como gestión de una nafta rica en isobutileno. El Departamento de Ingeniería Química (en adelante, DIQ) pondrá a disposición de la Empresa Contratista (en adelante, EC) las definiciones fundamentales de la Ingeniería Conceptual del proyecto (Definición y Alcance –en adelante, DAP– y Bases de Diseño –en adelante, BD–) y la información necesaria para completar el diseño conceptual del proceso, dado que se trata de una tecnología licenciada. El proyecto ha de considerar la nafta rica en isobutileno a límite de batería, si bien ha de considerar la producción de metanol verde, suministrado a límite de batería. Asimismo, se garantiza el suministro a límite de batería de algunos servicios auxiliares necesarios para llevar a cabo el proceso.\nLas materias primas tendrán la siguientes especificaciones y límites de batería. El MTBE ha de cumplir con una pureza del 99,9 % en masa. El modelo termodinámico ha de seleccionarse para describir correctamente los equilibrios propios de reacción química, líquido-vapor y líquido-líquido. El coeficiente de utilización mínimo es del 50%. La planta operará 8000 horas al año.\n\n![[Pasted image 20260907180236.png]]\n\nLa capacidad de la planta es de 10000 toneladas de nafta al año",
+    "target_product": "",
+    "feedstocks": "",
+    "capacity": "",
+    "operating_hours": 8000,
+    "operating_mode": "",
+    "product_spec": "",
+    "thermo_model": "NRTL-RK / UNIQUAC-RK",
+    "battery_limits": "",
+    "constraints": "",
+    "references": [
+      "references/MTBE_chemsystems.pdf"
+    ]
+  },
+  "substances": [
+    {
+      "name": "Isobutylene",
+      "common_name": "Isobutene",
+      "role": "Key Reactant",
+      "formula": "C4H8",
+      "cas": "115-11-7",
+      "mw": "56.11",
+      "bp_c": -6.9,
+      "bp_k": 266.25,
+      "mp_c": -140.4,
+      "tc_c": 144.8,
+      "pc_bar": 40,
+      "omega": "0.197",
+      "density": "0.588 g/cm³ (25°C)",
+      "viscosity": "0.16 mPa·s",
+      "vp": "3.08 bar (25°C)",
+      "cid": "8255"
+    },
+    {
+      "name": "Methanol",
+      "common_name": "Methanol",
+      "role": "Green Feed",
+      "formula": "CH4O",
+      "cas": "67-56-1",
+      "mw": "32.04",
+      "bp_c": 64.7,
+      "bp_k": 337.85,
+      "mp_c": -97.8,
+      "tc_c": 239.9,
+      "pc_bar": 81,
+      "omega": "0.565",
+      "density": "0.790 g/cm³ (25°C)",
+      "viscosity": "0.54 mPa·s (25°C)",
+      "vp": "0.169 bar (25°C)",
+      "cid": "887"
+    },
+    {
+      "name": "MTBE",
+      "common_name": "Tert-butyl methyl ether",
+      "role": "Target Product",
+      "formula": "C5H12O",
+      "cas": "1634-04-4",
+      "mw": "88.15",
+      "bp_c": 55.2,
+      "bp_k": 328.35,
+      "mp_c": -108.6,
+      "tc_c": 223.5,
+      "pc_bar": 34.1,
+      "omega": "0.265",
+      "density": "0.736 g/cm³ (25°C)",
+      "viscosity": "0.34 mPa·s (25°C)",
+      "vp": "0.33 bar (25°C)",
+      "cid": "15413"
+    },
+    {
+      "name": "Water",
+      "common_name": "Water",
+      "role": "Wash Solvent",
+      "formula": "H2O",
+      "cas": "7732-18-5",
+      "mw": "18.02",
+      "bp_c": 100,
+      "bp_k": 373.15,
+      "mp_c": 0,
+      "tc_c": 373.9,
+      "pc_bar": 220.6,
+      "omega": "0.344",
+      "density": "0.997 g/cm³ (25°C)",
+      "viscosity": "0.91 mPa·s (25°C)",
+      "vp": "0.032 bar (25°C)",
+      "cid": "962"
+    }
+  ],
+  "azeotrope_notes": "",
+  "stages": [
+    {
+      "id": "BP",
+      "name": "Basis & Properties",
+      "color": "teal"
+    },
+    {
+      "id": "RX",
+      "name": "1. Reactor",
+      "color": "blue"
+    },
+    {
+      "id": "SP",
+      "name": "2. Separation",
+      "color": "violet"
+    },
+    {
+      "id": "HX",
+      "name": "3. Heat Exchangers",
+      "color": "amber"
+    },
+    {
+      "id": "SM",
+      "name": "4. Conceptual Brief",
+      "color": "emerald"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "BP-01",
+      "stage": "BP",
+      "title": "Basis & Operating Mode",
+      "state": "done",
+      "deps": [],
+      "objective": "Parse process inputs & ./references/, classify Continuous vs Batch (PROC-002), and capture capacity, specs, battery limits, and constraints.",
+      "recommended_heuristics": [
+        "PROC-001",
+        "PROC-002",
+        "PROC-003"
+      ]
+    },
+    {
+      "id": "BP-02",
+      "stage": "BP",
+      "title": "Chemical Substances & Thermo Model",
+      "state": "done",
+      "deps": [
+        "BP-01"
+      ],
+      "objective": "Retrieve pure-component properties for 3-5 key species via `props`, rank normal boiling points / relative volatilities, flag azeotropes, and select the thermodynamic model.",
+      "recommended_heuristics": [
+        "PROP-001",
+        "PROP-002",
+        "PROC-003"
+      ]
+    },
+    {
+      "id": "RX-01",
+      "stage": "RX",
+      "title": "Reactor Thermodynamics",
+      "state": "done",
+      "deps": [
+        "BP-02"
+      ],
+      "objective": "Quantify heat of reaction (ΔH_rxn), adiabatic temperature rise (ΔT_ad), thermal severity, equilibrium limits, and side reactions / extinction strategy.",
+      "recommended_heuristics": [
+        "REACT-004",
+        "REACT-005",
+        "PROC-004",
+        "PROC-007"
+      ],
+      "proposal": "The synthesis of Methyl *tert*-butyl ether (MTBE) is conducted as a liquid-phase, heterogeneously catalyzed equilibrium-limited addition reaction:\n\n$$\\text{CH}_3\\text{C(CH}_3\\text{)=CH}_2 (l) + \\text{CH}_3\\text{OH} (l) \\xrightleftharpoons[\\text{Resin Catalyst}]{\\Delta H^\\circ_{\\text{rxn}} = -37.2\\text{ kJ/mol}} (\\text{CH}_3)_3\\text{C}-\\text{O}-\\text{CH}_3 (l)$$\n\n* **Thermal Classification**: **Moderately Exothermic** ($\\Delta H^\\circ_{\\text{rxn}} = -37.2\\text{ kJ/mol} = -16,000\\text{ Btu/lb-mol}$; $\\Delta T_{\\text{ad}} \\approx 42.4^\\circ\\text{C}$).\n* **Equilibrium Window**: Operating at $50^\\circ\\text{C}$ to $75^\\circ\\text{C}$ provides an optimal compromise: high equilibrium conversion ($K_{\\text{eq}} \\approx 25 - 35$ at $55^\\circ\\text{C}$, permitting $>92-95\\%$ conversion per pass) while sustaining sufficient kinetic rate over macroporous ion-exchange resin.\n* **Phase Stability**: Operating pressure is established at $10-15\\text{ barg}$, ensuring all C4 hydrocarbons and methanol remain strictly in the liquid phase without localized boiling or vapor pocket formation in the catalyst bed.\n\n---",
+      "rationale": "### 2.1 Stoichiometry and Molar Flow Rates\nFrom the Basis of Design ($10,000\\text{ t/year}$ naphtha, $8,000\\text{ h/year}$, $19\\text{ wt}\\%$ isobutylene):\n* **Naphtha Mass Flow**: $\\dot{m}_{\\text{naphtha}} = 1,250.0\\text{ kg/h}$.\n* **Isobutylene Feed Rate**: $\\dot{m}_{i\\text{-C4}} = 1,250 \\times 0.19 = 237.5\\text{ kg/h}$ ($4.233\\text{ kmol/h} = 4,233\\text{ mol/h}$).\n* **Methanol Feed Ratio**: Specified at $\\text{MeOH} : i\\text{-C}_4\\text{H}_8 = 1.05 : 1.00$ ($5\\%$ molar excess).\n* **Total Methanol Feed**: $\\dot{n}_{\\text{MeOH}} = 1.05 \\times 4.233 = 4.445\\text{ kmol/h}$ ($142.4\\text{ kg/h}$).\n* **Total Reactor Feed**: $\\dot{m}_{\\text{feed, tot}} = 1,250.0 + 142.4 = 1,392.4\\text{ kg/h}$.\n\n### 2.2 Heat Generation & Adiabatic Temperature Rise ($\\Delta T_{\\text{ad}}$)\nAssuming a design primary single-pass conversion $X_{i\\text{-C4}} = 90\\%$ ($3.810\\text{ kmol/h}$ converted):\n$$\\dot{Q}_{\\text{gen}} = \\dot{n}_{i\\text{-C4, conv}} \\cdot (-\\Delta H^\\circ_{\\text{rxn}}) = (3,810\\text{ mol/h}) \\cdot (37.2\\text{ kJ/mol}) = 141,732\\text{ kJ/h} = 39.37\\text{ kW}$$\n\nThe average liquid heat capacity of the feed mixture (dominated by C4 alkanes/alkenes with $C_p \\approx 2.35\\text{ kJ/(kg}\\cdot\\text{K)}$ and methanol $C_p \\approx 2.65\\text{ kJ/(kg}\\cdot\\text{K)}$) is $C_{p,\\text{mix}} \\approx 2.40\\text{ kJ/(kg}\\cdot\\text{K)}$.\n\nThe adiabatic temperature rise is:\n$$\\Delta T_{\\text{ad}} = \\frac{-\\Delta H^\\circ_{\\text{rxn}} \\cdot X_{i\\text{-C4}} \\cdot n_{i\\text{-C4}}}{\\dot{m}_{\\text{feed, tot}} \\cdot C_{p,\\text{mix}}} = \\frac{141,732\\text{ kJ/h}}{1,392.4\\text{ kg/h} \\times 2.40\\text{ kJ/(kg}\\cdot\\text{K)}} \\approx 42.4^\\circ\\text{C}$$\n\n* **Conclusion**: With an inlet temperature of $50^\\circ\\text{C}$, the unmitigated adiabatic exit temperature would reach $92.4^\\circ\\text{C}$. This temperature must be moderated below the resin desulfonation threshold ($120^\\circ\\text{C}$) to prevent catalyst degradation and suppress byproduct dimerization.\n\n### 2.3 Side Reactions & Extinction Analysis\n1. **Isobutylene Dimerization to Diisobutylene (DIB)**:\n   $$2 \\, i\\text{-C}_4\\text{H}_8 \\xrightleftharpoons{} \\text{DIB} \\quad (\\Delta H^\\circ \\approx -80\\text{ kJ/mol})$$\n   *Suppression Mechanism*: Polar methanol preferentially adsorbs onto the sulfonic acid ($-\\text{SO}_3\\text{H}$) sites of the resin. Maintaining $\\text{MeOH} : i\\text{-C}_4 > 1.00$ creates a methanol monolayer that inhibits the contact between two isobutylene molecules, keeping DIB yield $<0.5\\text{ wt}\\%$.\n2. **Isobutylene Hydration to *tert*-Butyl Alcohol (TBA)**:\n   $$i\\text{-C}_4\\text{H}_8 + \\text{H}_2\\text{O} \\xrightleftharpoons{} \\text{TBA}$$\n   TBA is an excellent, high-octane gasoline blending component. Any trace TBA formed is gasoline-compatible and leaves harmlessly with the MTBE bottom product (`PROC-007`).\n3. **Methanol Dehydration to Dimethyl Ether (DME)**:\n   $$2 \\, \\text{CH}_3\\text{OH} \\xrightleftharpoons{} \\text{CH}_3\\text{OCH}_3 + \\text{H}_2\\text{O}$$\n   Kinetically negligible below $90^\\circ\\text{C}$ over sulfonic resins; selectivity to MTBE exceeds $99.5\\%$.\n\n---",
+      "heuristics": [
+        {
+          "id": "REACT-004",
+          "summary": "To remove a highly exothermic heat of reaction, use an excess of reactant, an inert diluent, or direct cold-shot fluid injectio...",
+          "applied": "Moderately high exotherm; evaluate diluent effect and excess reactant. Excess C4 inerts ($81\\text{ wt}\\%$ of naphtha) act as an internal heat sink, limiting adiabatic rise to $42.4^\\circ\\text{C}$.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 21, p. 156"
+        },
+        {
+          "id": "REACT-005",
+          "summary": "For moderately exothermic heats of reaction, circulate reactor fluid to an external heat exchanger, or use a jacketed vessel, i...",
+          "applied": "For moderate exotherms ($\\Delta T_{\\text{ad}} < 100^\\circ\\text{C}$), utilize multi-tubular cooled reactors, intermediate cooling exchangers, or pump-around cooling loops.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 22, p. 156"
+        },
+        {
+          "id": "PROC-007",
+          "summary": "Byproducts produced in small quantities by reversible reactions should not be separated for sale or purged; recycle them to ext...",
+          "applied": "Reversible byproducts formed in trace quantities (e.g. TBA/DIB) need not be isolated if they meet final fuel specifications or can be recycled to extinction.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 6, p. 155"
+        },
+        {
+          "id": "PROC-004",
+          "summary": "Use an excess of an inexpensive, non-toxic, or readily available reactant to drive complete consumption of a valuable, toxic, o...",
+          "applied": "Feed a $5\\%$ stoichiometric excess of methanol ($\\text{MeOH}/i\\text{-C}_4 = 1.05$) to drive isobutylene conversion toward completion and selectively poison the acid-catalyzed olefin dimerization pathway.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 2, p. 155"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "RX-02",
+      "stage": "RX",
+      "title": "Reactor Type & Catalyst",
+      "state": "done",
+      "deps": [
+        "RX-01"
+      ],
+      "objective": "Select reactor family (PFR / fixed bed / CSTR / fluidized), catalyst class & particle size, and screen reactive separation alternatives.",
+      "recommended_heuristics": [
+        "REACT-003",
+        "REACT-007",
+        "PROC-008",
+        "REACT-006"
+      ],
+      "proposal": "A **Two-Stage Fixed-Bed Catalytic Reactor Train with Intermediate Cooling** is selected for MTBE synthesis:\n\n* **Primary Reactor (R-101)**: Vertical fixed-bed reactor operating in liquid downflow over a packed bed of macroporous sulfonic acid resin beads. Converts $\\approx 85-90\\%$ of isobutylene. Operating inlet $50^\\circ\\text{C}$, exiting at $\\le 75^\\circ\\text{C}$.\n* **Interstage Cooler (E-102)**: Shell-and-tube heat exchanger cooling the reaction mixture from $75^\\circ\\text{C}$ down to $45-50^\\circ\\text{C}$ using cooling water.\n* **Finishing / Polishing Reactor (R-102)**: Second adiabatic fixed-bed catalytic reactor operating at lower temperature ($45^\\circ\\text{C} \\to 55^\\circ\\text{C}$), shifting the exothermic thermodynamic equilibrium to achieve **$>97-99\\%$ overall isobutylene conversion**.\n* **Catalyst**: **Amberlyst 15** (or Purolite CT-175 / Dowex M-31) strongly acidic macroporous cation-exchange resin (sulfonated crosslinked styrene-divinylbenzene copolymer) in spherical bead form ($d_p = 0.6 - 0.8\\text{ mm}$).\n\n---",
+      "rationale": "### 2.1 PFR vs. CSTR Volume Comparison\nThe rate of MTBE formation follows Langmuir-Hinshelwood / positive-order kinetics with respect to isobutylene:\n$$r = \\frac{k \\cdot a_{i\\text{-C4}} \\cdot a_{\\text{MeOH}}}{1 + K_{\\text{MeOH}} \\cdot a_{\\text{MeOH}}}$$\n\nBecause reaction rate decreases monotonically with reactant conversion:\n$$\\frac{V_{\\text{CSTR}}}{V_{\\text{PFR}}} = \\frac{\\frac{X}{1-X}}{\\ln\\left(\\frac{1}{1-X}\\right)}$$\n\nFor $X = 90\\%$ single-pass conversion:\n$$\\frac{V_{\\text{CSTR}}}{V_{\\text{PFR}}} = \\frac{\\frac{0.90}{0.10}}{\\ln\\left(\\frac{1}{0.10}\\right)} = \\frac{9.0}{2.303} \\approx 3.91$$\n\nA CSTR cascade would require nearly $4\\times$ the catalyst volume of a plug-flow fixed-bed. Therefore, a **fixed-bed tubular plug-flow reactor (PFR)** provides maximum catalyst efficiency and minimum vessel volume (`REACT-003`).\n\n### 2.2 Why Two Adiabatic Stages with Intercooling vs. Single Multi-tubular Exchanger\nFor the plant design throughput ($1,250\\text{ kg/h}$ total naphtha, or $\\approx 2.2\\text{ m}^3\\text{/h}$ liquid volumetric flow):\n1. **Multi-tubular Exchanger Reactor**: High capital fabrication cost for small tube bundles, complex catalyst loading/unloading into hundreds of small $1''-1.5''$ tubes, and difficult flow maldistribution in small tubes.\n2. **Two-Stage Adiabatic Train**: Two simple cylindrical pressure vessels (R-101 and R-102) with an external standard shell-and-tube cooler (E-102) between them.\n   - Stage 1 achieves fast kinetics at $50-75^\\circ\\text{C}$ and removes $85\\%$ of the total reaction heat.\n   - Stage 2 takes advantage of the higher equilibrium constant $K_{\\text{eq}}$ at lower temperature ($45-55^\\circ\\text{C}$), driving final conversion past $98\\%$ without exceeding catalyst thermal limits.\n\n### 2.3 Evaluation of Reactive Distillation (CDTech Route)\nHeuristic `PROC-008` recommends evaluating reactive separations for equilibrium-limited reactions:\n* **Industrial Context**: Catalytic distillation (CDTech / CDMtbe) is the premier technology for mega-scale refineries ($>100,000\\text{ t/year}$ MTBE) to reach $99.5\\%$ conversion in a single tower.\n* **Scale Evaluation**: At $10,000\\text{ t/year}$ naphtha ($2,950\\text{ t/year}$ MTBE product), proprietary licensed catalytic packing (e.g. catalyst bales/wire gauze envelopes) incurs high licensing fees, mechanical complexity, and maintenance overhead for a small diameter column.\n* **Conclusion**: The two-stage fixed bed with conventional debutizer fractionation delivers identical product purity ($>99.9\\text{ wt}\\%$) and $>98\\%$ conversion with standard off-the-shelf equipment and proven commercial resin beads.\n\n---",
+      "heuristics": [
+        {
+          "id": "REACT-003",
+          "summary": "For isothermal reactions (or where temperature drops with conversion) with positive-order kinetics, a Plug Flow Reactor (PFR) r...",
+          "applied": "For isothermal/positive-order kinetics, PFR requires significantly smaller volume than CSTR ($V_{\\text{PFR}} \\ll V_{\\text{CSTR}}$ for $X > 0.8$). Packed fixed bed chosen.",
+          "source": "Ulrich & Vasudevan (2004), Appendix C, Reactors, p. 581"
+        },
+        {
+          "id": "REACT-005",
+          "summary": "For moderately exothermic heats of reaction, circulate reactor fluid to an external heat exchanger, or use a jacketed vessel, i...",
+          "applied": "Circulate reaction mixture through intermediate heat exchangers or external coolers to prevent runaway and overcome Le Chatelier equilibrium constraints.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 22, p. 156"
+        },
+        {
+          "id": "REACT-007",
+          "summary": "Select catalyst particle sizes based on reactor contact regime: ~0.10 mm (100 microns) for fluidized beds; ~1 mm for slurry bub...",
+          "applied": "For liquid-phase packed beds, select particle sizes $d_p = 0.5 - 1.5\\text{ mm}$ (Amberlyst 15 resin beads $\\sim 0.6-0.8\\text{ mm}$) to balance intraparticle diffusion with allowable bed pressure drop ($\\Delta P < 1.5\\text{ bar}$).",
+          "source": "Turton (2012), Table 11.17, Rule 2, p. 390"
+        },
+        {
+          "id": "PROC-008",
+          "summary": "For reversible equilibrium-limited reactions, evaluate reactive separation (e.g. reactive distillation) to remove products cont...",
+          "applied": "Evaluated catalytic distillation vs. multi-stage fixed bed; for small conceptual throughput ($1,250\\text{ kg/h}$), 2-stage fixed bed is selected for lower CAPEX and operational robustness.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 8, p. 155"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "RX-03",
+      "stage": "RX",
+      "title": "Reaction Conditions",
+      "state": "done",
+      "deps": [
+        "RX-02"
+      ],
+      "objective": "Set operating T, P (phase stability), stoichiometric ratio, space velocity / residence time, feed pressurization, and preliminary bed sizing.",
+      "recommended_heuristics": [
+        "REACT-002",
+        "PROC-009",
+        "REACT-007",
+        "VES-001"
+      ],
+      "proposal": "| Parameter | Primary Reactor (R-101) | Secondary Reactor (R-102) | Unit / Specification |\n| :--- | :--- | :--- | :--- |\n| **Operating Pressure** | $12.0$ | $11.0$ | $\\text{barg}$ (liquid phase guaranteed) |\n| **Inlet Temperature** | $50.0$ | $45.0$ | $^\\circ\\text{C}$ |\n| **Outlet Temperature** | $74.5$ | $53.0$ | $^\\circ\\text{C}$ (peak $< 75^\\circ\\text{C}$, well below $120^\\circ\\text{C}$ limit) |\n| **Feed Molar Ratio ($\\text{MeOH}/i\\text{-C}_4$)** | $1.05$ | Combined stream | $\\text{mol/mol}$ ($5\\%$ excess methanol) |\n| **Design Conversion ($X_{i\\text{-C4}}$)** | $89.0\\%$ | $98.5\\%$ (cumulative) | Based on fresh isobutylene feed |\n| **Liquid Hourly Space Velocity ($\\text{LHSV}$)**| $3.8$ | $7.4$ | $\\text{h}^{-1}$ (overall combined $\\text{LHSV} = 2.5\\text{ h}^{-1}$) |\n| **Catalyst Bed Volume** | $0.60$ ($600\\text{ L}$) | $0.31$ ($310\\text{ L}$) | $\\text{m}^3$ ($0.91\\text{ m}^3$ total resin volume) |\n| **Vessel Internal Diameter ($D_i$)** | $0.60$ ($24\\text{ in}$) | $0.50$ ($20\\text{ in}$) | $\\text{m}$ |\n| **Bed Height ($H_{\\text{bed}}$)** | $2.12$ ($L/D \\approx 3.5$) | $1.58$ ($L/D \\approx 3.2$) | $\\text{m}$ |\n| **Allowable Pressure Drop ($\\Delta P$)** | $\\le 0.45$ | $\\le 0.35$ | $\\text{bar}$ |\n\n---",
+      "rationale": "### 2.1 Bubble Point & Pressure Determination\nThe liquid feed is a multi-component hydrocarbon-alcohol mixture dominated by isobutane ($35\\text{ wt}\\%$, $T_b = -11.7^\\circ\\text{C}$), 2-butenes ($21\\text{ wt}\\%$, $T_b \\approx 2^\\circ\\text{C}$), isobutylene ($19\\text{ wt}\\%$, $T_b = -6.9^\\circ\\text{C}$), and methanol ($T_b = 64.7^\\circ\\text{C}$).\n* At the peak reactor temperature of $75^\\circ\\text{C}$, the bubble point pressure of this mixture is:\n  $$P_{\\text{bubble}}(75^\\circ\\text{C}) \\approx \\sum x_i \\gamma_i P^\\circ_{\\text{vap}, i}(75^\\circ\\text{C}) \\approx 7.2\\text{ bar abs} = 6.2\\text{ barg}$$\n* **Safety Margin**: Setting the operating pressure to **$12.0\\text{ barg}$ ($13.0\\text{ bar abs}$)** provides an overpressure margin of $\\Delta P_{\\text{subcooled}} \\approx 5.8\\text{ bar}$. This guarantees:\n  1. Complete liquid-phase operation throughout the catalyst bed.\n  2. Prevention of localized boiling or hot spots that could damage the resin polymer matrix.\n  3. Stable, pulsation-free downflow percolation through the porous bead bed.\n\n### 2.2 Feed Pumping Hydraulics (`PROC-009`, `PUMP-001`)\n* **Feed Conditions at Battery Limit**: Naphtha arrives at $4.0\\text{ barg}$ and $25^\\circ\\text{C}$. Green methanol arrives at $0.0\\text{ barg}$ ($1.0\\text{ bar abs}$) and $25^\\circ\\text{C}$.\n* **Feed Boost Pumps (P-101 A/B & P-102 A/B)**:\n  * Naphtha Pump (P-101): Boosts $1,250\\text{ kg/h}$ ($2.12\\text{ m}^3\\text{/h}$) from $4\\text{ barg}$ to $13.5\\text{ barg}$ ($\\Delta P = 9.5\\text{ bar} = 950\\text{ kPa}$).\n  * Methanol Pump (P-102): Boosts $142.4\\text{ kg/h}$ ($0.18\\text{ m}^3\\text{/h}$) from $0\\text{ barg}$ to $13.5\\text{ barg}$ ($\\Delta P = 13.5\\text{ bar}$).\n  * **Hydraulic Power Calculation** (`PUMP-002`):\n    $$P_{\\text{hyd, P-101}} = \\frac{\\dot{V} \\cdot \\Delta P}{3600} = \\frac{(2.12\\text{ m}^3\\text{/h}) \\cdot (950\\text{ kPa})}{3600} = 0.56\\text{ kW}$$\n    With a pump efficiency $\\eta \\approx 60\\%$, motor driver rating is $1.1\\text{ kW}$ (operating load $\\approx 0.93\\text{ kW}$).\n  * Pumping liquid requires $<1\\text{ kW}$ of electrical power, confirming heuristic `PROC-009` (pressurize liquids via pumps rather than vaporizing/compressing gases).\n\n### 2.3 Reactor Bed Hydraulics & Ergun Equation\nFor spherical resin particles with $d_p = 0.75\\text{ mm}$ and bed voidage $\\varepsilon = 0.38$:\n* Cross-sectional area of R-101 ($D = 0.60\\text{ m}$): $A_c = \\frac{\\pi}{4}(0.60)^2 = 0.283\\text{ m}^2$.\n* Superficial liquid velocity: $u_s = \\frac{2.28\\text{ m}^3\\text{/h}}{3600 \\cdot 0.283\\text{ m}^2} = 0.00224\\text{ m/s}$.\n* Liquid density $\\rho \\approx 600\\text{ kg/m}^3$, viscosity $\\mu \\approx 0.16\\text{ mPa}\\cdot\\text{s} = 1.6 \\times 10^{-4}\\text{ Pa}\\cdot\\text{s}$.\n* Modified Reynolds number: $Re_p = \\frac{\\rho u_s d_p}{\\mu(1-\\varepsilon)} = \\frac{600 \\cdot 0.00224 \\cdot 0.00075}{1.6 \\times 10^{-4} \\cdot 0.62} \\approx 10.2$ (laminar/transition).\n* Applying the Ergun equation yields $\\frac{\\Delta P}{L} \\approx 1.8\\text{ kPa/m}$. For $L = 2.12\\text{ m}$, bed friction pressure drop is $\\Delta P_{\\text{bed}} \\approx 3.8\\text{ kPa} \\approx 0.04\\text{ bar}$, well within the structural crushing strength of Amberlyst 15 resin beads ($\\Delta P_{\\max} \\approx 1.5\\text{ bar}$).\n\n---",
+      "heuristics": [
+        {
+          "id": "REACT-002",
+          "summary": "Reaction rates must be established experimentally in the laboratory, and residence time or space velocity must eventually be ve...",
+          "applied": "Reaction conditions must respect catalyst stability bounds. Maintain $T \\le 75^\\circ\\text{C}$ to avoid sulfonic resin desulfonation occurring at $>120^\\circ\\text{C}$.",
+          "source": "Turton (2012), Table 11.17, Heuristic 1, p. 390"
+        },
+        {
+          "id": "PROC-009",
+          "summary": "To increase the pressure of a stream, pump a liquid rather than compress a gas, unless refrigeration or reaction phase constrai...",
+          "applied": "Pressurize feeds as liquids before entering reactors. Pumping liquids requires $<1\\text{ kW}$, saving massive electrical energy compared to gas compression.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 43, p. 158"
+        },
+        {
+          "id": "PUMP-001",
+          "summary": "Select pump type based on flow rate, differential head, and fluid viscosity: 1. Centrifugal pumps: primary choice for heads up...",
+          "applied": "Flow rate of $2.3\\text{ m}^3\\text{/h}$ ($10\\text{ gpm}$) at $9.5\\text{ bar}$ head ($160\\text{ m}$): specify multi-stage centrifugal or regenerative turbine pump.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 37, p. 158"
+        },
+        {
+          "id": "PIPE-001",
+          "summary": "Size liquid process piping based on standard economic velocity and pressure drop guidelines: 1. Pump discharge lines: size for...",
+          "applied": "Size liquid feed piping for economic velocity $u = 1.0 - 2.0\\text{ m/s}$. For $2.3\\text{ m}^3\\text{/h}$, a $1''$ schedule 40 pipe ($ID = 26.6\\text{ mm}$) yields $u = 1.15\\text{ m/s}$.",
+          "source": "Turton (2012), Table 11.8, Rule 1(a)-(b), p. 383"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "SP-01",
+      "stage": "SP",
+      "title": "Separation Steps & Sequence",
+      "state": "done",
+      "deps": [
+        "RX-03"
+      ],
+      "objective": "Synthesize separation train (flash, distillation, extraction, absorption) from relative volatilities, azeotropes, and recycle/purge structure.",
+      "recommended_heuristics": [
+        "DIST-001",
+        "DIST-002",
+        "EXTR-001",
+        "EXTR-002",
+        "PROC-005",
+        "PROC-007"
+      ],
+      "proposal": "A **Three-Unit Hybrid Distillation-Extraction Train** is synthesized based on relative volatility hierarchy and azeotropic phase behavior:\n\n```mermaid\nflowchart TD\n    RX[\"Reactor Effluent<br/>(MTBE + C4s + MeOH)\"] --> T201[\"T-201: Debutizer / MTBE Column\"]\n    T201 -->|Bottoms: 99.9 wt% MTBE| P1[\"MTBE Product Storage<br/>(Battery Limit)\"]\n    T201 -->|Overhead: C4s + MeOH Azeotrope| T202[\"T-202: Water Wash Extractor (LLE)\"]\n    \n    WW[\"Recycled Wash Water\"] --> T202\n    T202 -->|Top Raffinate: Spent C4s| P2[\"Raffinate-II Storage<br/>(MeOH < 20 ppm)\"]\n    T202 -->|Bottoms Extract: MeOH + H2O| T203[\"T-203: Methanol Recovery Column\"]\n    \n    T203 -->|Overhead: >99.5 wt% MeOH| REC[\"Methanol Recycle to Reactor Feed\"]\n    T203 -->|Bottoms: Stripped Water| E203[\"Cooler / Closed Water Loop\"] --> WW\n```\n\n1. **Unit 1 — Debutizer / MTBE Fractionation Column (T-201)**:\n   - Separates heavy MTBE ($T_b = 55.2^\\circ\\text{C}$) as bottom product from the light C4 hydrocarbons ($T_b = -11.7^\\circ\\text{C} \\text{ to } +3.7^\\circ\\text{C}$).\n   - Exploits the **minimum-boiling C4/methanol azeotrope**: although pure methanol boils at $64.7^\\circ\\text{C}$, in the presence of C4 hydrocarbons it exhibits severe positive non-ideality ($\\gamma_{\\text{MeOH}} \\approx 8-12$), driving all residual methanol overhead with the C4s.\n   - **Bottoms Purity**: MTBE is recovered at **$>99.9\\text{ wt}\\%$ purity**, satisfying the design specification directly.\n2. **Unit 2 — Methanol Extraction / Water Wash Column (T-202)**:\n   - Countercurrent liquid-liquid extraction (LLE) using demineralized water as mass separating agent.\n   - Strips methanol from the C4 distillate. Overhead Raffinate-II contains $<20\\text{ ppm}$ methanol, suitable for LPG or alkylation feedstocks.\n3. **Unit 3 — Methanol Recovery Distillation Column (T-203)**:\n   - Distills the aqueous extract ($15-25\\text{ wt}\\%$ methanol). Overhead yields $>99.5\\text{ wt}\\%$ green methanol for direct recycle to the reactor feed (`PROC-004`).\n   - Bottoms yields stripped water ($<50\\text{ ppm}$ methanol), recycled in a closed circuit back to T-202 (`PROC-007`).\n\n---",
+      "rationale": "### 2.1 Azeotropic Phase Distribution Analysis\nIn a conventional binary mixture, methanol ($T_b = 64.7^\\circ\\text{C}$) would be heavier than MTBE ($T_b = 55.2^\\circ\\text{C}$). However, in this multi-component mixture:\n* The hydrocarbon matrix consists of $>70\\text{ wt}\\%$ C4 alkanes and alkenes.\n* The infinite-dilution activity coefficient of methanol in butanes is $\\gamma^\\infty_{\\text{MeOH}} \\approx 10.5$.\n* The effective partial pressure of methanol:\n  $$P_{\\text{MeOH}} = x_{\\text{MeOH}} \\cdot \\gamma_{\\text{MeOH}} \\cdot P^\\circ_{\\text{vap, MeOH}}$$\n  At $70^\\circ\\text{C}$, $P^\\circ_{\\text{vap, MeOH}} = 1.3\\text{ bar}$, while $P^\\circ_{\\text{vap, MTBE}} = 1.6\\text{ bar}$. With $\\gamma_{\\text{MeOH}} \\approx 8.0$, the apparent volatility of methanol becomes $\\alpha_{\\text{MeOH/MTBE}} \\approx \\frac{8.0 \\cdot 1.3}{1.0 \\cdot 1.6} \\approx 6.5$.\n* Therefore, methanol boils off with the C4s, leaving pure MTBE at the column bottom.\n\n### 2.2 Extraction vs. Pressure-Swing / Extractive Distillation\nBreaking the C4-methanol azeotrope via distillation alone would require:\n1. Two high-pressure columns operating at differing pressure swings, requiring substantial compression energy.\n2. High capital cost for high-pressure cryogenic C4 handling.\nBy contrast, liquid-liquid water washing (`EXTR-001`):\n* Water has an exceptionally high distribution coefficient for methanol ($K_D = y_{\\text{MeOH, aq}} / x_{\\text{MeOH, org}} \\approx 25 - 40$).\n* Mutual hydrocarbon-water solubility is $<0.01\\text{ wt}\\%$, giving selectivity $\\beta \\to \\infty$.\n* Water wash operates at ambient temperature ($35-40^\\circ\\text{C}$) and pressure ($6\\text{ barg}$), preserving the liquid state with minimal utility requirements.\n\n### 2.3 Closed Recycle Loops & Environmental Integrity\n* **Methanol Balance**: Fresh green methanol makes up only what is stoichiometrically consumed to form MTBE ($134.3\\text{ kg/h}$). The excess $8.14\\text{ kg/h}$ circulating through the reactor is completely recovered in T-203 overhead and recycled, achieving $\\approx 99.8\\%$ overall methanol utilization.\n* **Zero Wastewater Discharge**: By recovering water in T-203 bottoms and returning it to T-202, the wash water is maintained in a 100% closed loop (`PROC-007`).\n\n---",
+      "heuristics": [
+        {
+          "id": "DIST-001",
+          "summary": "Distillation is the primary, most economical method for separating miscible liquid mixtures when relative volatility alpha > 1....",
+          "applied": "Use distillation when relative volatility $\\alpha > 1.25$. Applied to T-201 ($\\alpha \\approx 6.0$) and T-203 ($\\alpha \\approx 2.8$).",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 9, p. 155"
+        },
+        {
+          "id": "DIST-002",
+          "summary": "For multi-component distillation trains, apply the standard sequencing heuristics: 1. Perform the easiest separation first (hig...",
+          "applied": "1. Remove plentiful components early (C4s are $71\\%$ of feed). 2. Easiest separation first ($\\alpha_{\\text{C4/MTBE}} > 5.5$). 3. Recover high purity product directly as bottoms.",
+          "source": "Turton (2012), Table 11.13, Heuristic 4, p. 386"
+        },
+        {
+          "id": "EXTR-001",
+          "summary": "Specify liquid-liquid extraction (LLE) when components have low relative volatility (alpha < 1.05), form close-boiling azeotrop...",
+          "applied": "Specify LLE when distillation is infeasible due to azeotropes or low relative volatility. Water wash selected for C4/MeOH separation.",
+          "source": "Turton (2012), Section 2.5, p. 110"
+        },
+        {
+          "id": "EXTR-002",
+          "summary": "Select extraction solvents satisfying: 1. High selectivity (beta = (y_A/x_A) / (y_B/x_B) >= 5 to 10). 2. High distribution coef...",
+          "applied": "Water exhibits near-infinite selectivity ($\\beta \\gg 10$), high capacity, non-toxicity, and high chemical stability with zero fouling.",
+          "source": "Turton (2012), Table 11.16, Rules 5 & 7, p. 389"
+        },
+        {
+          "id": "PROC-004",
+          "summary": "Use an excess of an inexpensive, non-toxic, or readily available reactant to drive complete consumption of a valuable, toxic, o...",
+          "applied": "Solvent from extraction (water) and unreacted raw material (methanol) must be separated and recycled to near-extinction.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 2, p. 155"
+        },
+        {
+          "id": "PROC-007",
+          "summary": "Byproducts produced in small quantities by reversible reactions should not be separated for sale or purged; recycle them to ext...",
+          "applied": "Recycle unreacted methanol overhead from T-203 to reactor inlet to maintain overall stoichiometric efficiency.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 6, p. 155"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "SP-02",
+      "stage": "SP",
+      "title": "Separation Conditions",
+      "state": "done",
+      "deps": [
+        "SP-01"
+      ],
+      "objective": "Set column operating pressures (for CW condensation), T_top/T_bot, reflux ratio (1.2-1.3 R_min), theoretical stages, and tray vs packing internals.",
+      "recommended_heuristics": [
+        "DIST-003",
+        "DIST-004",
+        "DIST-005",
+        "DIST-006",
+        "EXTR-003",
+        "EXTR-004"
+      ],
+      "proposal": "| Equipment ID | Service / Type | Operating Pressure | Top / Bottom Temp. | Stages / Trays | Reflux Ratio ($R$) | Internal Diameter ($D_i$) | Tangent Height ($H_{\\text{T-T}}$) | Internals Specified |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **T-201** | Debutizer / MTBE Column | $6.5\\text{ barg}$ ($7.5\\text{ bar abs}$) | $49^\\circ\\text{C} \\,/\\, 138^\\circ\\text{C}$ | $36$ theor. stages | $1.15$ ($1.25 R_{\\min}$) | $0.65\\text{ m}$ ($26\\text{ in}$) | $20.5\\text{ m}$ | Structured Packing (Mellapak 250Y) |\n| **T-202** | Methanol Water Extractor | $6.0\\text{ barg}$ ($7.0\\text{ bar abs}$) | $35^\\circ\\text{C} \\,/\\, 38^\\circ\\text{C}$ | $6$ theor. stages | N/A (LLE) | $0.35\\text{ m}$ ($14\\text{ in}$) | $8.0\\text{ m}$ | Random Packing (1\" SS Pall Rings) |\n| **T-203** | Methanol Recovery Column | $1.2\\text{ barg}$ ($2.2\\text{ bar abs}$) | $78^\\circ\\text{C} \\,/\\, 115^\\circ\\text{C}$ | $24$ theor. stages | $1.20$ ($1.25 R_{\\min}$) | $0.30\\text{ m}$ ($12\\text{ in}$) | $13.5\\text{ m}$ | Structured Packing (Mellapak 250Y) |\n\n---",
+      "rationale": "### 2.1 Column Pressure Selection (`DIST-003`)\n* **Heuristic Guideline**: Operate distillation columns at the lowest pressure that permits complete condensation using standard cooling water ($30^\\circ\\text{C}$ supply, $40^\\circ\\text{C}$ return).\n* **T-201 (Debutizer)**:\n  - Distillate is primarily isobutane ($35\\%$), 2-butenes ($21\\%$), and 1-butene ($11\\%$) plus azeotropic methanol.\n  - At $1.0\\text{ atm}$, isobutane boils at $-11.7^\\circ\\text{C}$ (requiring expensive sub-ambient refrigeration).\n  - Raising column pressure to **$6.5\\text{ barg}$ ($7.5\\text{ bar abs}$)** shifts the overhead bubble point to **$49.0^\\circ\\text{C}$**.\n  - Temperature driving force in condenser: $\\Delta T = 49^\\circ\\text{C} - 30^\\circ\\text{C} = 19^\\circ\\text{C} > 10^\\circ\\text{C}$ minimum approach (`HEX-004`), allowing 100% cooling water condensation and eliminating refrigeration compressors (`UTIL-REF-001`).\n  - Bottoms Temperature: At $7.5\\text{ bar abs}$, pure MTBE boils at $138^\\circ\\text{C}$. This is safely below the MTBE thermal decomposition limit ($>160^\\circ\\text{C}$), ensuring stable bottom reboiler operation without product degradation.\n* **T-203 (Methanol Recovery)**:\n  - Operated at $1.2\\text{ barg}$ ($2.2\\text{ bar abs}$). Overhead methanol condenses at $78^\\circ\\text{C}$ with cooling water, while bottoms water reboils at $115^\\circ\\text{C}$ using low-pressure steam ($3.5\\text{ barg}$, $148^\\circ\\text{C}$).\n\n### 2.2 Reflux Ratio and Theoretical Stages (`DIST-004`, `DIST-005`)\n* **T-201**:\n  - The split is very favorable: $\\alpha_{\\text{C4/MTBE}} \\approx 6.0$.\n  - Minimum stages from Fenske equation: $N_{\\min} \\approx \\frac{\\ln\\left(\\frac{0.999 \\times 0.995}{0.001 \\times 0.005}\\right)}{\\ln(6.0)} \\approx 6.8$ ideal binary equivalent; accounting for multicomponent pinches, $N_{\\min} \\approx 18$.\n  - Optimum operating stages: $N = 1.8 \\times N_{\\min} \\approx 36$ stages (`DIST-004`).\n  - Operating reflux: $R_{\\min} \\approx 0.90 \\implies R_{\\text{op}} = 1.25 \\times 0.90 \\approx 1.15$.\n* **Internals Choice (`DIST-005`)**:\n  - Calculated column diameter $D_i = 0.65\\text{ m} < 0.9\\text{ m}$.\n  - Heuristic `DIST-005` specifies structured packing for column diameters $< 0.9\\text{ m}$ to prevent weeping, minimize liquid holdup, and lower column pressure drop ($\\Delta P_{\\text{col}} < 0.2\\text{ bar}$).\n  - With standard HETP $\\approx 0.45\\text{ m}$, active bed height is $H_{\\text{pack}} = 36 \\times 0.45 = 16.2\\text{ m}$.\n  - Including feed distributors, vapor disengagement, and bottoms sump (`DIST-008`), total height is $20.5\\text{ m}$.\n\n### 2.3 Methanol Water Extractor Sizing (T-202) (`EXTR-003`, `EXTR-004`)\n* **Extraction Conditions**: $P = 6.0\\text{ barg}$, $T = 35^\\circ\\text{C}$. Operating at $6\\text{ barg}$ allows direct liquid feed from the debutizer reflux drum without intermediate depressurization or booster pumps (`PROC-009`).\n* **Solvent Ratio & Stages**:\n  - Hydrocarbon flow: $\\dot{m}_{\\text{org}} = 1,020\\text{ kg/h}$ ($1.72\\text{ m}^3\\text{/h}$).\n  - Wash water rate: $\\dot{m}_{\\text{aq}} = 150\\text{ kg/h}$ ($0.15\\text{ m}^3\\text{/h}$).\n  - Mass ratio $S/F \\approx 0.15$. The extraction factor $\\mathcal{E} = K_D \\cdot \\frac{S}{F} \\approx 30 \\times 0.15 = 4.5 \\gg 1.5$.\n  - Kremser equation yields $N_{\\text{stages}} = 5.2 \\implies \\mathbf{6\\text{ theoretical stages}}$ (`EXTR-003`).\n* **Phase Dispersion (`EXTR-004`)**:\n  - Volumetric ratio $\\dot{V}_{\\text{org}} / \\dot{V}_{\\text{aq}} = 1.72 / 0.15 \\approx 11.5 : 1$.\n  - Heuristic `EXTR-004` states: *Disperse the phase with the higher volumetric flow rate*.\n  - Therefore, the hydrocarbon phase is **dispersed** as droplets, while water forms the continuous downward-flowing film over 1\" stainless steel Pall rings.\n  - Column diameter: $D_i = 0.35\\text{ m}$ ($14\\text{ in}$), total packed height: $6.0\\text{ m}$, vessel height: $8.0\\text{ m}$.\n\n---",
+      "heuristics": [
+        {
+          "id": "DIST-003",
+          "summary": "Operate distillation columns at the lowest feasible pressure, because relative volatility increases as pressure decreases. The...",
+          "applied": "Set pressure so condenser operates with cooling water ($T_{\\text{cond}} \\ge 45-50^\\circ\\text{C}$); ensure bottoms $T < 150^\\circ\\text{C}$ to avoid thermal degradation.",
+          "source": "Turton (2012), Table 11.13, Rule 3, p. 386"
+        },
+        {
+          "id": "DIST-004",
+          "summary": "Set the operating reflux ratio R between 1.1 and 1.5 times the minimum reflux ratio (R_min), with 1.2 to 1.3 R_min being the st...",
+          "applied": "Set $R = 1.2 \\text{ to } 1.3 R_{\\min}$; set theoretical stages $N = 1.5 \\text{ to } 2.0 N_{\\min}$.",
+          "source": "Turton (2012), Table 11.13, Rules 5-9, p. 386"
+        },
+        {
+          "id": "DIST-005",
+          "summary": "Use tray columns for column diameters > 0.6 to 0.9 m (2 to 3 ft), high liquid flow rates, fouling fluids, slurries, or when int...",
+          "applied": "For diameters $D < 0.9\\text{ m}$ ($3\\text{ ft}$), choose structured packing over trays to reduce pressure drop and ensure uniform liquid distribution.",
+          "source": "Turton (2012), Tables 11.13, 11.14, 11.15, p. 386"
+        },
+        {
+          "id": "DIST-008",
+          "summary": "Calculate packed tower active height using the verified Ulrich equation: H_a = N * HETP. For distillation, HETP = 0.5 * D^0.3 (...",
+          "applied": "Calculate total height as $H = N \\cdot \\text{HETP} + \\text{allowances for distributors and sump}$ ($1.5-2.5\\text{ m}$ top/bottom).",
+          "source": "Ulrich & Vasudevan (2004), Appendix C, Process Vessels (Packed Towers), p. 580"
+        },
+        {
+          "id": "EXTR-003",
+          "summary": "Most commercial extraction cascades require 4 to 10 theoretical stages. Select equipment by stage count and interfacial tension...",
+          "applied": "Commercial extraction cascades typically require 4 to 10 theoretical stages. Specified 6 stages for T-202.",
+          "source": "Turton (2012), Table 11.16, Rules 3-9, p. 389"
+        },
+        {
+          "id": "EXTR-004",
+          "summary": "Disperse the phase with the higher volumetric flow rate in column extractors to maximize interfacial mass transfer area, unless...",
+          "applied": "Disperse the phase with the higher volumetric flow rate ($V_{\\text{org}} / V_{\\text{aq}} \\approx 11.5 \\implies$ hydrocarbon dispersed).",
+          "source": "Turton (2012), Table 11.16, Rule 1, p. 389"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "HX-01",
+      "stage": "HX",
+      "title": "Heat Exchanger Types",
+      "state": "done",
+      "deps": [
+        "SP-02"
+      ],
+      "objective": "List primary heat-transfer services, select TEMA configurations & standard geometry, allocate tube vs shell fluids, and verify reboiler nucleate-boiling ΔT.",
+      "recommended_heuristics": [
+        "HEX-001",
+        "HEX-002",
+        "HEX-007",
+        "HEX-010"
+      ],
+      "proposal": "A network of **eight heat transfer units** is specified across the reaction, debutizer, extraction, and methanol recovery circuits:\n\n| Tag | Service | Exchanger Type | Heat Duty ($\\text{kW}$) | Tube-Side Fluid (Allocation Basis) | Shell-Side Fluid | Design Geometry |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **E-101** | Feed / MTBE Product Economizer | TEMA BEU (U-tube) | $23.5$ | Fresh Feed ($12\\text{ barg}$, high pressure `HEX-002`) | Hot MTBE Product ($6.5\\text{ barg}$, clean organic) | $3/4''$ OD, $1''$ tri pitch, $16\\text{ ft}$ |\n| **E-102** | Reactor Interstage Cooler | TEMA AES (Floating head) | $27.4$ | Cooling Water ($30 \\to 38^\\circ\\text{C}$, fouling fluid `HEX-002`) | Reactor Effluent ($11.5\\text{ barg}$) | $3/4''$ OD, $1''$ tri pitch, $16\\text{ ft}$ |\n| **E-201** | Debutizer Overhead Condenser | TEMA AES (Horizontal) | $210.0$ | Cooling Water ($30 \\to 40^\\circ\\text{C}$, fouling/corrosive `HEX-002`) | Condensing C4/MeOH vapor ($49^\\circ\\text{C}$, `HEX-002`) | $3/4''$ OD, $1''$ tri pitch, $16\\text{ ft}$ |\n| **E-202** | Debutizer Reboiler | TEMA BKU (Kettle Reboiler) | $72.0$ | LP Steam ($3.5\\text{ barg}$, $148^\\circ\\text{C}$, condensing in tube bundle) | Boiling MTBE ($138^\\circ\\text{C}$, boiling on shell `HEX-007`) | U-tube bundle, enlarged vapor space |\n| **E-203** | Extract Preheater / Water Economizer | Hairpin / Plate-and-Frame | $14.5$ | Aqueous Methanol Extract ($35 \\to 80^\\circ\\text{C}$) | Hot Stripped Water ($115 \\to 50^\\circ\\text{C}$) | Countercurrent high-effectiveness |\n| **E-204** | Wash Water Trim Cooler | TEMA BEM / Double-pipe | $4.2$ | Cooling Water ($30 \\to 35^\\circ\\text{C}$) | Recycled Water ($50 \\to 35^\\circ\\text{C}$) | Standard CS/SS hairpin |\n| **E-205** | Methanol Recovery Condenser | TEMA AES (Horizontal) | $16.8$ | Cooling Water ($30 \\to 40^\\circ\\text{C}$) | Condensing Methanol ($78^\\circ\\text{C}$) | $3/4''$ OD, $1''$ tri pitch, $12\\text{ ft}$ |\n| **E-206** | Methanol Recovery Reboiler | Thermosiphon Reboiler | $18.5$ | LP Steam ($2.0\\text{ barg}$, $133^\\circ\\text{C}$) | Boiling Water ($115^\\circ\\text{C}$) | Vertical tube thermosiphon |\n\n---",
+      "rationale": "### 2.1 Tube-Side vs. Shell-Side Allocation Rules (`HEX-002`)\nThe fluids in each unit are strictly allocated according to established chemical engineering heuristics:\n1. **Cooling Tower Water**: Allocated to the **tube side** in E-102, E-201, E-204, and E-205. Cooling water is aerated, contains mineral salts, and exhibits biological/scaling fouling tendencies. Placing it inside straight tubes allows on-line chemical cleaning and easy mechanical rodding without opening the shell casing.\n2. **High-Pressure Streams**: High-pressure reaction feed ($12-13\\text{ barg}$) in E-101 is allocated to the **tube side**. Tube walls inherently resist internal hoop stress with minimal wall thickness, eliminating the need for an expensive heavy-wall shell.\n3. **Condensing and Boiling Streams**: Condensing C4/methanol vapors (E-201, E-205) are routed to the **shell side** to minimize vapor flow resistance and keep pressure drop below $0.15\\text{ bar}$. Boiling fluids in kettle reboiler E-202 are routed to the enlarged shell space to permit unhindered vapor disengagement without liquid entrainment.\n\n### 2.2 Standard Geometry & Mechanical Design (`HEX-001`)\n* **Tube Dimensions**: All shell-and-tube exchangers utilize industry-standard $3/4\\text{ inch}$ ($19.05\\text{ mm}$) outside diameter (OD) tubes with 16 BWG ($1.65\\text{ mm}$) wall thickness.\n* **Pitch & Layout**: Tubes are arranged on a $1\\text{ inch}$ ($25.4\\text{ mm}$) **triangular pitch** ($30^\\circ$ orientation), maximizing heat transfer coefficient per unit shell volume for clean organic fluids (`HEX-001`).\n* **Tube Length**: Standard $16\\text{ ft}$ ($4.88\\text{ m}$) tube lengths are specified for primary exchangers (E-101, E-102, E-201) to minimize shell diameter and shell-flange costs.\n\n### 2.3 Nucleate vs. Film Boiling Verification in Reboilers (`HEX-007`)\nA critical operating failure in distillation reboilers is transitioning into film boiling (vapor blanketing), which drops the heat transfer coefficient by an order of magnitude:\n* **Heuristic Criterion**: Maintain temperature driving force $\\Delta T_{\\text{reb}} = T_{\\text{steam}} - T_{\\text{process}} \\le 25^\\circ\\text{C}$ ($45^\\circ\\text{F}$) to guarantee nucleate boiling.\n* **E-202 (Debutizer Reboiler)**:\n  - Process boiling temperature at $6.5\\text{ barg}$: $T_{\\text{boil}} = 138^\\circ\\text{C}$.\n  - Utility: Low-pressure steam at $3.5\\text{ barg}$ ($T_{\\text{sat}} = 148^\\circ\\text{C}$).\n  - Overall driving force: $\\Delta T = 148^\\circ\\text{C} - 138^\\circ\\text{C} = \\mathbf{10^\\circ\\text{C}} \\le 25^\\circ\\text{C}$.\n  - **Verdict**: Nucleate boiling regime is safely maintained; vapor blanketing risk is zero.\n* **E-206 (Methanol Recovery Reboiler)**:\n  - Process boiling temperature at $1.2\\text{ barg}$: $T_{\\text{boil}} = 115^\\circ\\text{C}$.\n  - Using throttled LP steam at $2.0\\text{ barg}$ ($T_{\\text{sat}} = 133^\\circ\\text{C}$) provides $\\Delta T = 18^\\circ\\text{C} \\le 25^\\circ\\text{C}$, safely within the nucleate boiling envelope.\n\n---",
+      "heuristics": [
+        {
+          "id": "HEX-001",
+          "summary": "For standard shell-and-tube heat exchangers, specify 3/4-inch (19.05 mm) OD tubes on a 1-inch (25.4 mm) triangular pitch, with...",
+          "applied": "Specify $3/4\\text{ in}$ ($19.05\\text{ mm}$) OD tubes on $1\\text{ in}$ triangular pitch, $16\\text{ ft}$ ($4.88\\text{ m}$) length for commercial exchangers.",
+          "source": "Turton (2012), Table 11.11, Rule 2, p. 385"
+        },
+        {
+          "id": "HEX-002",
+          "summary": "Allocate fluids between tube side and shell side according to the standard priority hierarchy: 1. Tube side: corrosive fluids (...",
+          "applied": "Corrosive, fouling, and higher-pressure fluids on tube side; condensing, boiling, and viscous fluids on shell side.",
+          "source": "Turton (2012), Table 11.11, Rules 3 & 4, p. 385"
+        },
+        {
+          "id": "HEX-003",
+          "summary": "Calculate required heat exchanger surface area from: A = Q_dot / (U * F * LMTD). Maintain the LMTD correction factor F >= 0.80...",
+          "applied": "Preliminary area calculated via $A = Q / (U \\cdot \\Delta T_{\\text{LM}} \\cdot F_T)$.",
+          "source": "Turton (2012), Table 11.11, Rule 1, p. 385"
+        },
+        {
+          "id": "HEX-005",
+          "summary": "Use standard typical overall heat transfer coefficients (U) for preliminary scoping: 1. Liquid-to-liquid (water/organics): 300...",
+          "applied": "Used typical values: liquid-liquid organic $U \\approx 350-500\\text{ W/(m}^2\\cdot\\text{K)}$; condensing hydrocarbon $U \\approx 450-700\\text{ W/(m}^2\\cdot\\text{K)}$; steam reboiler $U \\approx 800-1200\\text{ W/(m}^2\\cdot\\text{K)}$.",
+          "source": "Turton (2012), Table 11.11, Rules 8 & 12, p. 385"
+        },
+        {
+          "id": "HEX-006",
+          "summary": "Estimate typical allowable pressure drops in heat exchangers: 1. Liquid heating, cooling, or boiling: 0.2 to 0.6 bar (3 to 9 ps...",
+          "applied": "Design liquid streams for $\\Delta P \\le 0.35-0.70\\text{ bar}$; condensing vapors for $\\Delta P \\le 0.10-0.15\\text{ bar}$.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 31, p. 157"
+        },
+        {
+          "id": "HEX-007",
+          "summary": "In reboilers and vaporizers, maintain the maximum overall temperature driving force Delta T_driving <= 45 F (25 C) to ensure nu...",
+          "applied": "In reboilers and vaporizers, maintain $\\Delta T \\le 25^\\circ\\text{C}$ ($45^\\circ\\text{F}$) to avoid entering the unstable film boiling regime.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 28, p. 157"
+        },
+        {
+          "id": "HEX-010",
+          "summary": "Specify double-pipe or multi-pipe hairpin heat exchangers when required heat transfer area is small (< 100 to 200 ft2 / 10 to 2...",
+          "applied": "Specify hairpin exchangers when required surface area $A < 20\\text{ m}^2$ (applied to E-203 and E-204).",
+          "source": "Turton (2012), Table 11.11, Rule 9, p. 385"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "HX-02",
+      "stage": "HX",
+      "title": "Utilities & Pinch",
+      "state": "done",
+      "deps": [
+        "HX-01"
+      ],
+      "objective": "Identify process-to-process heat recovery matches, set ΔT_min, verify pinch discipline, and specify cooling water / steam utility headers.",
+      "recommended_heuristics": [
+        "PROC-010",
+        "HEX-004",
+        "UTIL-REF-001",
+        "UTIL-REF-003"
+      ],
+      "proposal": "An integrated heat exchanger network (HEN) is synthesized respecting Douglas Level 5 energy hierarchy and the fundamental laws of Pinch Technology:\n\n```mermaid\nflowchart TD\n    subgraph AbovePinch[\"Zone Above Pinch (T > 120 °C)\"]\n        LP[\"LP Steam Header (3.5 barg, 148 °C)\"]\n        LP --> E202[\"E-202 Reboiler (72.0 kW)\"]\n        LP --> E206[\"E-206 Reboiler (18.5 kW)\"]\n    end\n    \n    subgraph HeatRecovery[\"Inter-Process Heat Integration\"]\n        MTBE[\"Hot MTBE Bottoms (138 °C)\"] --> E101[\"E-101 Feed Preheater (18.0 kW)\"] --> MTBE_C[\"Cooled MTBE (60 °C)\"]\n        FEED[\"Cold Feed (25 °C)\"] --> E101 --> FEED_H[\"Preheated Feed (50 °C)\"]\n        \n        H2O_H[\"Hot Stripped Water (115 °C)\"] --> E203[\"E-203 Extract Economizer (7.0 kW)\"] --> H2O_C[\"Cooled Water (50 °C)\"]\n        EXT_C[\"Cold Extract (35 °C)\"] --> E203 --> EXT_H[\"Preheated Extract (75 °C)\"]\n    end\n    \n    subgraph BelowPinch[\"Zone Below Pinch (T < 90 °C)\"]\n        CW[\"Cooling Water Supply (30 °C)\"]\n        CW --> E102[\"E-102 Intercooler (27.4 kW)\"]\n        CW --> E201[\"E-201 Debutizer Condenser (210.0 kW)\"]\n        CW --> E204[\"E-204 Water Trim Cooler (4.2 kW)\"]\n        CW --> E205[\"E-205 MeOH Condenser (16.8 kW)\"]\n    end\n```\n\n* **Minimum Approach ($\\Delta T_{\\min}$)**: Established at **$10.0^\\circ\\text{C}$** across all chemical process streams (`HEX-004`).\n* **Steam Utility**: Standard Low-Pressure (LP) saturated steam header at **$3.5\\text{ barg}$ ($148^\\circ\\text{C}$)** (`UTIL-REF-003`). Total steam consumption: **$162.5\\text{ kg/h}$** ($95.7\\text{ kW}$ thermal duty).\n* **Cooling Water Utility**: Mechanical-draft recirculating cooling water supplied at **$30.0^\\circ\\text{C}$**, returning at $\\le 40.0^\\circ\\text{C}$ (`UTIL-REF-001`). Total cooling water flow: **$22.2\\text{ m}^3\\text{/h}$** ($258.4\\text{ kW}$ cooling duty).\n\n---",
+      "rationale": "### 2.1 Process Thermal Streams Table\n\n| Stream Identifier | Type | Supply Temp. ($T_s$) | Target Temp. ($T_t$) | Mass Flow ($\\text{kg/h}$) | Heat Capacity ($C_p$) | Heat Duty ($Q$, $\\text{kW}$) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hot 1 (MTBE Bottoms)** | Hot | $138.0^\\circ\\text{C}$ | $40.0^\\circ\\text{C}$ | $369.4$ | $2.25\\text{ kJ/(kg}\\cdot\\text{K)}$ | $22.6$ |\n| **Hot 2 (R-101 Effluent)** | Hot | $74.5^\\circ\\text{C}$ | $45.0^\\circ\\text{C}$ | $1,392.4$ | $2.40\\text{ kJ/(kg}\\cdot\\text{K)}$ | $27.4$ |\n| **Hot 3 (T-201 Overhead Vapor)**| Hot | $49.0^\\circ\\text{C}$ (cond.) | $49.0^\\circ\\text{C}$ (sat. liq) | $2,100.0$ | $\\lambda \\approx 360\\text{ kJ/kg}$ | $210.0$ |\n| **Hot 4 (T-203 Bottoms Water)** | Hot | $115.0^\\circ\\text{C}$ | $35.0^\\circ\\text{C}$ | $150.0$ | $4.18\\text{ kJ/(kg}\\cdot\\text{K)}$ | $13.9$ |\n| **Hot 5 (T-203 Overhead Vapor)**| Hot | $78.0^\\circ\\text{C}$ (cond.) | $78.0^\\circ\\text{C}$ (sat. liq) | $22.0$ | $\\lambda \\approx 1,100\\text{ kJ/kg}$| $16.8$ |\n| **Cold 1 (Reactor Feed)** | Cold | $25.0^\\circ\\text{C}$ | $50.0^\\circ\\text{C}$ | $1,392.4$ | $2.40\\text{ kJ/(kg}\\cdot\\text{K)}$ | $23.2$ |\n| **Cold 2 (Extract to T-203)** | Cold | $35.0^\\circ\\text{C}$ | $80.0^\\circ\\text{C}$ | $158.1$ | $3.90\\text{ kJ/(kg}\\cdot\\text{K)}$ | $7.7$ |\n| **Cold 3 (T-201 Reboiler)** | Cold | $138.0^\\circ\\text{C}$ (boil) | $138.0^\\circ\\text{C}$ (vapor) | $750.0$ | $\\lambda \\approx 345\\text{ kJ/kg}$ | $72.0$ |\n| **Cold 4 (T-203 Reboiler)** | Cold | $115.0^\\circ\\text{C}$ (boil) | $115.0^\\circ\\text{C}$ (vapor) | $28.0$ | $\\lambda \\approx 2,220\\text{ kJ/kg}$| $18.5$ |\n\n### 2.2 Pinch Location & Fundamental Rules (`PROC-010`)\n* With $\\Delta T_{\\min} = 10^\\circ\\text{C}$, the system exhibits a sharp pinch divide:\n  $$T_{\\text{pinch, hot}} = 125^\\circ\\text{C}, \\quad T_{\\text{pinch, cold}} = 115^\\circ\\text{C}$$\n* **Pinch Rules Enforced (`PROC-010`)**:\n  1. *Do not transfer heat across the pinch*: Only hot streams above $125^\\circ\\text{C}$ are used to heat cold streams above $115^\\circ\\text{C}$.\n  2. *Do not use external utilities inappropriately*: No cooling water is applied above the pinch; no steam is applied below the pinch (except minor trim if necessary).\n  3. High-temperature reboilers (E-202 at $138^\\circ\\text{C}$ and E-206 at $115^\\circ\\text{C}$) operate strictly above the pinch and are supplied by the $148^\\circ\\text{C}$ LP steam header.\n\n### 2.3 Heat Integration Matches & Utility Reductions\n1. **Feed Preheating via Product Heat Recovery (E-101)**:\n   - MTBE product leaving T-201 bottom is hot ($138^\\circ\\text{C}$). Rather than dumping this heat into cooling water, it is cross-exchanged with the incoming cold feed ($25^\\circ\\text{C}$), preheating the feed to $50^\\circ\\text{C}$ and cooling the MTBE to $60^\\circ\\text{C}$.\n   - Energy Recovered: $18.0\\text{ kW}$. Eliminates a dedicated steam preheater.\n2. **Stripped Water Economizer (E-203)**:\n   - Clean water from T-203 bottom at $115^\\circ\\text{C}$ must be cooled to $35^\\circ\\text{C}$ before re-entering extraction column T-202.\n   - Cross-exchanging with the cold extract ($35^\\circ\\text{C}$) recovers $7.0\\text{ kW}$, preheating the column feed to $75^\\circ\\text{C}$ and reducing reboiler duty.\n3. **Net Energy Savings**:\n   - Total thermal heating without integration: $121.4\\text{ kW}$.\n   - Actual heating utility required: $95.7\\text{ kW}$ (**$21.2\\%$ steam savings**).\n   - Cooling water load avoided: $25.0\\text{ kW}$ reduction.\n\n---",
+      "heuristics": [
+        {
+          "id": "PROC-010",
+          "summary": "Follow the fundamental Pinch Analysis rules: Never transfer heat across the pinch. Above the pinch, only accept heat from hot u...",
+          "applied": "Never transfer heat across the pinch. Do not introduce hot utility below the pinch or cold utility above the pinch.",
+          "source": "Turton (2012), Section 2.6 & Chapter 15 (Pinch Technology), p. 536"
+        },
+        {
+          "id": "HEX-004",
+          "summary": "Specify near-optimal minimum approach temperatures (Delta T_min) based on temperature regime: 1. Sub-ambient / cryogenic temper...",
+          "applied": "Specify $\\Delta T_{\\min} = 10\\text{ to } 20^\\circ\\text{C}$ for standard chemical processes. Specified $\\Delta T_{\\min} = 10^\\circ\\text{C}$.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 26, p. 157"
+        },
+        {
+          "id": "UTIL-REF-001",
+          "summary": "Standard cooling tower water is supplied to process exchangers at 85 to 90 F (29 to 32 C) and returned at a maximum allowable t...",
+          "applied": "Standard industrial cooling water supplied at $30^\\circ\\text{C}$ ($85-90^\\circ\\text{F}$), returned at $40-45^\\circ\\text{C}$ ($110-115^\\circ\\text{F}$). Maximum exit $45^\\circ\\text{C}$ to prevent scaling.",
+          "source": "Seider et al. (2010), Table 6.2, Heuristic 27, p. 157"
+        },
+        {
+          "id": "UTIL-REF-003",
+          "summary": "Specify utility steam distribution at standardized header pressure levels: 1. High Pressure (HP): 40 to 45 bara (580 to 650 psi...",
+          "applied": "Low-pressure (LP) steam standardized at $3.5\\text{ barg}$ ($50\\text{ psig}$, $148^\\circ\\text{C}$); Medium-pressure (MP) at $10\\text{ barg}$ ($150\\text{ psig}$, $184^\\circ\\text{C}$). LP steam specified.",
+          "source": "Ulrich & Vasudevan (2004), Appendix C, Process Steam, p. 573"
+        }
+      ],
+      "notes": [
+        {
+          "at": "2026-11-25T22:11:28Z",
+          "by": "migration",
+          "text": "Migrated from legacy Minicheme Obsidian note."
+        }
+      ]
+    },
+    {
+      "id": "SM-01",
+      "stage": "SM",
+      "title": "Conceptual Process Brief",
+      "state": "done",
+      "deps": [
+        "HX-02"
+      ],
+      "objective": "Synthesize a 1-page executive brief (Capacity, Reaction, Separation, Energy) confirming readiness to build the Aspen Plus / HYSYS / DWSIM model.",
+      "recommended_heuristics": [
+        "PROC-001",
+        "PROC-002",
+        "PROC-010"
+      ],
+      "proposal": "# Process Summary: Conceptual Process Brief for Green MTBE Plant\n\n> **Project**: Conceptual Process Plan for Green MTBE Production from Isobutylene-Rich Naphtha  \n> **Workspace**: `Process_1/`  \n> **Target Capacity**: $10,000\\text{ metric tons/year}$ Naphtha ($8,000\\text{ operating hr/year}$)  \n> **Status**: 🟢 Conceptual Screening Complete & Heuristically Validated\n\n---\n\n## 1. Operating Mode & Capacity Basis (`PROC-002`)\n\n* **Operating Mode**: **Continuous Processing** ($1,250\\text{ kg/h}$ feed rate, $8,000\\text{ hr/year}$ stream factor).\n* **Turndown Flexibility**: Designed for a minimum **$50\\%$ turndown coefficient** ($625\\text{ kg/h}$).\n* **Primary Chemistry**:\n  $$\\text{Isobutylene} + \\text{Methanol} \\xrightleftharpoons[\\text{Amberlyst 15}]{\\Delta H^\\circ = -37.2\\text{ kJ/mol}} \\text{MTBE}$$\n* **Thermodynamic Model**: **NRTL-RK** or **UNIQUAC-RK** to account for polar alcohol non-ideality, minimum-boiling C4/methanol azeotropes, and LLE water-wash extraction.\n\n---\n\n## 2. Conceptual Reaction Synthesis ({Reactor})\n\n* **Reactor Configuration (`REACT-003`, `REACT-005`)**: Two-stage fixed-bed catalytic reactor train with intermediate cooling (R-101 primary fixed bed + E-102 intercooler + R-102 finishing bed).\n* **Catalyst (`REACT-007`)**: Strongly acidic macroporous cation exchange resin (**Amberlyst 15** beads, $d_p \\approx 0.75\\text{ mm}$).\n* **Operating Regime**: Single liquid phase maintained at **$12.0\\text{ barg}$** (safely above bubble point $\\sim 7\\text{ bar}$).\n* **Thermal Management**: Moderate exotherm ($\\Delta T_{\\text{ad}} \\approx 42.4^\\circ\\text{C}$). Primary inlet at $50^\\circ\\text{C}$, peak limited to $\\le 75^\\circ\\text{C}$ ($<120^\\circ\\text{C}$ resin stability limit).\n* **Stoichiometry (`PROC-004`)**: $5\\%$ stoichiometric excess of methanol ($\\text{MeOH}/i\\text{-C}_4 = 1.05$) to drive conversion and suppress olefin dimerization.\n\n---\n\n## 3. Conceptual Separation Synthesis ({Separation})\n\nA 3-step sequence exploiting the minimum-boiling C4/methanol azeotrope:\n1. **T-201 (Debutizer Column, `DIST-001`, `DIST-002`)**:\n   - Operates at **$6.5\\text{ barg}$** to permit overhead condensation at $49^\\circ\\text{C}$ with cooling water (`DIST-003`).\n   - Bottoms product recovers MTBE at **$\\ge 99.9\\text{ wt}\\%$ purity** directly.\n   - C4 hydrocarbons and unreacted azeotropic methanol distill overhead.\n2. **T-202 (Methanol Extraction Water Wash, `EXTR-001`, `EXTR-002`)**:\n   - Countercurrent liquid-liquid extraction using demineralized water.\n   - Overhead yields spent C4 **Raffinate-II** with $<20\\text{ ppm}$ residual methanol.\n3. **T-203 (Methanol Recovery Distillation, `DIST-001`, `PROC-007`)**:\n   - Operates at **$1.2\\text{ barg}$** to separate methanol from water.\n   - Distillate recovers green methanol for direct recycle to the reactor; bottoms returns clean water to T-202 in a closed zero-discharge loop.\n\n---\n\n## 4. Conceptual Energy & Utility Synthesis ({Heat Exchangers})\n\n* **Heat Recovery Match (`PROC-010`)**: Hot MTBE bottoms ($138^\\circ\\text{C}$) preheats cold incoming reactor feed ($25 \\to 50^\\circ\\text{C}$) in E-101, reducing steam heating duty by $>20\\%$.\n* **Stripped Water Economizer**: Hot water from T-203 bottoms preheats the aqueous extract feed to T-203 in E-203.\n* **Utility Selection**:\n  - **Heating**: Standard Low-Pressure (LP) saturated steam header at **$3.5\\text{ barg}$ ($148^\\circ\\text{C}$)** (`UTIL-REF-003`). Reboiler approach $\\Delta T = 10^\\circ\\text{C} \\le 25^\\circ\\text{C}$ guarantees stable nucleate boiling (`HEX-007`).\n  - **Cooling**: Standard mechanical-draft cooling water supplied at **$30^\\circ\\text{C}$** (`UTIL-REF-001`). No cryogenic refrigeration required.\n\n---\n\n## 5. Transition to Process Simulation\n\nThe conceptual foundation, chemical data, equipment families, and operating envelopes are now established. The engineer can confidently proceed to open **Aspen Plus**, **Aspen HYSYS**, or **DWSIM** to construct the rigorous flowsheet model."
+    }
+  ]
+}

@@ -24,11 +24,12 @@ env/
 venv/
 ENV/
 
-# Obsidian Vault State (Keep configs/plugins/themes, ignore local layout/cache)
-**/.obsidian/workspace.json
-**/.obsidian/workspace-mobile.json
-**/.obsidian/cache/
-**/.obsidian/backups/
+# Minicheme runtime locks & temporary exports
+.*.lock
+*_snapshot.html
+
+# Large textbook source PDFs
+resources/heuristics/SOURCES/
 
 # Operating System Files
 .DS_Store

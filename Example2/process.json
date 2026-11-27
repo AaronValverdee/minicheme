@@ -1,0 +1,209 @@
+{
+  "minicheme": 2,
+  "title": "Green MTBE (Ready to Run)",
+  "basis": {
+    "description": "El objeto del proyecto ofertado es el desarrollo de la Ingeniería Básica de una planta de producción de MTBE verde, como gestión de una nafta rica en isobutileno. El Departamento de Ingeniería Química (en adelante, DIQ) pondrá a disposición de la Empresa Contratista (en adelante, EC) las definiciones fundamentales de la Ingeniería Conceptual del proyecto (Definición y Alcance –en adelante, DAP– y Bases de Diseño –en adelante, BD–) y la información necesaria para completar el diseño conceptual del proceso, dado que se trata de una tecnología licenciada. El proyecto ha de considerar la nafta rica en isobutileno a límite de batería, si bien ha de considerar la producción de metanol verde, suministrado a límite de batería. Asimismo, se garantiza el suministro a límite de batería de algunos servicios auxiliares necesarios para llevar a cabo el proceso.\nLas materias primas tendrán la siguientes especificaciones y límites de batería. El MTBE ha de cumplir con una pureza del 99,9 % en masa. El modelo termodinámico ha de seleccionarse para describir correctamente los equilibrios propios de reacción química, líquido-vapor y líquido-líquido. El coeficiente de utilización mínimo es del 50%. La planta operará 8000 horas al año.\n\n![[Pasted image 20260907180236.png]]\n\nLa capacidad de la planta es de 10000 toneladas de nafta al año",
+    "target_product": "",
+    "feedstocks": "",
+    "capacity": "",
+    "operating_hours": 8000,
+    "operating_mode": "",
+    "product_spec": "",
+    "thermo_model": "",
+    "battery_limits": "",
+    "constraints": "",
+    "references": [
+      "references/MTBE_chemsystems.pdf"
+    ]
+  },
+  "substances": [],
+  "azeotrope_notes": "",
+  "stages": [
+    {
+      "id": "BP",
+      "name": "Basis & Properties",
+      "color": "teal"
+    },
+    {
+      "id": "RX",
+      "name": "1. Reactor",
+      "color": "blue"
+    },
+    {
+      "id": "SP",
+      "name": "2. Separation",
+      "color": "violet"
+    },
+    {
+      "id": "HX",
+      "name": "3. Heat Exchangers",
+      "color": "amber"
+    },
+    {
+      "id": "SM",
+      "name": "4. Conceptual Brief",
+      "color": "emerald"
+    }
+  ],
+  "blocks": [
+    {
+      "id": "BP-01",
+      "stage": "BP",
+      "title": "Basis & Operating Mode",
+      "state": "todo",
+      "deps": [],
+      "objective": "Parse process inputs & ./references/, classify Continuous vs Batch (PROC-002), and capture capacity, specs, battery limits, and constraints.",
+      "recommended_heuristics": [
+        "PROC-001",
+        "PROC-002",
+        "PROC-003"
+      ]
+    },
+    {
+      "id": "BP-02",
+      "stage": "BP",
+      "title": "Chemical Substances & Thermo Model",
+      "state": "todo",
+      "deps": [
+        "BP-01"
+      ],
+      "objective": "Retrieve pure-component properties for 3-5 key species via `props`, rank normal boiling points / relative volatilities, flag azeotropes, and select the thermodynamic model.",
+      "recommended_heuristics": [
+        "PROP-001",
+        "PROP-002",
+        "PROC-003"
+      ]
+    },
+    {
+      "id": "RX-01",
+      "stage": "RX",
+      "title": "Reactor Thermodynamics",
+      "state": "todo",
+      "deps": [
+        "BP-02"
+      ],
+      "objective": "Quantify heat of reaction (ΔH_rxn), adiabatic temperature rise (ΔT_ad), thermal severity, equilibrium limits, and side reactions / extinction strategy.",
+      "recommended_heuristics": [
+        "REACT-004",
+        "REACT-005",
+        "PROC-004",
+        "PROC-007"
+      ]
+    },
+    {
+      "id": "RX-02",
+      "stage": "RX",
+      "title": "Reactor Type & Catalyst",
+      "state": "todo",
+      "deps": [
+        "RX-01"
+      ],
+      "objective": "Select reactor family (PFR / fixed bed / CSTR / fluidized), catalyst class & particle size, and screen reactive separation alternatives.",
+      "recommended_heuristics": [
+        "REACT-003",
+        "REACT-007",
+        "PROC-008",
+        "REACT-006"
+      ]
+    },
+    {
+      "id": "RX-03",
+      "stage": "RX",
+      "title": "Reaction Conditions",
+      "state": "todo",
+      "deps": [
+        "RX-02"
+      ],
+      "objective": "Set operating T, P (phase stability), stoichiometric ratio, space velocity / residence time, feed pressurization, and preliminary bed sizing.",
+      "recommended_heuristics": [
+        "REACT-002",
+        "PROC-009",
+        "REACT-007",
+        "VES-001"
+      ]
+    },
+    {
+      "id": "SP-01",
+      "stage": "SP",
+      "title": "Separation Steps & Sequence",
+      "state": "todo",
+      "deps": [
+        "RX-03"
+      ],
+      "objective": "Synthesize separation train (flash, distillation, extraction, absorption) from relative volatilities, azeotropes, and recycle/purge structure.",
+      "recommended_heuristics": [
+        "DIST-001",
+        "DIST-002",
+        "EXTR-001",
+        "EXTR-002",
+        "PROC-005",
+        "PROC-007"
+      ]
+    },
+    {
+      "id": "SP-02",
+      "stage": "SP",
+      "title": "Separation Conditions",
+      "state": "todo",
+      "deps": [
+        "SP-01"
+      ],
+      "objective": "Set column operating pressures (for CW condensation), T_top/T_bot, reflux ratio (1.2-1.3 R_min), theoretical stages, and tray vs packing internals.",
+      "recommended_heuristics": [
+        "DIST-003",
+        "DIST-004",
+        "DIST-005",
+        "DIST-006",
+        "EXTR-003",
+        "EXTR-004"
+      ]
+    },
+    {
+      "id": "HX-01",
+      "stage": "HX",
+      "title": "Heat Exchanger Types",
+      "state": "todo",
+      "deps": [
+        "SP-02"
+      ],
+      "objective": "List primary heat-transfer services, select TEMA configurations & standard geometry, allocate tube vs shell fluids, and verify reboiler nucleate-boiling ΔT.",
+      "recommended_heuristics": [
+        "HEX-001",
+        "HEX-002",
+        "HEX-007",
+        "HEX-010"
+      ]
+    },
+    {
+      "id": "HX-02",
+      "stage": "HX",
+      "title": "Utilities & Pinch",
+      "state": "todo",
+      "deps": [
+        "HX-01"
+      ],
+      "objective": "Identify process-to-process heat recovery matches, set ΔT_min, verify pinch discipline, and specify cooling water / steam utility headers.",
+      "recommended_heuristics": [
+        "PROC-010",
+        "HEX-004",
+        "UTIL-REF-001",
+        "UTIL-REF-003"
+      ]
+    },
+    {
+      "id": "SM-01",
+      "stage": "SM",
+      "title": "Conceptual Process Brief",
+      "state": "todo",
+      "deps": [
+        "HX-02"
+      ],
+      "objective": "Synthesize a 1-page executive brief (Capacity, Reaction, Separation, Energy) confirming readiness to build the Aspen Plus / HYSYS / DWSIM model.",
+      "recommended_heuristics": [
+        "PROC-001",
+        "PROC-002",
+        "PROC-010"
+      ]
+    }
+  ]
+}
